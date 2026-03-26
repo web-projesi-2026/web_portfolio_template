@@ -1,1 +1,321 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>gzhno — Security Researcher</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0f;--bg-card:#11111a;--border:#1e1e2e;--border-glow:#00ffc840;--text:#e0e0e8;--text-dim:#6e6e82;--accent:#00ffc8;--accent-dim:#00ffc830;--red:#ff4d6a;--amber:#ffb347;--blue:#4da6ff}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;line-height:1.7;overflow-x:hidden}
+body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:.08;pointer-events:none;z-index:0}
+.container{max-width:1200px;margin:0 auto;padding:0 40px;position:relative;z-index:1}
+.scroll-progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--blue));z-index:10000;width:0}
+nav{padding:20px 40px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);background:rgba(10,10,15,.85)}
+.logo{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;color:var(--accent);letter-spacing:-.5px;text-decoration:none}.logo span{color:var(--text-dim);font-weight:300}
+.nav-links{display:flex;gap:28px}
+.nav-links a{color:var(--text-dim);text-decoration:none;font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase;transition:color .3s;position:relative}
+.nav-links a:hover,.nav-links a.active{color:var(--accent)}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;background:var(--accent);transition:width .3s}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+.menu-toggle{display:none;background:none;border:none;color:var(--text);font-size:1.5rem;cursor:pointer}
+.hero-3d{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden}
+#threeCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:0}
+.hero-content{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:60px;padding:100px 40px 80px;width:100%;max-width:1400px;margin:0 auto}
+.hero-text{max-width:600px}
+.hero-label{font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--accent);letter-spacing:3px;text-transform:uppercase;margin-bottom:24px;opacity:0;animation:fadeUp .6s ease .2s forwards}
+.hero-title{font-size:clamp(2.8rem,6vw,4.5rem);font-weight:700;line-height:1.1;letter-spacing:-2px;margin-bottom:24px;opacity:0;animation:fadeUp .6s ease .35s forwards}
+.hero-title .highlight{background:linear-gradient(135deg,var(--accent),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-desc{font-size:1.15rem;color:var(--text-dim);line-height:1.8;opacity:0;animation:fadeUp .6s ease .5s forwards}
+.hero-badges{display:flex;gap:10px;margin-top:28px;flex-wrap:wrap;opacity:0;animation:fadeUp .6s ease .65s forwards}
+.badge{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:8px 18px;border:1px solid var(--border);border-radius:20px;color:var(--text-dim);letter-spacing:.5px;transition:all .3s;cursor:default}
+.badge:hover{border-color:var(--accent);color:var(--accent);box-shadow:0 0 20px var(--accent-dim);transform:translateY(-2px)}
+.hero-cta{display:flex;gap:16px;margin-top:32px;opacity:0;animation:fadeUp .6s ease .8s forwards}
+.btn{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;transition:all .3s;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:var(--accent);color:var(--bg);box-shadow:0 0 20px var(--accent-dim)}
+.btn-primary:hover{box-shadow:0 0 40px var(--accent-dim);transform:translateY(-2px)}
+.btn-secondary{background:transparent;color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+.logo-3d-hint{position:absolute;right:8%;bottom:12%;font-family:'JetBrains Mono',monospace;font-size:.5rem;color:var(--accent);opacity:.25;letter-spacing:3px;text-transform:uppercase;z-index:2}
+section{padding:60px 0}
+.section-header{display:flex;align-items:center;gap:16px;margin-bottom:40px}
+.section-number{font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--accent);opacity:.6}
+.section-title{font-size:1.8rem;font-weight:600;letter-spacing:-.5px}
+.section-line{flex:1;height:1px;background:var(--border)}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
+.stat-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:32px;text-align:center;transition:all .4s}
+.stat-card:hover{border-color:var(--border-glow);transform:translateY(-4px);box-shadow:0 8px 32px rgba(0,255,200,.06)}
+.stat-value{font-family:'JetBrains Mono',monospace;font-size:2.5rem;font-weight:700;color:var(--accent)}
+.stat-label{font-size:.95rem;color:var(--text-dim);margin-top:6px}
+.carousel-wrapper{position:relative;overflow:hidden;border-radius:16px}
+.carousel{display:flex;transition:transform .5s cubic-bezier(.16,1,.3,1)}
+.carousel-slide{min-width:100%;background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:48px;position:relative;overflow:hidden}
+.carousel-slide::before{content:'';position:absolute;top:-50%;right:-20%;width:300px;height:300px;background:radial-gradient(circle,var(--accent-dim) 0%,transparent 70%);pointer-events:none}
+.carousel-content{position:relative}
+.carousel-tag{font-family:'JetBrains Mono',monospace;font-size:.65rem;padding:3px 10px;border-radius:12px;font-weight:600;display:inline-block;margin-bottom:12px}
+.tag-wip{background:#ffb34715;color:var(--amber);border:1px solid #ffb34730}
+.tag-done{background:#00ffc815;color:var(--accent);border:1px solid #00ffc830}
+.tag-research{background:#4da6ff15;color:var(--blue);border:1px solid #4da6ff30}
+.carousel-title{font-family:'JetBrains Mono',monospace;font-size:1.6rem;font-weight:700;margin-bottom:10px}
+.carousel-desc{color:var(--text-dim);font-size:1.05rem;line-height:1.8;max-width:700px;margin-bottom:24px}
+.carousel-tech{display:flex;gap:8px;flex-wrap:wrap}
+.carousel-tech span{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text-dim);background:#ffffff06;padding:4px 12px;border-radius:6px}
+.carousel-nav{display:flex;justify-content:center;gap:8px;margin-top:20px}
+.carousel-dot{width:10px;height:10px;border-radius:50%;background:var(--border);border:none;cursor:pointer;transition:all .3s;padding:0}
+.carousel-dot.active{background:var(--accent);box-shadow:0 0 12px var(--accent-dim)}
+.carousel-arrows{position:absolute;top:50%;width:100%;display:flex;justify-content:space-between;transform:translateY(-50%);pointer-events:none;padding:0 12px;z-index:2}
+.carousel-arrow{pointer-events:auto;background:var(--bg-card);border:1px solid var(--border);color:var(--text);width:40px;height:40px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:all .3s}
+.carousel-arrow:hover{border-color:var(--accent);color:var(--accent)}
+.terminal{background:#0d0d14;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:40px}
+.terminal-bar{padding:12px 16px;background:#0a0a10;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.terminal-dot{width:10px;height:10px;border-radius:50%}
+.dot-red{background:var(--red)}.dot-amber{background:var(--amber)}.dot-green{background:var(--accent)}
+.terminal-body{padding:24px;font-family:'JetBrains Mono',monospace;font-size:.85rem;line-height:2;color:var(--text-dim);min-height:220px}
+.terminal-body .cmd{color:var(--accent)}.terminal-body .path{color:var(--amber)}.terminal-body .comment{color:#444460}
+.cursor-block{display:inline-block;width:8px;height:16px;background:var(--accent);animation:blink 1s step-end infinite;vertical-align:middle;margin-left:4px}
+.newsletter{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:48px;text-align:center;margin-top:60px}
+.newsletter h3{font-size:1.5rem;margin-bottom:10px}
+.newsletter p{color:var(--text-dim);font-size:1rem;margin-bottom:28px}
+.newsletter-form{display:flex;gap:12px;max-width:520px;margin:0 auto}
+.newsletter-form input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px 18px;color:var(--text);font-family:'Outfit',sans-serif;font-size:1rem;outline:none;transition:border-color .3s}
+.newsletter-form input:focus{border-color:var(--accent)}
+.newsletter-form input::placeholder{color:var(--text-dim)}
+.newsletter-msg{margin-top:12px;font-size:.8rem;font-family:'JetBrains Mono',monospace;opacity:0;transition:opacity .3s}
+.newsletter-msg.show{opacity:1}.newsletter-msg.success{color:var(--accent)}.newsletter-msg.error{color:var(--red)}
+.back-to-top{position:fixed;bottom:32px;right:32px;width:44px;height:44px;border-radius:50%;background:var(--bg-card);border:1px solid var(--border);color:var(--accent);font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:100;opacity:0;transform:translateY(20px);transition:all .3s;pointer-events:none}
+.back-to-top.visible{opacity:1;transform:translateY(0);pointer-events:auto}
+.back-to-top:hover{border-color:var(--accent);box-shadow:0 0 24px var(--accent-dim)}
+footer{padding:48px 0;border-top:1px solid var(--border);margin-top:60px;text-align:center}
+footer p{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--text-dim)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{50%{opacity:0}}
+.fade-in{opacity:0;transform:translateY(24px);transition:all .7s cubic-bezier(.16,1,.3,1)}.fade-in.visible{opacity:1;transform:translateY(0)}
+@media(max-width:768px){.hero-content{grid-template-columns:1fr;text-align:center}.hero-badges{justify-content:center}.hero-cta{justify-content:center}.nav-links{display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg);border-bottom:1px solid var(--border);flex-direction:column;padding:20px 24px;gap:16px}.nav-links.open{display:flex}.menu-toggle{display:block}.stats-row{grid-template-columns:1fr 1fr}.newsletter-form{flex-direction:column}.carousel-arrows{display:none}.logo-3d-hint{display:none}}
+</style>
+</head>
+<body>
+<div class="scroll-progress" id="scrollProgress"></div>
+<nav>
+<a href="index.html" class="logo">gzhno<span>_sec</span> <span style="opacity:.3;font-size:.7rem;margin-left:8px">// Krul_Tepes</span></a>
+<button class="menu-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+<div class="nav-links">
+<a href="index.html" class="active">Ana Sayfa</a>
+<a href="pages/project.html">Projeler</a>
+<a href="pages/rust.html">Rust</a>
+<a href="pages/scenario.html">Senaryo</a>
+<a href="pages/about.html">Hakkımda</a>
+<a href="pages/books.html">Kitaplık</a>
+<a href="pages/contact.html">İletişim</a>
+</div>
+</nav>
 
+<section class="hero-3d">
+<canvas id="threeCanvas"></canvas>
+<div class="hero-content">
+<div class="hero-text">
+<div class="hero-label">Krul_Tepes — Smart Contract Security Researcher</div>
+<h1 class="hero-title">Kodu kırmadan önce<br><span class="highlight" id="typingTarget"></span><span style="display:inline-block;width:2px;height:1em;background:var(--accent);margin-left:2px;animation:blink 1s step-end infinite;vertical-align:text-bottom"></span></h1>
+<p class="hero-desc">Solana ve EVM ekosistemlerinde akıllı sözleşme güvenliği üzerine çalışıyorum. DeFi protokollerinde güvenlik açıkları buluyorum, aynı zamanda safety-critical sistemler için sıfırdan bir RTOS geliştiriyorum.</p>
+<div class="hero-badges"><span class="badge">Rust</span><span class="badge">Solana</span><span class="badge">Solidity / EVM</span><span class="badge">RISC-V</span><span class="badge">Formal Verification</span></div>
+<div class="hero-cta"><a href="pages/project.html" class="btn btn-primary">Projeleri Gör →</a><a href="pages/contact.html" class="btn btn-secondary">İletişim</a></div>
+</div>
+</div>
+<div class="logo-3d-hint">Sipahi Kernel · 3D Architecture · Mouse ile döndür</div>
+</section>
+
+<div class="container">
+<section class="fade-in">
+<div class="section-header"><span class="section-number">01</span><h2 class="section-title">Rakamlarla</h2><div class="section-line"></div></div>
+<div class="stats-row">
+<div class="stat-card"><div class="stat-value" data-count="2">0</div><div class="stat-label">Audit Yarışması</div></div>
+<div class="stat-card"><div class="stat-value" data-count="3">0</div><div class="stat-label">Güvenlik Raporu</div></div>
+<div class="stat-card"><div class="stat-value" data-count="4">0</div><div class="stat-label">Katmanlı Mimari</div></div>
+<div class="stat-card"><div class="stat-value" data-count="7">0</div><div class="stat-label">Çekirdek Modül</div></div>
+</div>
+</section>
+
+<section class="fade-in">
+<div class="section-header"><span class="section-number">02</span><h2 class="section-title">Öne Çıkan Projeler</h2><div class="section-line"></div></div>
+<div class="carousel-wrapper">
+<div class="carousel" id="carousel">
+<div class="carousel-slide"><div class="carousel-content"><span class="carousel-tag tag-wip">Geliştiriliyor</span><div class="carousel-title">Sipahi Microkernel</div><p class="carousel-desc">RISC-V üzerinde capability-based mikro çekirdek. WASM sandbox, heap-free/panic-free kernel, PMP izolasyonu, Kani/Lean 4 formal doğrulama.</p><div class="carousel-tech"><span>Rust</span><span>RISC-V</span><span>WASM</span><span>Kani</span></div></div></div>
+<div class="carousel-slide"><div class="carousel-content"><span class="carousel-tag tag-wip">Geliştiriliyor</span><div class="carousel-title">National Cyber Stack</div><p class="carousel-desc">5 katmanlı ulusal siber savunma mimarisi. PRELUDE, ORACLE, MANTIS, ARES, OBSIDIAN.</p><div class="carousel-tech"><span>PRELUDE</span><span>ORACLE</span><span>MANTIS</span><span>ARES</span><span>OBSIDIAN</span></div></div></div>
+<div class="carousel-slide"><div class="carousel-content"><span class="carousel-tag tag-done">Tamamlandı</span><div class="carousel-title">Jupiter Lend Audit</div><p class="carousel-desc">Code4rena yarışmasında Solana lending protokolü güvenlik denetimi.</p><div class="carousel-tech"><span>Solana</span><span>Rust</span><span>DeFi</span><span>Code4rena</span></div></div></div>
+<div class="carousel-slide"><div class="carousel-content"><span class="carousel-tag tag-research">Araştırma</span><div class="carousel-title">Warlord DeFi Toolkit</div><p class="carousel-desc">Constant Product Formula tabanlı likidite havuzu. Property-based testing, cebirsel ispat.</p><div class="carousel-tech"><span>Rust</span><span>rust_decimal</span><span>proptest</span></div></div></div>
+</div>
+<div class="carousel-arrows"><button class="carousel-arrow" onclick="moveCarousel(-1)">‹</button><button class="carousel-arrow" onclick="moveCarousel(1)">›</button></div>
+</div>
+<div class="carousel-nav" id="carouselNav"></div>
+</section>
+
+<div class="terminal fade-in">
+<div class="terminal-bar"><span class="terminal-dot dot-red"></span><span class="terminal-dot dot-amber"></span><span class="terminal-dot dot-green"></span></div>
+<div class="terminal-body" id="terminalBody"></div>
+</div>
+
+<div class="newsletter fade-in">
+<h3>Güncellemelerden Haberdar Ol</h3>
+<p>Yeni güvenlik bulguları ve Sipahi geliştirmeleri hakkında bilgi al.</p>
+<div class="newsletter-form"><input type="email" id="newsletterEmail" placeholder="e-posta@adresin.com"><button class="btn btn-primary" onclick="submitNewsletter()">Abone Ol</button></div>
+<div class="newsletter-msg" id="newsletterMsg"></div>
+</div>
+
+<footer><p>gzhno // Krul_Tepes © 2026 — built with purpose</p></footer>
+</div>
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+const canvas=document.getElementById('threeCanvas');
+const R=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+R.setPixelRatio(Math.min(window.devicePixelRatio,2));
+R.setClearColor(0x000000,0);
+const S=new THREE.Scene();
+S.fog=new THREE.FogExp2(0x0a0a0f,0.06);
+const cam=new THREE.PerspectiveCamera(50,1,0.1,100);
+cam.position.set(0,0,10);
+let W,H;
+function rz(){const r=canvas.parentElement.getBoundingClientRect();W=r.width;H=r.height;R.setSize(W,H);cam.aspect=W/H;cam.updateProjectionMatrix()}
+window.addEventListener('resize',rz);rz();
+
+const mC=new THREE.MeshPhysicalMaterial({color:0x00ffc8,metalness:.9,roughness:.12,emissive:0x003322,emissiveIntensity:.3,clearcoat:1,clearcoatRoughness:.1,transparent:true,opacity:.85});
+const mS=new THREE.MeshPhysicalMaterial({color:0x1a3a4a,metalness:.95,roughness:.1,emissive:0x001a11,emissiveIntensity:.2,clearcoat:.8,transparent:true,opacity:.55});
+const mW=new THREE.MeshBasicMaterial({color:0x00ffc8,wireframe:true,transparent:true,opacity:.07});
+const mR=new THREE.MeshPhysicalMaterial({color:0x00ffc8,metalness:.8,roughness:.2,emissive:0x004433,emissiveIntensity:.5,transparent:true,opacity:.45});
+const mG=new THREE.MeshBasicMaterial({color:0x00ffc8,transparent:true,opacity:.03});
+
+const K=new THREE.Group();
+const core=new THREE.Mesh(new THREE.OctahedronGeometry(.8,0),mC);K.add(core);
+K.add(new THREE.Mesh(new THREE.OctahedronGeometry(.82,0),mW));
+K.add(new THREE.Mesh(new THREE.SphereGeometry(.55,32,32),mG));
+
+const r1=new THREE.Mesh(new THREE.TorusGeometry(1.4,.03,16,100),mR);r1.rotation.x=Math.PI/2;K.add(r1);
+const r1b=new THREE.Mesh(new THREE.TorusGeometry(1.5,.015,16,100),mR.clone());r1b.material.opacity=.22;r1b.rotation.x=Math.PI/2;K.add(r1b);
+
+const mR2=mR.clone();mR2.color=new THREE.Color(0x4da6ff);mR2.emissive=new THREE.Color(0x112244);mR2.opacity=.32;
+const r2=new THREE.Mesh(new THREE.TorusGeometry(2,.025,16,120),mR2);r2.rotation.x=1.2;r2.rotation.y=.5;K.add(r2);
+const r2b=new THREE.Mesh(new THREE.TorusGeometry(2.1,.012,16,120),mR2.clone());r2b.material.opacity=.14;r2b.rotation.x=1;r2b.rotation.y=-.3;K.add(r2b);
+
+const shield=new THREE.Mesh(new THREE.IcosahedronGeometry(2.6,1),mS);K.add(shield);
+K.add(new THREE.Mesh(new THREE.IcosahedronGeometry(2.62,1),new THREE.MeshBasicMaterial({color:0x00ffc8,wireframe:true,transparent:true,opacity:.05})));
+K.add(new THREE.Mesh(new THREE.SphereGeometry(2.8,32,32),new THREE.MeshBasicMaterial({color:0x00ffc8,transparent:true,opacity:.012,side:THREE.BackSide})));
+
+/* ═══════ MORPHING PARTICLES ═══════ */
+const pC=900;
+const pG=new THREE.BufferGeometry();
+const pPos=new Float32Array(pC*3);
+const pTgt=new Float32Array(pC*3); // target positions (text)
+const pOrg=new Float32Array(pC*3); // scattered positions
+
+// Generate scattered sphere positions
+for(let i=0;i<pC;i++){
+    const th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1),r=3+Math.random()*5;
+    pOrg[i*3]=r*Math.sin(ph)*Math.cos(th);
+    pOrg[i*3+1]=r*Math.sin(ph)*Math.sin(th);
+    pOrg[i*3+2]=r*Math.cos(ph);
+    pPos[i*3]=pOrg[i*3];pPos[i*3+1]=pOrg[i*3+1];pPos[i*3+2]=pOrg[i*3+2];
+}
+
+// Generate text positions from canvas
+(function(){
+    const tc=document.createElement('canvas');tc.width=800;tc.height=200;
+    const tx=tc.getContext('2d');
+    tx.fillStyle='#fff';
+    tx.font='bold 140px Arial,Helvetica,sans-serif';
+    tx.textAlign='center';tx.textBaseline='middle';
+    tx.fillText('SIPAHI',400,100);
+    const d=tx.getImageData(0,0,800,200).data;
+    const pts=[];
+    // Pixel-level scan for dense coverage
+    for(let y=0;y<200;y+=1)for(let x=0;x<800;x+=1){
+        if(d[(y*800+x)*4+3]>128)pts.push({x:(x-400)/100,y:(100-y)/100,z:0});
+    }
+    // Shuffle for random distribution
+    for(let i=pts.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pts[i],pts[j]]=[pts[j],pts[i]]}
+    for(let i=0;i<pC;i++){
+        const p=pts[i%pts.length];
+        pTgt[i*3]=p.x-1.5;pTgt[i*3+1]=p.y+3.0;pTgt[i*3+2]=(Math.random()-.5)*.1;
+    }
+})();
+
+pG.setAttribute('position',new THREE.BufferAttribute(pPos,3));
+const pSizes=new Float32Array(pC);for(let i=0;i<pC;i++)pSizes[i]=Math.random()*.4+.3;
+pG.setAttribute('size',new THREE.BufferAttribute(pSizes,1));
+const particles=new THREE.Points(pG,new THREE.PointsMaterial({color:0x00ffc8,size:.035,transparent:true,opacity:.6,sizeAttenuation:true}));
+S.add(particles);
+let morphPhase=0; // 0=scattered, 1=text
+
+K.position.set(1.2,0,0);S.add(K);
+
+S.add(new THREE.AmbientLight(0x0a1a2a,.6));
+const dL=new THREE.DirectionalLight(0x00ffc8,1.2);dL.position.set(5,5,5);S.add(dL);
+const fL=new THREE.DirectionalLight(0x4da6ff,.4);fL.position.set(-5,-3,2);S.add(fL);
+const rL=new THREE.DirectionalLight(0xff6b35,.3);rL.position.set(0,5,-5);S.add(rL);
+const pL=new THREE.PointLight(0x00ffc8,.8,10);pL.position.set(0,0,3);S.add(pL);
+
+let mX=0,mY=0;
+document.addEventListener('mousemove',e=>{mX=(e.clientX/innerWidth-.5)*2;mY=(e.clientY/innerHeight-.5)*2});
+
+const clk=new THREE.Clock();
+function anim(){
+requestAnimationFrame(anim);
+const t=clk.getElapsedTime();
+K.rotation.y+=(mX*.3+t*.15-K.rotation.y)*.02;
+K.rotation.x+=(mY*.3+Math.sin(t*.08)*.15-K.rotation.x)*.02;
+core.scale.setScalar(1+Math.sin(t*2)*.03);
+r1.rotation.z=t*.3;r1b.rotation.z=-t*.2;r2.rotation.z=t*.15;r2b.rotation.z=-t*.1;
+r2.rotation.x=1.2+Math.sin(t*.3)*.1;
+shield.scale.setScalar(1+Math.sin(t*.5)*.02);
+mC.emissiveIntensity=.3+Math.sin(t*2)*.15;
+pL.position.x=Math.sin(t*.5)*2;pL.position.z=3+Math.cos(t*.3);pL.intensity=.8+Math.sin(t*1.5)*.2;
+// Particle morph: 5s text visible, 12s scattered
+const cycle=Math.max(0,t-8)%25;
+morphPhase=cycle<2.5?Math.min(1,cycle/2.5):cycle<7.5?1:cycle<10?Math.max(0,1-(cycle-7.5)/2.5):0;
+const posArr=pG.attributes.position.array;
+for(let i=0;i<pC;i++){
+    const i3=i*3;
+    const tx=pTgt[i3],ty=pTgt[i3+1],tz=pTgt[i3+2];
+    const ox=pOrg[i3],oy=pOrg[i3+1],oz=pOrg[i3+2];
+    posArr[i3]=ox+(tx-ox)*morphPhase+Math.sin(t*1.5+i*.1)*.03;
+    posArr[i3+1]=oy+(ty-oy)*morphPhase+Math.cos(t*1.2+i*.15)*.03;
+    posArr[i3+2]=oz+(tz-oz)*morphPhase+Math.sin(t*.8+i*.2)*.02;
+}
+pG.attributes.position.needsUpdate=true;
+particles.material.opacity=.3+morphPhase*.35;
+R.render(S,cam);}
+anim();
+})();
+
+(function(){const w=['anlamak gerekir.','güvenlik gelir.','mimari önemlidir.','doğrulama şarttır.'];let wi=0,ci=0,d=false;const el=document.getElementById('typingTarget');
+function t(){const s=w[wi];if(!d){el.textContent=s.slice(0,ci+1);ci++;if(ci>=s.length){d=true;setTimeout(t,2000);return;}}else{el.textContent=s.slice(0,ci);ci--;if(ci<0){ci=0;d=false;wi=(wi+1)%w.length;}}setTimeout(t,d?40:80);}setTimeout(t,1200)})();
+
+window.addEventListener('scroll',()=>{const h=document.documentElement.scrollHeight-innerHeight;document.getElementById('scrollProgress').style.width=(scrollY/h*100)+'%';document.getElementById('backToTop').classList.toggle('visible',scrollY>400)});
+
+const cObs=new IntersectionObserver(e=>{e.forEach(e=>{if(!e.isIntersecting)return;e.target.querySelectorAll('[data-count]').forEach(el=>{const t=+el.dataset.count;let c=0;const s=()=>{c++;el.textContent=c+(t===2?'+':'');if(c<t)requestAnimationFrame(s)};requestAnimationFrame(s)});cObs.unobserve(e.target)})},{threshold:.3});
+document.querySelectorAll('.stats-row').forEach(el=>cObs.observe(el));
+
+let cI=0;const sl=document.querySelectorAll('.carousel-slide'),nE=document.getElementById('carouselNav');
+sl.forEach((_,i)=>{const d=document.createElement('button');d.className='carousel-dot'+(i===0?' active':'');d.onclick=()=>gS(i);nE.appendChild(d)});
+function gS(i){cI=i;document.getElementById('carousel').style.transform=`translateX(-${i*100}%)`;document.querySelectorAll('.carousel-dot').forEach((d,j)=>d.classList.toggle('active',j===i))}
+function moveCarousel(dir){gS((cI+dir+sl.length)%sl.length)}
+setInterval(()=>moveCarousel(1),5000);
+
+(function(){const lines=[{t:'comment',v:'# sipahi kernel build'},{t:'cmd',v:'$ ~/WARLORD_HQ/sipahi cargo build --target riscv64gc-unknown-none-elf'},{t:'out',v:'  Compiling sipahi-kernel v0.1.0'},{t:'out',v:'  Finished release [optimized] target(s)'},{t:'cmd',v:'$ ~/WARLORD_HQ/sipahi qemu-system-riscv64 -kernel target/sipahi.elf'},{t:'out',v:'  [SIPAHI] Çelik Çekirdek başlatılıyor...'},{t:'out',v:'  [PMP] Bellek bölgeleri yapılandırıldı'},{t:'out',v:'  [SCHED] Preemptive RR scheduler aktif'},{t:'out',v:'  [WASM] Sandbox modülleri yükleniyor...'},{t:'out',v:'  [OK] Sistem hazır.'}];
+const el=document.getElementById('terminalBody');let li=0;
+const tO=new IntersectionObserver(e=>{if(e[0].isIntersecting){tL();tO.unobserve(el)}},{threshold:.3});tO.observe(el);
+function tL(){if(li>=lines.length){el.innerHTML+='<span class="cmd">$</span> <span class="path">~/WARLORD_HQ/sipahi</span> <span class="cursor-block"></span>';return;}
+const l=lines[li];let h='';if(l.t==='comment')h=`<span class="comment">${l.v}</span>`;else if(l.t==='cmd')h=`<span class="cmd">${l.v.slice(0,1)}</span> <span class="path">${l.v.slice(2,l.v.indexOf(' ',2))}</span>${l.v.slice(l.v.indexOf(' ',2))}`;else h=l.v;
+el.innerHTML+=h+'<br>';li++;setTimeout(tL,l.t==='cmd'?400:150)}})();
+
+function submitNewsletter(){const e=document.getElementById('newsletterEmail').value;const m=document.getElementById('newsletterMsg');
+if(!e||!e.includes('@')||!e.includes('.')){m.textContent='✗ Geçerli bir e-posta girin.';m.className='newsletter-msg show error';return;}
+m.textContent='✓ Başarıyla abone oldunuz!';m.className='newsletter-msg show success';document.getElementById('newsletterEmail').value='';}
+
+const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:.05});
+document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
+</script>
+<script src="assests/js/senior.js"></script>
+</body>
+</html>

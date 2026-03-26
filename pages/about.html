@@ -1,1 +1,338 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hakkımda — Krul_Tepes</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&family=Cinzel:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0f;--bg-card:#11111a;--border:#1e1e2e;--border-glow:#00ffc840;--text:#e0e0e8;--text-dim:#6e6e82;--accent:#00ffc8;--blood:#c41230;--blood-dim:#c4123020;--amber:#ffb347;--blue:#4da6ff}
+*{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;line-height:1.7;overflow-x:hidden}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:18px 32px;display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(12px);background:rgba(10,10,15,.6);transition:background .3s}
+nav.scrolled{background:rgba(10,10,15,.95);border-bottom:1px solid var(--border)}
+.logo{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:700;color:var(--accent);text-decoration:none}.logo span{color:var(--text-dim);font-weight:300}
+.nav-links{display:flex;gap:24px}.nav-links a{color:var(--text-dim);text-decoration:none;font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase;transition:color .3s}.nav-links a:hover,.nav-links a.active{color:var(--accent)}
+.krul-hero{position:relative;min-height:100vh;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
+.krul-bg{position:absolute;inset:0;z-index:0}.krul-bg img{width:100%;height:100%;object-fit:cover;object-position:center 20%}
+.krul-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,rgba(10,10,15,1) 0%,rgba(10,10,15,.6) 30%,rgba(10,10,15,.15) 55%,rgba(10,10,15,.4) 100%)}
+.krul-vignette{position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse at center,transparent 40%,rgba(20,2,5,.6) 100%);pointer-events:none}
+.krul-particles{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+.krul-content{position:relative;z-index:3;text-align:center;padding:0 24px 80px;max-width:800px}
+.krul-alias{font-family:'JetBrains Mono',monospace;font-size:.75rem;letter-spacing:6px;color:var(--blood);text-transform:uppercase;margin-bottom:12px;opacity:0;animation:kF .8s ease .3s forwards}
+.krul-name{font-family:'Cinzel',serif;font-size:clamp(3.5rem,9vw,6.5rem);font-weight:900;letter-spacing:4px;line-height:.95;margin-bottom:8px;background:linear-gradient(180deg,#e8e0f0 30%,var(--blood) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 40px rgba(196,18,48,.3));opacity:0;animation:kR 1s ease .5s forwards}
+.krul-handle{font-family:'Cinzel',serif;font-size:clamp(1.1rem,3.5vw,1.8rem);font-weight:600;color:var(--blood);letter-spacing:8px;margin-bottom:24px;opacity:0;animation:kF .8s ease .8s forwards}
+.krul-titles{display:flex;flex-direction:column;gap:6px;margin-bottom:32px}
+.krul-title-line{font-family:'JetBrains Mono',monospace;font-size:.8rem;letter-spacing:3px;text-transform:uppercase;opacity:0;animation:kF .6s ease forwards}
+.krul-title-line:nth-child(1){color:var(--accent);animation-delay:1.1s}
+.krul-title-line:nth-child(2){color:var(--amber);animation-delay:1.3s}
+.krul-title-line:nth-child(3){color:var(--blood);animation-delay:1.5s}
+.krul-scroll{opacity:0;animation:kF .6s ease 1.8s forwards}
+.krul-scroll-line{width:1px;height:40px;background:linear-gradient(180deg,var(--blood),transparent);margin:0 auto 8px;animation:sP 2s ease infinite}
+@keyframes sP{0%,100%{opacity:.3;height:40px}50%{opacity:.8;height:50px}}
+.krul-scroll-text{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:4px;color:var(--text-dim);text-transform:uppercase}
+@keyframes kF{from{opacity:0}to{opacity:1}}@keyframes kR{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.content-section{background:var(--bg);position:relative;z-index:4}.container{max-width:920px;margin:0 auto;padding:0 24px}
+section{padding:80px 0}
+.section-header{display:flex;align-items:center;gap:16px;margin-bottom:40px}
+.section-number{font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--accent);opacity:.6}
+.section-title{font-size:1.8rem;font-weight:600;letter-spacing:-.5px}.section-line{flex:1;height:1px;background:var(--border)}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
+.about-text{color:var(--text-dim);font-size:1.1rem;line-height:1.9}.about-text p+p{margin-top:16px}.about-text strong{color:var(--accent);font-weight:600}
+.timeline{border-left:2px solid var(--border);padding-left:28px;position:relative}
+.timeline::before{content:'';position:absolute;top:0;left:-1px;width:2px;height:0;background:linear-gradient(180deg,var(--blood),var(--accent));transition:height 1.5s cubic-bezier(.16,1,.3,1)}
+.timeline.animated::before{height:100%}
+.timeline-item{margin-bottom:32px;position:relative;opacity:0;transform:translateX(-16px);transition:all .5s ease}
+.timeline.animated .timeline-item{opacity:1;transform:translateX(0)}
+.timeline-item::before{content:'';position:absolute;left:-34px;top:8px;width:12px;height:12px;border-radius:50%;background:var(--bg);border:2px solid var(--border);transition:all .5s;z-index:1}
+.timeline.animated .timeline-item::before{border-color:var(--blood);box-shadow:0 0 12px var(--blood-dim)}
+.timeline-date{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--blood);margin-bottom:4px}
+.timeline-title{font-weight:600;font-size:1.05rem;margin-bottom:4px}.timeline-desc{color:var(--text-dim);font-size:.9rem}
+.skill-category{margin-bottom:32px}.skill-category h3{font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--accent);text-transform:uppercase;letter-spacing:2px;margin-bottom:18px}
+.skill-bar-item{margin-bottom:16px}.skill-bar-header{display:flex;justify-content:space-between;margin-bottom:6px}
+.skill-bar-name{font-size:1rem}.skill-bar-pct{font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--accent)}
+.skill-bar-track{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.skill-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--blood),var(--accent));width:0;transition:width 1.2s cubic-bezier(.16,1,.3,1)}
+.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.tool-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px;text-align:center;transition:all .4s;cursor:default;position:relative;overflow:hidden}
+.tool-card::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:2px;transform:scaleX(0);transform-origin:left;transition:transform .4s}
+.tool-card:hover{border-color:rgba(196,18,48,.3);transform:translateY(-4px);box-shadow:0 8px 32px var(--blood-dim)}
+.tool-card:hover::after{transform:scaleX(1)}
+.tool-card[data-cat="formal"]::after{background:var(--blood)}
+.tool-card[data-cat="fuzz"]::after{background:var(--amber)}
+.tool-card[data-cat="observe"]::after{background:#a78bfa}
+.tool-card[data-cat="test"]::after{background:var(--accent)}
+.tool-card[data-cat="security"]::after{background:var(--blood)}
+.tool-card[data-cat="infra"]::after{background:var(--blue)}
+.tool-icon{font-size:2rem;margin-bottom:10px}
+.tool-name{font-family:'JetBrains Mono',monospace;font-size:.95rem;font-weight:600;margin-bottom:6px}
+.tool-desc{font-size:.8rem;color:var(--text-dim);line-height:1.6}
+.tool-cat-badge{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:1.5px;text-transform:uppercase;padding:3px 10px;border-radius:4px;display:inline-block;margin-top:10px}
+.cat-formal{color:var(--blood);background:var(--blood-dim);border:1px solid rgba(196,18,48,.2);font-size:.55rem}
+.cat-fuzz{color:var(--amber);background:rgba(255,179,71,.08);border:1px solid rgba(255,179,71,.2);font-size:.55rem}
+.cat-observe{color:#a78bfa;background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);font-size:.55rem}
+.cat-test{color:var(--accent);background:rgba(0,255,200,.08);border:1px solid rgba(0,255,200,.2);font-size:.55rem}
+.cat-security{color:var(--blood);background:var(--blood-dim);border:1px solid rgba(196,18,48,.2);font-size:.55rem}
+.cat-infra{color:var(--blue);background:rgba(77,166,255,.08);border:1px solid rgba(77,166,255,.2);font-size:.55rem}
+.tool-filters{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+.tool-filter{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:8px 16px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;transition:all .3s;letter-spacing:.5px}
+.tool-filter:hover{border-color:var(--accent);color:var(--accent)}
+.tool-filter.active{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.tool-count{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--text-dim);margin-bottom:20px}
+.tool-count span{color:var(--accent);font-weight:700}
+.ticker{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-top:40px;overflow:hidden}
+.ticker-track{display:flex;gap:48px;animation:scr 20s linear infinite;width:max-content}
+.ticker-item{font-family:'JetBrains Mono',monospace;font-size:.9rem;color:var(--text-dim);white-space:nowrap;display:flex;align-items:center;gap:8px}
+.ticker-item span{color:var(--blood)}
+@keyframes scr{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+footer{padding:40px 0;border-top:1px solid var(--border);text-align:center}
+footer p{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--text-dim)}
+.fade-in{opacity:0;transform:translateY(20px);transition:all .8s cubic-bezier(.16,1,.3,1)}.fade-in.visible{opacity:1;transform:translateY(0)}
+@media(max-width:768px){.about-grid{grid-template-columns:1fr}.krul-name{letter-spacing:2px}.krul-handle{letter-spacing:4px}nav{padding:14px 16px}.nav-links{gap:14px}.nav-links a{font-size:.65rem}.tools-grid{grid-template-columns:1fr 1fr}.tool-filters{gap:4px}.tool-filter{font-size:.55rem;padding:6px 10px}}
+</style>
+</head>
+<body>
+<nav id="nav"><a href="../index.html" class="logo">gzhno<span>_sec</span></a><div class="nav-links"><a href="../index.html">Ana Sayfa</a><a href="project.html">Projeler</a><a href="rust.html">Rust</a><a href="scenario.html">Senaryo</a><a href="about.html" class="active">Hakkımda</a><a href="books.html">Kitaplık</a><a href="contact.html">İletişim</a></div></nav>
+<div class="krul-hero"><div class="krul-bg"><img src="krul.png" alt="Krul Tepes"></div><div class="krul-vignette"></div><div class="krul-particles" id="krulParticles"></div>
+<div class="krul-content"><div class="krul-alias">// Security Researcher</div><div class="krul-name">Gazihan ÖCBE</div><div class="krul-handle">// Krul_Tepes</div>
+<div class="krul-titles"><div class="krul-title-line">Smart Contract Security Researcher</div><div class="krul-title-line">Code4rena · Immunefi · Bug Bounty Hunter</div></div>
+<div class="krul-scroll"><div class="krul-scroll-line"></div><div class="krul-scroll-text">Aşağı Kaydır</div></div></div></div>
+<div class="content-section"><div class="container">
+<section class="fade-in"><div class="section-header"><span class="section-number">01</span><h2 class="section-title">Hakkımda</h2><div class="section-line"></div></div>
+<div class="about-grid"><div class="about-text"><p>Akıllı sözleşme güvenlik araştırmacısıyım. Solana ve EVM ekosistemlerinde DeFi protokollerinin güvenlik denetimini yapıyorum. <strong>Code4rena</strong> ve <strong>Immunefi</strong> platformlarında bug bounty araştırmaları yürütüyorum.</p><p>Güvenlik araştırmalarının yanı sıra, RISC-V mimarisi üzerinde safety-critical sistemler için bir gerçek zamanlı işletim sistemi çekirdeği — <strong>Sipahi</strong> — geliştiriyorum.</p><p>Birincil programlama dilim <strong>Rust</strong>. Bare-metal embedded sistemlerden blockchain akıllı sözleşmelerine kadar geniş bir alanda Rust ile çalışıyorum.</p></div>
+<div class="timeline" id="timeline"><div class="timeline-item" style="transition-delay:.1s"><div class="timeline-date">2026</div><div class="timeline-title">Sipahi National Cyber Stack</div><div class="timeline-desc">5 katmanlı sovereign siber savunma mimarisi</div></div><div class="timeline-item" style="transition-delay:.25s"><div class="timeline-date">2026</div><div class="timeline-title">Code4rena — Jupiter Lend Audit</div><div class="timeline-desc">Solana lending protokolü güvenlik denetimi</div></div><div class="timeline-item" style="transition-delay:.4s"><div class="timeline-date">2026</div><div class="timeline-title">Sipahi Microkernel</div><div class="timeline-desc">RISC-V capability-based RTOS tasarımı</div></div><div class="timeline-item" style="transition-delay:.55s"><div class="timeline-date">2025–2026</div><div class="timeline-title">Immunefi Bug Bounty</div><div class="timeline-desc">Solana DeFi güvenlik araştırması</div></div><div class="timeline-item" style="transition-delay:.7s"><div class="timeline-date">2025</div><div class="timeline-title">Warlord DeFi Toolkit</div><div class="timeline-desc">Rust ile AMM likidite havuzu</div></div></div></div></section>
+<section class="fade-in"><div class="section-header"><span class="section-number">02</span><h2 class="section-title">Yetenekler — AI-Augmented</h2><div class="section-line"></div></div>
+<div id="skillBars"><div class="skill-category"><h3>Güvenlik & Audit</h3><div class="skill-bar-item"><div class="skill-bar-header"><span class="skill-bar-name">Smart Contract Auditing</span><span class="skill-bar-pct">85%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="85"></div></div></div><div class="skill-bar-item"><div class="skill-bar-header"><span class="skill-bar-name">DeFi Protocol Analysis</span><span class="skill-bar-pct">80%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="80"></div></div></div><div class="skill-bar-item"><div class="skill-bar-header"><span class="skill-bar-name">Bug Bounty</span><span class="skill-bar-pct">75%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="75"></div></div></div><div class="skill-bar-item"><div class="skill-bar-header"><span class="skill-bar-name">Formal Verification</span><span class="skill-bar-pct">60%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="60"></div></div></div></div>
+<div class="skill-category"><h3>Programlama</h3><div class="skill-bar-item"><div class="skill-bar-header"><span class="skill-bar-name">Rust / no_std</span><span class="skill-bar-pct">90%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="90"></div></div></div><div class="skill-bar-item"><div class="skill-bar-header"><span class="skill-bar-name">Solidity / EVM</span><span class="skill-bar-pct">70%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="70"></div></div></div><div class="skill-bar-item"><div class="skill-bar-header"><span class="skill-bar-name">Solana / Anchor</span><span class="skill-bar-pct">80%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="80"></div></div></div><div class="skill-bar-item"><div class="skill-bar-header"><span class="skill-bar-name">RISC-V bare-metal</span><span class="skill-bar-pct">65%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="65"></div></div></div></div></div></section>
 
+<!-- 3D SKILL SPHERE -->
+<section class="fade-in">
+<div class="section-header"><span class="section-number">02.5</span><h2 class="section-title">Yetenek Küre</h2><div class="section-line"></div></div>
+<div style="position:relative;width:100%;height:500px;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--bg-card)">
+<canvas id="sphereCanvas" style="width:100%;height:100%"></canvas>
+<div style="position:absolute;bottom:12px;right:16px;font-family:'JetBrains Mono',monospace;font-size:.5rem;color:var(--text-dim);opacity:.4;letter-spacing:2px">MOUSE İLE DÖNDÜR</div>
+</div>
+</section>
+<section class="fade-in"><div class="section-header"><span class="section-number">03</span><h2 class="section-title">Araç Kutusu</h2><div class="section-line"></div></div>
+<div class="tool-filters" id="toolFilters">
+<button class="tool-filter active" onclick="filterTools('all')">Tümü</button>
+<button class="tool-filter" onclick="filterTools('formal')">Formal Verification</button>
+<button class="tool-filter" onclick="filterTools('fuzz')">Fuzzing & Mutation</button>
+<button class="tool-filter" onclick="filterTools('observe')">Observability</button>
+<button class="tool-filter" onclick="filterTools('test')">Testing</button>
+<button class="tool-filter" onclick="filterTools('security')">Security</button>
+<button class="tool-filter" onclick="filterTools('infra')">Infrastructure</button>
+</div>
+<div class="tool-count" id="toolCount"><span>16</span> araç gösteriliyor</div>
+<div class="tools-grid" id="toolsGrid">
+<div class="tool-card" data-cat="formal"><div class="tool-icon">🛡️</div><div class="tool-name">Kani</div><div class="tool-desc">Rust model checker — panic-freedom ve UB yokluğu ispatı</div><span class="tool-cat-badge cat-formal">Formal</span></div>
+<div class="tool-card" data-cat="formal"><div class="tool-icon">📐</div><div class="tool-name">Lean 4</div><div class="tool-desc">Teorem ispatlayıcı — capability doğruluğu matematiksel kanıtı</div><span class="tool-cat-badge cat-formal">Formal</span></div>
+<div class="tool-card" data-cat="formal"><div class="tool-icon">📋</div><div class="tool-name">TLA+</div><div class="tool-desc">Concurrent sistem spesifikasyonu — dağıtık protokol doğrulama</div><span class="tool-cat-badge cat-formal">Formal</span></div>
+<div class="tool-card" data-cat="formal"><div class="tool-icon">🔬</div><div class="tool-name">Miri</div><div class="tool-desc">Rust undefined behavior dedektörü — unsafe kod doğrulama</div><span class="tool-cat-badge cat-formal">Formal</span></div>
+<div class="tool-card" data-cat="formal"><div class="tool-icon">🧵</div><div class="tool-name">Loom</div><div class="tool-desc">Concurrency model checker — data race ve deadlock tespiti</div><span class="tool-cat-badge cat-formal">Formal</span></div>
+<div class="tool-card" data-cat="fuzz"><div class="tool-icon">💥</div><div class="tool-name">cargo-fuzz</div><div class="tool-desc">libFuzzer entegrasyonu — rastgele girdi ile kodu kırma</div><span class="tool-cat-badge cat-fuzz">Fuzzing</span></div>
+<div class="tool-card" data-cat="fuzz"><div class="tool-icon">⚡</div><div class="tool-name">AFL++</div><div class="tool-desc">American Fuzzy Lop — coverage-guided fuzzing</div><span class="tool-cat-badge cat-fuzz">Fuzzing</span></div>
+<div class="tool-card" data-cat="fuzz"><div class="tool-icon">🧬</div><div class="tool-name">cargo-mutants</div><div class="tool-desc">Mutation testing — test suite kalitesini ölçme</div><span class="tool-cat-badge cat-fuzz">Mutation</span></div>
+<div class="tool-card" data-cat="observe"><div class="tool-icon">🔥</div><div class="tool-name">eBPF + Flamegraph</div><div class="tool-desc">Kernel seviyesinde profiling — performans darboğazı analizi</div><span class="tool-cat-badge cat-observe">Observability</span></div>
+<div class="tool-card" data-cat="observe"><div class="tool-icon">⏪</div><div class="tool-name">RR</div><div class="tool-desc">Record & Replay — crash'i birebir tekrar oynatma ve debug</div><span class="tool-cat-badge cat-observe">Observability</span></div>
+<div class="tool-card" data-cat="test"><div class="tool-icon">🎲</div><div class="tool-name">proptest / quickcheck</div><div class="tool-desc">Property-based testing — otomatik edge case keşfi</div><span class="tool-cat-badge cat-test">Testing</span></div>
+<div class="tool-card" data-cat="test"><div class="tool-icon">📸</div><div class="tool-name">Insta</div><div class="tool-desc">Snapshot testing — çıktı regresyon kontrolü</div><span class="tool-cat-badge cat-test">Testing</span></div>
+<div class="tool-card" data-cat="test"><div class="tool-icon">📊</div><div class="tool-name">Criterion.rs</div><div class="tool-desc">Benchmark framework — istatistiksel performans ölçümü</div><span class="tool-cat-badge cat-test">Testing</span></div>
+<div class="tool-card" data-cat="test"><div class="tool-icon">📈</div><div class="tool-name">llvm-cov / grcov</div><div class="tool-desc">Code coverage — test kapsama oranı analizi</div><span class="tool-cat-badge cat-test">Testing</span></div>
+<div class="tool-card" data-cat="security"><div class="tool-icon">🔒</div><div class="tool-name">cargo-audit + deny</div><div class="tool-desc">Supply chain security — bağımlılık güvenlik taraması</div><span class="tool-cat-badge cat-security">Security</span></div>
+<div class="tool-card" data-cat="security"><div class="tool-icon">⚠️</div><div class="tool-name">Clippy</div><div class="tool-desc">Lint & best practices — 700+ kural ile kod kalitesi</div><span class="tool-cat-badge cat-security">Lint</span></div>
+<div class="tool-card" data-cat="infra"><div class="tool-icon">🌍</div><div class="tool-name">cross-rs</div><div class="tool-desc">Cross-compilation — RISC-V, ARM, x86 multi-target derleme</div><span class="tool-cat-badge cat-infra">Infra</span></div>
+</div></section>
+<div class="ticker fade-in"><div class="ticker-track"><div class="ticker-item"><span>→</span> Rust ile bare-metal kernel yazıyorum</div><div class="ticker-item"><span>→</span> 4 katmanlı güvenlik mimarisi</div><div class="ticker-item"><span>→</span> WASM sandbox izolasyonu</div><div class="ticker-item"><span>→</span> DeFi bug bounty avcısı</div><div class="ticker-item"><span>→</span> Code4rena yarışmacısı</div><div class="ticker-item"><span>→</span> Krul_Tepes</div><div class="ticker-item"><span>→</span> Rust ile bare-metal kernel yazıyorum</div><div class="ticker-item"><span>→</span> 4 katmanlı güvenlik mimarisi</div><div class="ticker-item"><span>→</span> WASM sandbox izolasyonu</div><div class="ticker-item"><span>→</span> DeFi bug bounty avcısı</div><div class="ticker-item"><span>→</span> Code4rena yarışmacısı</div><div class="ticker-item"><span>→</span> Krul_Tepes</div></div></div>
+<footer><p>gzhno // Krul_Tepes © 2026</p></footer>
+</div></div>
+<script>
+window.addEventListener('scroll',()=>{document.getElementById('nav').classList.toggle('scrolled',scrollY>100)});
+(function(){const c=document.getElementById('krulParticles');for(let i=0;i<30;i++){const p=document.createElement('div');const s=Math.random()*3+1;Object.assign(p.style,{position:'absolute',width:s+'px',height:s+'px',borderRadius:'50%',background:`rgba(196,18,48,${Math.random()*.3+.1})`,left:Math.random()*100+'%',top:Math.random()*100+'%',animation:`pF ${8+Math.random()*12}s ease-in-out infinite`,animationDelay:`-${Math.random()*10}s`});c.appendChild(p)}const st=document.createElement('style');st.textContent='@keyframes pF{0%,100%{transform:translate(0,0);opacity:.2}50%{transform:translate('+(Math.random()*40-20)+'px,'+(-(Math.random()*60))+'px);opacity:.4}}';document.head.appendChild(st)})();
+const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:.05});document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
+const tlObs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('animated');tlObs.unobserve(e.target)}})},{threshold:.2});tlObs.observe(document.getElementById('timeline'));
+const sbObs=new IntersectionObserver(e=>{e.forEach(e=>{if(!e.isIntersecting)return;e.target.querySelectorAll('.skill-bar-fill').forEach(b=>{b.style.width=b.dataset.width+'%'});sbObs.unobserve(e.target)})},{threshold:.2});sbObs.observe(document.getElementById('skillBars'));
+/* TOOL FILTER */
+function filterTools(cat){
+document.querySelectorAll('.tool-filter').forEach(b=>b.classList.remove('active'));
+event.target.classList.add('active');
+const cards=document.querySelectorAll('.tool-card');
+let count=0;
+cards.forEach(c=>{
+const show=cat==='all'||c.dataset.cat===cat;
+c.style.opacity=show?'1':'0';c.style.transform=show?'':'scale(.95)';
+setTimeout(()=>{c.style.display=show?'':'none'},show?0:300);
+if(show){setTimeout(()=>{c.style.display='';c.style.opacity='1';c.style.transform=''},10);count++}
+});
+setTimeout(()=>{document.getElementById('toolCount').innerHTML='<span>'+count+'</span> araç gösteriliyor'},100);
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ═══════ 3D SKILL SPHERE ═══════ */
+(function(){
+const canvas=document.getElementById('sphereCanvas');
+if(!canvas)return;
+const R=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+R.setPixelRatio(Math.min(devicePixelRatio,2));
+R.setClearColor(0x000000,0);
+const S=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(55,1,0.1,100);
+cam.position.z=12;
+
+function resize(){
+    const rect=canvas.parentElement.getBoundingClientRect();
+    R.setSize(rect.width,rect.height);
+    cam.aspect=rect.width/rect.height;
+    cam.updateProjectionMatrix();
+}
+addEventListener('resize',resize);resize();
+
+const skills=[
+    {t:'Rust',s:1.4,c:0xff6b35},
+    {t:'Solana',s:1.2,c:0x00ffc8},
+    {t:'RISC-V',s:1.1,c:0x4da6ff},
+    {t:'Kani',s:1.0,c:0xff4d6a},
+    {t:'Lean 4',s:.9,c:0xa78bfa},
+    {t:'Miri',s:.9,c:0xff6b35},
+    {t:'TLA+',s:.9,c:0xffb347},
+    {t:'WASM',s:1.1,c:0x00ffc8},
+    {t:'Solidity',s:1.0,c:0x4da6ff},
+    {t:'DeFi',s:1.1,c:0x00ffc8},
+    {t:'Clippy',s:.8,c:0xff6b35},
+    {t:'AFL++',s:.9,c:0xffb347},
+    {t:'cargo-fuzz',s:.85,c:0xffb347},
+    {t:'proptest',s:.9,c:0x00ffc8},
+    {t:'eBPF',s:.85,c:0xa78bfa},
+    {t:'PMP',s:.9,c:0xff4d6a},
+    {t:'Anchor',s:.95,c:0x00ffc8},
+    {t:'EVM',s:.9,c:0x4da6ff},
+    {t:'Linux',s:1.0,c:0xffb347},
+    {t:'Loom',s:.8,c:0xa78bfa},
+    {t:'RR',s:.75,c:0xa78bfa},
+    {t:'cross-rs',s:.8,c:0x4da6ff},
+    {t:'Code4rena',s:1.0,c:0x00ffc8},
+    {t:'Immunefi',s:.95,c:0x00ffc8},
+    {t:'Criterion',s:.8,c:0x00ffc8},
+    {t:'cargo-audit',s:.85,c:0xff4d6a},
+    {t:'Insta',s:.75,c:0x00ffc8},
+    {t:'mutants',s:.8,c:0xffb347},
+];
+
+const group=new THREE.Group();
+
+// Create text sprites
+function makeSprite(text,size,color){
+    const c=document.createElement('canvas');
+    const ctx=c.getContext('2d');
+    const fontSize=Math.round(48*size);
+    c.width=512;c.height=128;
+    ctx.font=`bold ${fontSize}px 'Outfit', sans-serif`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    // Glow
+    ctx.shadowColor=`#${color.toString(16).padStart(6,'0')}`;
+    ctx.shadowBlur=20;
+    ctx.fillStyle=`#${color.toString(16).padStart(6,'0')}`;
+    ctx.fillText(text,256,64);
+    // Brighter center
+    ctx.shadowBlur=0;
+    ctx.globalAlpha=.6;
+    ctx.fillStyle='#ffffff';
+    ctx.fillText(text,256,64);
+    const tex=new THREE.CanvasTexture(c);
+    tex.needsUpdate=true;
+    const mat=new THREE.SpriteMaterial({map:tex,transparent:true,opacity:.85,depthWrite:false});
+    const sprite=new THREE.Sprite(mat);
+    sprite.scale.set(3.5*size,1*size,1);
+    return sprite;
+}
+
+// Distribute on sphere using Fibonacci spiral
+const n=skills.length;
+const radius=5.5;
+skills.forEach((sk,i)=>{
+    const y=1-(i/(n-1))*2; // -1 to 1
+    const r2=Math.sqrt(1-y*y);
+    const phi=i*2.399963; // golden angle
+    const x=Math.cos(phi)*r2;
+    const z=Math.sin(phi)*r2;
+    const sprite=makeSprite(sk.t,sk.s,sk.c);
+    sprite.position.set(x*radius,y*radius,z*radius);
+    sprite.userData={ox:x*radius,oy:y*radius,oz:z*radius,phase:Math.random()*Math.PI*2};
+    group.add(sprite);
+});
+
+// Wireframe sphere
+const wireMat=new THREE.MeshBasicMaterial({color:0x00ffc8,wireframe:true,transparent:true,opacity:.03});
+group.add(new THREE.Mesh(new THREE.IcosahedronGeometry(radius*.95,2),wireMat));
+
+// Connection lines between nearby skills
+const lineMat=new THREE.LineBasicMaterial({color:0x00ffc8,transparent:true,opacity:.04});
+for(let i=0;i<n;i++){
+    for(let j=i+1;j<n;j++){
+        const a=group.children[i],b=group.children[j];
+        const d=a.position.distanceTo(b.position);
+        if(d<radius*.8){
+            const geo=new THREE.BufferGeometry().setFromPoints([a.position.clone(),b.position.clone()]);
+            group.add(new THREE.Line(geo,lineMat));
+        }
+    }
+}
+
+S.add(group);
+
+// Lights
+S.add(new THREE.AmbientLight(0xffffff,.3));
+const pl=new THREE.PointLight(0x00ffc8,.5,20);pl.position.set(5,5,5);S.add(pl);
+
+// Mouse interaction
+let mX=0,mY=0,isDragging=false,dragX=0,dragY=0,rotVelX=0,rotVelY=0;
+canvas.addEventListener('mousedown',()=>isDragging=true);
+addEventListener('mouseup',()=>isDragging=false);
+addEventListener('mousemove',e=>{
+    const rect=canvas.getBoundingClientRect();
+    if(isDragging){
+        rotVelY+=(e.movementX||0)*.003;
+        rotVelX+=(e.movementY||0)*.003;
+    }
+});
+
+const clk=new THREE.Clock();
+function anim(){
+    requestAnimationFrame(anim);
+    const t=clk.getElapsedTime();
+
+    // Auto rotate + mouse drag
+    if(!isDragging){
+        rotVelX*=.95;rotVelY*=.95;
+        group.rotation.y+=.003+rotVelY;
+        group.rotation.x+=rotVelX;
+    }else{
+        group.rotation.y+=rotVelY;
+        group.rotation.x+=rotVelX;
+        rotVelX*=.92;rotVelY*=.92;
+    }
+
+    // Subtle float
+    group.children.forEach((child,i)=>{
+        if(child.isSprite&&child.userData.phase!==undefined){
+            const p=child.userData;
+            child.position.y=p.oy+Math.sin(t*.5+p.phase)*.15;
+        }
+    });
+
+    R.render(S,cam);
+}
+anim();
+
+// Intersection observer — start only when visible
+const sObs=new IntersectionObserver(e=>{
+    e.forEach(entry=>{
+        if(entry.isIntersecting)resize();
+    });
+},{threshold:.1});
+sObs.observe(canvas.parentElement);
+})();
+</script>
+<script src="../assests/js/senior.js"></script>
+</body>
+</html>

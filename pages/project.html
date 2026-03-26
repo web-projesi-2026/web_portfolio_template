@@ -1,1 +1,1675 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projeler — gzhno</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assests/css/style.css">
+    <style>
+:root{--bg:#0a0a0f;--bg-card:#11111a;--bg-card-hover:#161622;--border:#1e1e2e;--border-glow:#00ffc840;--text:#e0e0e8;--text-dim:#6e6e82;--accent:#00ffc8;--accent-dim:#00ffc830;--red:#ff4d6a;--amber:#ffb347;--blue:#4da6ff}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;line-height:1.7;overflow-x:hidden}
+body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:.12;pointer-events:none;z-index:0}
+.container{max-width:1200px;margin:0 auto;padding:0 40px;position:relative;z-index:1}
+.scroll-progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--blue));z-index:10000;width:0}
+nav{padding:20px 40px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:9999;backdrop-filter:blur(12px);background:rgba(10,10,15,.9)}
+.logo{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;color:var(--accent);letter-spacing:-.5px;text-decoration:none}
+.logo span{color:var(--text-dim);font-weight:300}
+.nav-links{display:flex;gap:28px}
+.nav-links a{color:var(--text-dim);text-decoration:none;font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase;transition:color .3s;position:relative}
+.nav-links a:hover,.nav-links a.active{color:var(--accent)}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;background:var(--accent);transition:width .3s}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+.menu-toggle{display:none;background:none;border:none;color:var(--text);font-size:1.5rem;cursor:pointer}
+section{padding:70px 0}
+.section-header{display:flex;align-items:center;gap:16px;margin-bottom:44px}
+.section-number{font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--accent);opacity:.6}
+.section-title{font-size:1.8rem;font-weight:600;letter-spacing:-.5px}
+.section-line{flex:1;height:1px;background:var(--border)}
+footer{padding:48px 0;border-top:1px solid var(--border);margin-top:60px;text-align:center}
+footer p{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--text-dim)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{50%{opacity:0}}
+.fade-in{opacity:0;transform:translateY(24px);transition:all .7s cubic-bezier(.16,1,.3,1)}
+.fade-in.visible{opacity:1;transform:translateY(0)}
 
+/* ═══════ SIPAHI HERO ═══════ */
+.sipahi-hero{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:40px;margin-bottom:32px;position:relative;overflow:hidden}
+.sipahi-hero::before{content:'';position:absolute;top:-50%;right:-20%;width:400px;height:400px;background:radial-gradient(circle,var(--accent-dim) 0%,transparent 70%);pointer-events:none}
+.sipahi-name{font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:700;margin-bottom:4px;position:relative}
+.sipahi-subtitle{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;position:relative}
+.sipahi-desc{color:var(--text-dim);font-size:1rem;max-width:600px;line-height:1.9;position:relative}
+.sipahi-principles{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;position:relative}
+.principle{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:6px 14px;border-radius:6px;font-weight:500;letter-spacing:.5px;transition:all .3s;cursor:default}
+.principle:hover{transform:translateY(-2px)}
+.p-red{background:#ff4d6a12;color:var(--red);border:1px solid #ff4d6a25}
+.p-amber{background:#ffb34712;color:var(--amber);border:1px solid #ffb34725}
+.p-green{background:#00ffc812;color:var(--accent);border:1px solid #00ffc825}
+.p-blue{background:#4da6ff12;color:var(--blue);border:1px solid #4da6ff25}
+
+/* ═══════ INTERACTIVE TABS ═══════ */
+.tabs{display:flex;gap:4px;margin-bottom:24px;overflow-x:auto;padding-bottom:4px}
+.tab{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:8px 18px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text-dim);cursor:pointer;transition:all .3s;white-space:nowrap;letter-spacing:.5px}
+.tab:hover{border-color:var(--accent);color:var(--accent)}
+.tab.active{background:var(--accent);color:var(--bg);border-color:var(--accent);box-shadow:0 0 20px var(--accent-dim)}
+.tab-panel{display:none;animation:fadeUp .4s ease}
+.tab-panel.active{display:block}
+
+/* ═══════ ARCH LAYER CARD ═══════ */
+.arch-layer{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:28px;margin-bottom:16px;transition:all .4s cubic-bezier(.16,1,.3,1);position:relative;overflow:hidden}
+.arch-layer::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--accent),var(--blue));transform:scaleX(0);transform-origin:left;transition:transform .4s}
+.arch-layer:hover{background:var(--bg-card-hover);border-color:var(--border-glow)}
+.arch-layer:hover::after{transform:scaleX(1)}
+.layer-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.layer-name{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600}
+.layer-id{font-family:'JetBrains Mono',monospace;font-size:.65rem;padding:3px 10px;border-radius:12px;font-weight:600;letter-spacing:1px}
+.lid-0{background:#6e6e8215;color:var(--text-dim);border:1px solid #6e6e8230}
+.lid-1{background:#ff4d6a15;color:var(--red);border:1px solid #ff4d6a30}
+.lid-2{background:#ffb34715;color:var(--amber);border:1px solid #ffb34730}
+.lid-3{background:#4da6ff15;color:var(--blue);border:1px solid #4da6ff30}
+.layer-desc{color:var(--text-dim);font-size:.9rem;margin-bottom:16px;line-height:1.8}
+.layer-features{display:flex;flex-wrap:wrap;gap:8px}
+.layer-feat{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text-dim);background:#ffffff06;padding:4px 12px;border-radius:6px;transition:all .3s;cursor:default}
+.layer-feat:hover{background:var(--accent-dim);color:var(--accent)}
+.arch-connector{display:flex;justify-content:center;padding:4px 0;color:var(--text-dim);font-size:.7rem;opacity:.4}
+
+/* ═══════ ACCORDION ═══════ */
+.accordion{margin-top:32px}
+.accordion-item{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;overflow:hidden;transition:border-color .3s}
+.accordion-item:hover{border-color:var(--border-glow)}
+.accordion-header{padding:20px 24px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background .3s}
+.accordion-header:hover{background:var(--bg-card-hover)}
+.accordion-header h4{font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:600;display:flex;align-items:center;gap:12px}
+.accordion-icon{font-size:1.1rem;transition:transform .3s;color:var(--accent)}
+.accordion-item.open .accordion-icon{transform:rotate(45deg)}
+.accordion-body{max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.16,1,.3,1),padding .3s}
+.accordion-item.open .accordion-body{max-height:400px;padding:0 24px 20px}
+.accordion-body p{color:var(--text-dim);font-size:.9rem;line-height:1.8}
+
+/* ═══════ PROJECT CARDS ═══════ */
+.projects-grid{display:grid;gap:16px}
+.project-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:28px;transition:all .4s cubic-bezier(.16,1,.3,1);position:relative;overflow:hidden}
+.project-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--accent);opacity:0;transition:opacity .3s}
+.project-card:hover{background:var(--bg-card-hover);border-color:var(--border-glow);transform:translateX(4px)}
+.project-card:hover::before{opacity:1}
+.project-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.project-name{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600}
+.project-tag{font-family:'JetBrains Mono',monospace;font-size:.65rem;padding:3px 10px;border-radius:12px;font-weight:500}
+.tag-active{background:#00ffc815;color:var(--accent);border:1px solid #00ffc830}
+.tag-research{background:#4da6ff15;color:var(--blue);border:1px solid #4da6ff30}
+.project-desc{color:var(--text-dim);font-size:.9rem;line-height:1.7;margin-bottom:16px}
+.project-tech{display:flex;gap:8px;flex-wrap:wrap}
+.tech{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text-dim);background:#ffffff06;padding:3px 10px;border-radius:6px}
+
+.back-to-top{position:fixed;bottom:32px;right:32px;width:44px;height:44px;border-radius:50%;background:var(--bg-card);border:1px solid var(--border);color:var(--accent);font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:100;opacity:0;transform:translateY(20px);transition:all .3s;pointer-events:none}
+.back-to-top.visible{opacity:1;transform:translateY(0);pointer-events:auto}
+.back-to-top:hover{border-color:var(--accent);box-shadow:0 0 24px var(--accent-dim)}
+
+/* ═══════ FLOW DIAGRAM ═══════ */
+.flow-diagram{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;padding:32px 0}
+.flow-node{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;text-align:center;cursor:pointer;transition:all .4s;min-width:100px}
+.flow-node:hover,.flow-node.active{border-color:var(--accent);box-shadow:0 0 24px var(--accent-dim);transform:translateY(-4px)}
+.flow-node-gold{border-color:var(--amber) !important}
+.flow-node-gold:hover,.flow-node-gold.active{border-color:var(--amber) !important;box-shadow:0 0 24px rgba(255,179,71,.25) !important}
+.flow-icon{font-size:1.5rem;margin-bottom:4px}
+.flow-label{font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;letter-spacing:1px}
+.flow-sub{font-size:.65rem;color:var(--text-dim);margin-top:2px}
+.flow-arrow{color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:1.2rem;opacity:.4}
+.flow-arrow-down{color:var(--amber);font-family:'JetBrains Mono',monospace;font-size:1.2rem;opacity:.4}
+
+/* Module detail panel */
+.module-panel{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:32px;margin-top:24px;display:none;position:relative;animation:fadeUp .4s ease}
+.module-panel.open{display:block}
+.module-close{position:absolute;top:16px;right:20px;background:none;border:none;color:var(--text-dim);font-size:1.2rem;cursor:pointer;transition:color .3s}
+.module-close:hover{color:var(--accent)}
+.module-name{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;margin-bottom:4px}
+.module-role{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px}
+.module-desc{color:var(--text-dim);font-size:.95rem;line-height:1.9;margin-bottom:20px}
+.module-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.module-item{background:#ffffff04;border-radius:8px;padding:12px 16px}
+.module-item-label{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.module-item-value{font-size:.85rem;color:var(--text-dim)}
+
+/* Invariants */
+.invariants-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:32px}
+.invariant-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px;transition:all .3s;cursor:default}
+.invariant-card:hover{border-color:var(--border-glow);transform:translateY(-2px)}
+.inv-icon{font-size:1.3rem;margin-bottom:8px}
+.inv-title{font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:600;margin-bottom:6px}
+.inv-desc{font-size:.8rem;color:var(--text-dim);line-height:1.6}
+
+/* Doctrine quote */
+.doctrine-quote{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:40px;margin-top:32px;text-align:center}
+.dq-line{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:600;margin-bottom:8px;opacity:0;animation:fadeUp .5s ease forwards}
+.dq-line:nth-child(1){animation-delay:.1s}
+.dq-line:nth-child(2){animation-delay:.2s}
+.dq-line:nth-child(3){animation-delay:.3s}
+.dq-line:nth-child(4){animation-delay:.4s}
+.dq-line:nth-child(5){animation-delay:.5s}
+.dq-line span{color:var(--accent)}
+.dq-footer{font-size:.8rem;color:var(--text-dim);margin-top:16px;font-style:italic;opacity:0;animation:fadeUp .5s ease .7s forwards}
+
+@media(max-width:768px){
+    .flow-diagram{gap:4px}
+    .flow-node{min-width:70px;padding:10px 12px}
+    .flow-icon{font-size:1.1rem}
+    .flow-label{font-size:.6rem}
+    .flow-arrow,.flow-arrow-down{font-size:.9rem}
+    .module-grid{grid-template-columns:1fr}
+    .nav-links{display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg);border-bottom:1px solid var(--border);flex-direction:column;padding:20px 24px;gap:16px}
+    .nav-links.open{display:flex}
+    .menu-toggle{display:block}
+    .sipahi-hero{padding:24px}
+    .arch-layer{padding:20px}
+    .tabs{gap:2px}
+    .tab{padding:6px 12px;font-size:.6rem}
+}
+    </style>
+</head>
+<body>
+<div class="scroll-progress" id="scrollProgress"></div>
+<nav>
+    <a href="../index.html" class="logo">gzhno<span>_sec</span></a>
+    <button class="menu-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+    <div class="nav-links">
+        <a href="../index.html">Ana Sayfa</a>
+        <a href="project.html" class="active">Projeler</a>
+        <a href="rust.html">Rust</a>
+        <a href="scenario.html">Senaryo</a>
+        <a href="about.html">Hakkımda</a>
+        <a href="books.html">Kitaplık</a>
+        <a href="contact.html">İletişim</a>
+    </div>
+</nav>
+<div class="container">
+
+    <!-- SIPAHI -->
+    <section class="fade-in">
+        <div class="section-header">
+            <span class="section-number">01</span>
+            <h2 class="section-title">Sipahi Microkernel</h2>
+            <div class="section-line"></div>
+        </div>
+
+        <div class="sipahi-hero">
+            <div class="sipahi-name">Sipahi</div>
+            <div class="sipahi-subtitle">Capability-Based Real-Time Microkernel for RISC-V</div>
+            <p class="sipahi-desc">
+                Robotik ve endüstriyel kontrol sistemleri için sıfırdan tasarlanan,
+                safety-critical gereksinimlere uygun bir gerçek zamanlı işletim sistemi çekirdeği.
+                Güvenilmeyen kullanıcı kodunu WASM sandbox içinde izole ederken, çekirdek katmanında
+                sıfır heap tahsisi ve sıfır panic garantisi sunuyor.
+            </p>
+            <div class="sipahi-principles">
+                <span class="principle p-red">Heap Yok</span>
+                <span class="principle p-red">Panic Yok</span>
+                <span class="principle p-amber">Single Hart</span>
+                <span class="principle p-green">PMP İzolasyon</span>
+                <span class="principle p-blue">Formal Doğrulama</span>
+            </div>
+        </div>
+
+        <!-- 3D EXPLODED VIEW -->
+        <div style="position:relative;width:100%;height:600px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:32px 0">
+            <canvas id="explodedCanvas" style="width:100%;height:100%"></canvas>
+            <div style="position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:16px;z-index:2">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--text-dim);letter-spacing:1px">BİRLEŞİK</span>
+                <input type="range" id="explodeSlider" min="0" max="100" value="30" style="width:180px;accent-color:#00ffc8;cursor:pointer">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--text-dim);letter-spacing:1px">AYRILMIŞ</span>
+            </div>
+            <div style="position:absolute;top:12px;right:16px;font-family:'JetBrains Mono',monospace;font-size:.5rem;color:var(--accent);opacity:.3;letter-spacing:2px">THREE.JS · MOUSE İLE DÖNDÜR</div>
+        </div>
+
+        <!-- INTERACTIVE TABS -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab(0)">Tüm Katmanlar</button>
+            <button class="tab" onclick="switchTab(1)">Katman 3 — WASM</button>
+            <button class="tab" onclick="switchTab(2)">Katman 2 — IPC</button>
+            <button class="tab" onclick="switchTab(3)">Katman 1 — Çekirdek</button>
+            <button class="tab" onclick="switchTab(4)">Katman 0 — Donanım</button>
+        </div>
+
+        <!-- TAB: All Layers -->
+        <div class="tab-panel active" id="tabAll">
+            <div class="arch-layer">
+                <div class="layer-header">
+                    <span class="layer-name">Güvenli Bölge — Untrusted User Space</span>
+                    <span class="layer-id lid-3">KATMAN 3</span>
+                </div>
+                <p class="layer-desc">WASM sandbox içinde izole modüller: sensör, robot kontrol, telemetri.</p>
+                <div class="layer-features">
+                    <span class="layer-feat">wasmi Runtime</span><span class="layer-feat">No-Float</span><span class="layer-feat">Cycle Accounting</span>
+                </div>
+            </div>
+            <div class="arch-connector">▼</div>
+            <div class="arch-layer">
+                <div class="layer-header">
+                    <span class="layer-name">Sinir Sistemi — IPC & Transport</span>
+                    <span class="layer-id lid-2">KATMAN 2</span>
+                </div>
+                <p class="layer-desc">Lock-free SPSC ring buffer, zero-copy iletişim, blackbox recorder.</p>
+                <div class="layer-features">
+                    <span class="layer-feat">SPSC Ring Buffer</span><span class="layer-feat">Zero-Copy</span><span class="layer-feat">CRC32</span>
+                </div>
+            </div>
+            <div class="arch-connector">▼</div>
+            <div class="arch-layer">
+                <div class="layer-header">
+                    <span class="layer-name">Çelik Çekirdek — Safety Critical Core</span>
+                    <span class="layer-id lid-1">KATMAN 1</span>
+                </div>
+                <p class="layer-desc">Trap handler, preemptive RR scheduler, capability broker, static memory.</p>
+                <div class="layer-features">
+                    <span class="layer-feat">Trap Handler</span><span class="layer-feat">Scheduler</span><span class="layer-feat">Capability Broker</span>
+                </div>
+            </div>
+            <div class="arch-connector">▼</div>
+            <div class="arch-layer">
+                <div class="layer-header">
+                    <span class="layer-name">Donanım — Hardware Abstraction</span>
+                    <span class="layer-id lid-0">KATMAN 0</span>
+                </div>
+                <p class="layer-desc">RISC-V 64-bit, CLINT, PMP izolasyon, Watchdog Timer.</p>
+                <div class="layer-features">
+                    <span class="layer-feat">RISC-V 64</span><span class="layer-feat">PMP</span><span class="layer-feat">WDT</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Layer 3 Detail -->
+        <div class="tab-panel" id="tabL3">
+            <div class="arch-layer">
+                <div class="layer-header">
+                    <span class="layer-name">Güvenli Bölge — Untrusted User Space</span>
+                    <span class="layer-id lid-3">KATMAN 3</span>
+                </div>
+                <p class="layer-desc">
+                    Güvenilmeyen kullanıcı modülleri (sensör sürücüleri, robot kontrol mantığı,
+                    telemetri servisleri) her biri bağımsız bir WASM sandbox içinde çalışır.
+                    Her modül kendi wasmi runtime ortamında "kapalı hücre" olarak izole edilir.
+                    Kayan nokta işlemleri yasaklanarak determinizm sağlanır, cycle accounting ile
+                    her modülün işlemci bütçesi takip edilir. Modüller çekirdeğe yalnızca
+                    tanımlı sistem çağrıları (cap_invoke, ipc, yield) üzerinden erişebilir.
+                </p>
+                <div class="layer-features">
+                    <span class="layer-feat">wasmi Runtime</span><span class="layer-feat">No-Float Enforcement</span><span class="layer-feat">Cycle Accounting</span><span class="layer-feat">cap_invoke</span><span class="layer-feat">ipc</span><span class="layer-feat">yield</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Layer 2 Detail -->
+        <div class="tab-panel" id="tabL2">
+            <div class="arch-layer">
+                <div class="layer-header">
+                    <span class="layer-name">Sinir Sistemi — IPC & Transport</span>
+                    <span class="layer-id lid-2">KATMAN 2</span>
+                </div>
+                <p class="layer-desc">
+                    Modüller arası iletişim, kilit gerektirmeyen (lock-free) SPSC ring buffer'lar
+                    üzerinden sıfır kopyalı (zero-copy) olarak gerçekleşir. Bu tasarım hem
+                    gecikmeyi minimize eder hem de paylaşılan mutex'lerden kaynaklanan priority
+                    inversion sorununu tamamen ortadan kaldırır. Blackbox/Flight Recorder modülü,
+                    crash durumlarında bile veri kaybını önleyen kalıcı kayıt tutar — her kayıt
+                    magic byte, versiyon ve CRC32 checksum ile doğrulanır.
+                </p>
+                <div class="layer-features">
+                    <span class="layer-feat">SPSC Ring Buffer</span><span class="layer-feat">Lock-Free</span><span class="layer-feat">Zero-Copy</span><span class="layer-feat">Blackbox Recorder</span><span class="layer-feat">CRC32 Integrity</span><span class="layer-feat">Crash-Safe</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Layer 1 Detail -->
+        <div class="tab-panel" id="tabL1">
+            <div class="arch-layer">
+                <div class="layer-header">
+                    <span class="layer-name">Çelik Çekirdek — Safety Critical Core</span>
+                    <span class="layer-id lid-1">KATMAN 1</span>
+                </div>
+                <p class="layer-desc">
+                    Trusted Computing Base (TCB). Timer tick ile tetiklenen trap handler,
+                    kesmeleri yakalar ve syscall dispatch'e yönlendirir. Preemptive round-robin
+                    scheduler, rdcycle donanım sayacı ile her görevin işlemci bütçesini kontrol eder.
+                    Capability Broker, her kaynak erişimini token bazlı yetki denetiminden geçirir.
+                    Bellek yönetimi tamamen statik: heap tahsisi yok, sabit bölge paylaşımı ve
+                    stack guard page'ler ile taşma koruması. Failure Policy Table, hata senaryolarında
+                    RESTART veya SAFE_MODE politikalarını uygular.
+                </p>
+                <div class="layer-features">
+                    <span class="layer-feat">Trap Handler</span><span class="layer-feat">Preemptive RR</span><span class="layer-feat">rdcycle Budget</span><span class="layer-feat">Capability Broker</span><span class="layer-feat">Static Memory</span><span class="layer-feat">Stack Guard</span><span class="layer-feat">Failure Policy</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Layer 0 Detail -->
+        <div class="tab-panel" id="tabL0">
+            <div class="arch-layer">
+                <div class="layer-header">
+                    <span class="layer-name">Donanım — Hardware Abstraction</span>
+                    <span class="layer-id lid-0">KATMAN 0</span>
+                </div>
+                <p class="layer-desc">
+                    RISC-V 64-bit işlemci üzerinde CLINT (Core Local Interruptor) timer kesmeleri,
+                    PMP (Physical Memory Protection) ile donanım seviyesinde bellek izolasyonu
+                    ve WDT (Watchdog Timer) ile sistem sağlığı izleme. Tüm üst katmanlar
+                    bu donanım güvenlik mekanizmalarına dayanır.
+                </p>
+                <div class="layer-features">
+                    <span class="layer-feat">RISC-V 64</span><span class="layer-feat">CLINT Timer</span><span class="layer-feat">PMP Isolation</span><span class="layer-feat">Watchdog Timer</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACCORDION: Formal Verification -->
+        <div class="accordion">
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <h4>🛡️ Kani — Panic Freedom İspatı</h4>
+                    <span class="accordion-icon">+</span>
+                </div>
+                <div class="accordion-body">
+                    <p>Kani model checker ile çekirdekteki her kod yolunun panic veya undefined behavior üretmediği matematiksel olarak ispatlanır. Rust'ın tip sistemi üzerine ek bir güvenlik katmanı sağlar. Her fonksiyon için harness yazılır ve tüm olası girdi uzayı exhaustive olarak taranır.</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <h4>📐 Lean 4 — Capability Teorem İspatı</h4>
+                    <span class="accordion-icon">+</span>
+                </div>
+                <div class="accordion-body">
+                    <p>Lean 4 teorem ispatlayıcısı ile "sadece geçerli capability token'ına sahip olan modül kaynaklara erişebilir" özelliği formal olarak kanıtlanır. Bu, runtime kontrollerinin ötesinde tasarım düzeyinde güvenlik garantisi sağlar.</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <h4>🔒 WASM Sandbox İzolasyonu</h4>
+                    <span class="accordion-icon">+</span>
+                </div>
+                <div class="accordion-body">
+                    <p>Güvenilmeyen kullanıcı kodu WASM bytecode'a derlenir ve wasmi interpreter içinde çalıştırılır. Her modül kendi bellek alanında izole edilir. Hatalı bir modül çökse bile çekirdek ve diğer modüller etkilenmez. Sistem çağrıları capability token'ları ile kontrol edilir.</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <h4>⚡ Deterministic IPC</h4>
+                    <span class="accordion-icon">+</span>
+                </div>
+                <div class="accordion-body">
+                    <p>Lock-free SPSC ring buffer ile modüller arası iletişim sabit zamanda tamamlanır. Priority inversion yok, mutex yok, tahmin edilebilir gecikme garantisi. Blackbox recorder crash durumlarında bile veri kaybını CRC32 ile korur.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- D3 FORCE GRAPH -->
+    <section class="fade-in">
+        <div class="section-header">
+            <span class="section-number">01.5</span>
+            <h2 class="section-title">Sipahi Modül Bağımlılık Grafiği</h2>
+            <div class="section-line"></div>
+        </div>
+        <div style="position:relative;width:100%;height:500px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+            <svg id="d3Graph" style="width:100%;height:100%"></svg>
+            <div style="position:absolute;top:12px;left:16px;font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--accent);opacity:.3;letter-spacing:2px">D3.JS FORCE SIMULATION · SÜRÜKLE</div>
+            <div style="position:absolute;bottom:12px;left:16px;display:flex;gap:16px">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:.5rem;display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#ff4d6a;display:inline-block"></span><span style="color:var(--text-dim)">Donanım</span></span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:.5rem;display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#00ffc8;display:inline-block"></span><span style="color:var(--text-dim)">Çekirdek</span></span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:.5rem;display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#4da6ff;display:inline-block"></span><span style="color:var(--text-dim)">IPC</span></span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:.5rem;display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#ff6b35;display:inline-block"></span><span style="color:var(--text-dim)">WASM</span></span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:.5rem;display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#a78bfa;display:inline-block"></span><span style="color:var(--text-dim)">Formal</span></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- CYBER STACK -->
+    <section class="fade-in">
+        <div class="section-header">
+            <span class="section-number">02</span>
+            <h2 class="section-title">Sipahi National Cyber Stack</h2>
+            <div class="section-line"></div>
+        </div>
+
+        <div class="sipahi-hero">
+            <div class="sipahi-name">SİPAHİ-CORE</div>
+            <div class="sipahi-subtitle">National Cyber Stack — 5 Katmanlı Siber Savunma Mimarisi</div>
+            <p class="sipahi-desc">
+                Sipahi çekirdeği üzerine inşa edilen sovereign siber savunma doktrini.
+                Erken algılamadan kontrollü karşı baskıya, her katman aynı deterministik
+                çekirdek fiziğine tabi. Sessiz aksiyon yok, inkâr edilemez kanıt zinciri var.
+            </p>
+            <div class="sipahi-principles">
+                <span class="principle p-red">Fail-Closed</span>
+                <span class="principle p-amber">Evidence-First</span>
+                <span class="principle p-green">Non-Panic</span>
+                <span class="principle p-blue">No Silent Action</span>
+            </div>
+        </div>
+
+        <!-- INTERACTIVE FLOW DIAGRAM -->
+        <div class="flow-diagram">
+            <div class="flow-node" onclick="showModule('prelude')" id="fn-prelude">
+                <div class="flow-icon">👁️</div>
+                <div class="flow-label">PRELUDE</div>
+                <div class="flow-sub">Erken Algılama</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-node" onclick="showModule('oracle')" id="fn-oracle">
+                <div class="flow-icon">🧠</div>
+                <div class="flow-label">ORACLE</div>
+                <div class="flow-sub">Kampanya Analizi</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-node" onclick="showModule('mantis')" id="fn-mantis">
+                <div class="flow-icon">🛡️</div>
+                <div class="flow-label">MANTIS</div>
+                <div class="flow-sub">Savunma</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-node" onclick="showModule('ares')" id="fn-ares">
+                <div class="flow-icon">⚔️</div>
+                <div class="flow-label">ARES</div>
+                <div class="flow-sub">Karşı Baskı</div>
+            </div>
+            <div class="flow-arrow-down">↘</div>
+            <div class="flow-node flow-node-gold" onclick="showModule('obsidian')" id="fn-obsidian">
+                <div class="flow-icon">💎</div>
+                <div class="flow-label">OBSIDIAN</div>
+                <div class="flow-sub">Gerçeğin Omurgası</div>
+            </div>
+        </div>
+        <p style="text-align:center;font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--text-dim);margin-top:12px">↑ Modüllere tıklayarak detayları gör</p>
+
+        <!-- QUANTUM CYBER FIELD 3D -->
+        <div style="position:relative;width:100%;height:80vh;min-height:600px;border-radius:16px;overflow:hidden;border:1px solid var(--border);background:#020208;margin:32px 0">
+            <canvas id="quantumCanvas" style="width:100%;height:100%"></canvas>
+            <div style="position:absolute;top:16px;left:20px;z-index:2">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;color:#fff;letter-spacing:2px">⚛ QUANTUM CYBER FIELD</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:.45rem;color:var(--accent);opacity:.5;margin-top:4px;letter-spacing:2px">SCHRÖDINGER · HEISENBERG · BELL STATE · QUANTUM TUNNELING</div>
+            </div>
+            <div style="position:absolute;top:16px;right:20px;font-family:'JetBrains Mono',monospace;font-size:.5rem;color:var(--accent);opacity:.3;z-index:2">THREE.JS · GLSL · MOUSE İLE ETKİLEŞ</div>
+            <!-- Quantum state display -->
+            <div id="qState" style="position:absolute;bottom:16px;left:20px;font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--accent);opacity:.6;z-index:2">|Ψ⟩ = α|SAFE⟩ + β|THREAT⟩</div>
+            <div id="qUncertainty" style="position:absolute;bottom:16px;right:20px;font-family:'JetBrains Mono',monospace;font-size:.5rem;color:var(--text-dim);opacity:.4;z-index:2">ΔxΔp ≥ ℏ/2</div>
+        </div>
+
+        <!-- MODULE DETAIL PANEL -->
+        <div class="module-panel" id="modulePanel">
+            <div class="module-close" onclick="closeModule()">✕</div>
+            <div id="moduleContent"></div>
+        </div>
+
+        <!-- INVARIANTS -->
+        <div class="invariants-grid">
+            <div class="invariant-card">
+                <div class="inv-icon">🔒</div>
+                <div class="inv-title">Determinism</div>
+                <div class="inv-desc">Aynı giriş → aynı çıktı. Wall-clock yok, monotonic tick var.</div>
+            </div>
+            <div class="invariant-card">
+                <div class="inv-icon">📜</div>
+                <div class="inv-title">Evidence-First</div>
+                <div class="inv-desc">Karar = kanıt + policy. Receipt'siz aksiyon yok.</div>
+            </div>
+            <div class="invariant-card">
+                <div class="inv-icon">🔗</div>
+                <div class="inv-title">Capability-Based</div>
+                <div class="inv-desc">Tokenized, süreli, devir edilebilir ama izlenebilir yetkiler.</div>
+            </div>
+            <div class="invariant-card">
+                <div class="inv-icon">⏪</div>
+                <div class="inv-title">Replay-Safe</div>
+                <div class="inv-desc">Aynı kaset → aynı sonuç. Alternatif policy ile simülasyon.</div>
+            </div>
+        </div>
+
+        <!-- DOCTRINE QUOTE -->
+        <div class="doctrine-quote">
+            <div class="dq-line">PRELUDE <span>görür.</span></div>
+            <div class="dq-line">ORACLE <span>anlar.</span></div>
+            <div class="dq-line">MANTIS <span>ayakta tutar.</span></div>
+            <div class="dq-line">ARES <span>sınırlar.</span></div>
+            <div class="dq-line">OBSIDIAN <span>gerçeği kilitler.</span></div>
+            <div class="dq-footer">Hepsi aynı çekirdeğin fiziğine tabidir.</div>
+        </div>
+    </section>
+
+    <!-- OTHER PROJECTS -->
+    <section class="fade-in">
+        <div class="section-header">
+            <span class="section-number">03</span>
+            <h2 class="section-title">Diğer Projeler</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="projects-grid">
+            <div class="project-card">
+                <div class="project-top">
+                    <span class="project-name">Jupiter Lend Audit</span>
+                    <span class="project-tag tag-active">Tamamlandı</span>
+                </div>
+                <p class="project-desc">Code4rena yarışmasında Solana tabanlı lending protokolünün güvenlik denetimi. Protokolün oracle mekanizması ve vault yönetim mantığı üzerinde bulgular raporlandı.</p>
+                <div class="project-tech"><span class="tech">Solana</span><span class="tech">Rust</span><span class="tech">DeFi</span><span class="tech">Code4rena</span></div>
+            </div>
+            <div class="project-card">
+                <div class="project-top">
+                    <span class="project-name">Warlord DeFi Toolkit</span>
+                    <span class="project-tag tag-research">Araştırma</span>
+                </div>
+                <p class="project-desc">Constant Product Formula (x·y=k) tabanlı likidite havuzu implementasyonu. Property-based testing ile doğrulanmış, cebirsel ispat ile fee invariant kanıtlanmış.</p>
+                <div class="project-tech"><span class="tech">Rust</span><span class="tech">rust_decimal</span><span class="tech">proptest</span></div>
+            </div>
+        </div>
+    </section>
+
+    <footer><p>gzhno © 2026 — built with purpose</p></footer>
+</div>
+
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// Scroll progress
+window.addEventListener('scroll',()=>{
+    const h=document.documentElement.scrollHeight-window.innerHeight;
+    document.getElementById('scrollProgress').style.width=(window.scrollY/h*100)+'%';
+    document.getElementById('backToTop').classList.toggle('visible',window.scrollY>400);
+});
+
+// Tabs
+const panels=[document.getElementById('tabAll'),document.getElementById('tabL3'),document.getElementById('tabL2'),document.getElementById('tabL1'),document.getElementById('tabL0')];
+function switchTab(i){
+    document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',j===i));
+    panels.forEach((p,j)=>p.classList.toggle('active',j===i));
+}
+
+// Accordion
+function toggleAccordion(header){
+    const item=header.parentElement;
+    const wasOpen=item.classList.contains('open');
+    document.querySelectorAll('.accordion-item').forEach(i=>i.classList.remove('open'));
+    if(!wasOpen) item.classList.add('open');
+}
+
+// Scroll reveal
+const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
+},{threshold:.05});
+document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
+
+// Module data
+const modules={
+    prelude:{
+        name:'PRELUDE',role:'Early Sensing Layer — Erken Algılama Katmanı',
+        desc:'Saldırıyı başlamadan önce hissetmek. Alarm üretmek değil, anormallik sinyali üretmek. ML bağımlılığı yok — gürültü yerine desen tabanlı algılama. Attribution yapmaz, "Bu saldırıdır" demez, aksiyon almaz.',
+        items:[
+            {label:'Girdiler',value:'Network telemetry, sistem davranış özetleri, zaman serisi sapmaları, coğrafi dağılım'},
+            {label:'Çıktılar',value:'PRELUDE_SIGNAL event, sinyal tipi (motif), güven seviyesi (taint grade)'},
+            {label:'Yapmaz',value:'Attribution, kesin yargı, aksiyon'},
+            {label:'Fark',value:'ML bağımlılığı yok, her sinyal Obsidian\'a bağlanır'}
+        ]
+    },
+    oracle:{
+        name:'ORACLE',role:'Intent & Campaign Reasoning Layer — Niyet & Kampanya Aklı',
+        desc:'Tekil olayları kampanya resmine dönüştürmek. "Bu neye gidiyor?" sorusuna cevap vermek. Zaman-kenarlı grafik ve deterministik heuristikler kullanır. Kesinlik iddiası değil, olasılık aralığı sunar.',
+        items:[
+            {label:'Girdiler',value:'Prelude sinyalleri, tarihsel olay grafı, politika bağlamı, taint bilgisi'},
+            {label:'İç Model',value:'Temporal graph, deterministik heuristikler, belirsizlik bandı'},
+            {label:'Çıktılar',value:'ORACLE_ASSESSMENT — kampanya türü, yön vektörü, belirsizlik bandı'},
+            {label:'Yapmaz',value:'Misilleme önermez, tek başına karar vermez'}
+        ]
+    },
+    mantis:{
+        name:'MANTIS',role:'Defensive Continuity & Policy Enforcement Layer — Savunma Katmanı',
+        desc:'Sistemi çökmeyecek şekilde savunmak. Saldırganı yavaşlatmak, meşruyu yakmamak. Her aksiyon receipt üretir, rollback tanımlı, süreli ve geri alınabilir.',
+        items:[
+            {label:'Policy',value:'IF context AND capability THEN consequence'},
+            {label:'Kademeler',value:'allow → limit → delay → degrade → deny (en son)'},
+            {label:'Güvence',value:'Her aksiyon receipt üretir, rollback tanımlı'},
+            {label:'Yapmaz',value:'Kör bloklama, kalıcı hasar, sessiz aksiyon'}
+        ]
+    },
+    ares:{
+        name:'ARES',role:'Controlled Counter-Pressure Layer — Kontrollü Karşı Baskı',
+        desc:'Caydırıcılık, tempo kırma, baskıyı pahalılaştırma. Otomatik DEĞİL — çoklu onay (M-of-N), zaman kilitli. Etki geri alınabilir, ölçülebilir ve kademeli.',
+        items:[
+            {label:'Yetki',value:'M-of-N çoklu onay, zaman kilitli, otomatik değil'},
+            {label:'Etki',value:'Geri alınabilir, ölçülebilir, kademeli'},
+            {label:'Çitler',value:'Obsidian\'a zorunlu kayıt, etki sınırı, otomatik durdurma'},
+            {label:'Yapmaz',value:'Yıkım, kontrolsüz saldırı, inkâr edilebilir aksiyon'}
+        ]
+    },
+    obsidian:{
+        name:'OBSIDIAN',role:'Evidence, Truth & Replay Layer — Gerçeğin Omurgası',
+        desc:'Olan biteni inkâr edilemez hâle getirmek. Zamanı geri oynatabilmek. SIEM değil, forensic sonrası değil — gerçek zamanlı hakikat. Append-only, content-addressed, deterministic serialization.',
+        items:[
+            {label:'Kanıt Yapıları',value:'Seal (log inclusion proof), Receipt (neden/sonuç), Taint (kanıt kalitesi), Veil (crypto-redaction)'},
+            {label:'Replay',value:'Aynı kaset → aynı sonuç, alternatif policy ile simülasyon'},
+            {label:'Dossier',value:'Teknik, denetim ve yürütme (executive) raporları'},
+            {label:'Fark',value:'SIEM değil — gerçek zamanlı, append-only hakikat katmanı'}
+        ]
+    }
+};
+
+function showModule(key){
+    const m=modules[key];
+    const panel=document.getElementById('modulePanel');
+    const content=document.getElementById('moduleContent');
+    document.querySelectorAll('.flow-node').forEach(n=>n.classList.remove('active'));
+    document.getElementById('fn-'+key).classList.add('active');
+    let itemsHtml=m.items.map(i=>`<div class="module-item"><div class="module-item-label">${i.label}</div><div class="module-item-value">${i.value}</div></div>`).join('');
+    content.innerHTML=`<div class="module-name">${m.name}</div><div class="module-role">${m.role}</div><p class="module-desc">${m.desc}</p><div class="module-grid">${itemsHtml}</div>`;
+    panel.classList.add('open');
+    panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function closeModule(){
+    document.getElementById('modulePanel').classList.remove('open');
+    document.querySelectorAll('.flow-node').forEach(n=>n.classList.remove('active'));
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ═══════ 3D EXPLODED SIPAHI ARCHITECTURE — v2 HOLOGRAPHIC ═══════ */
+(function(){
+const canvas=document.getElementById('explodedCanvas');
+if(!canvas)return;
+const R=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+R.setPixelRatio(Math.min(devicePixelRatio,2));
+R.setClearColor(0x000000,0);
+R.toneMapping=THREE.ACESFilmicToneMapping;
+R.toneMappingExposure=1.3;
+const S=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(50,1,0.1,100);
+cam.position.set(0,2,14);
+cam.lookAt(0,0,0);
+
+function resize(){
+    const r=canvas.parentElement.getBoundingClientRect();
+    R.setSize(r.width,r.height);
+    cam.aspect=r.width/r.height;
+    cam.updateProjectionMatrix();
+}
+addEventListener('resize',resize);resize();
+
+const group=new THREE.Group();
+
+/* ── TEXTURES ── */
+function dotTex(r,g,b){
+    const c=document.createElement('canvas');c.width=c.height=64;
+    const x=c.getContext('2d');
+    const gr=x.createRadialGradient(32,32,0,32,32,32);
+    gr.addColorStop(0,`rgba(${r},${g},${b},1)`);
+    gr.addColorStop(.15,`rgba(${r},${g},${b},.6)`);
+    gr.addColorStop(.4,`rgba(${r},${g},${b},.12)`);
+    gr.addColorStop(1,'rgba(0,0,0,0)');
+    x.fillStyle=gr;x.fillRect(0,0,64,64);
+    return new THREE.CanvasTexture(c);
+}
+const texRed=dotTex(255,77,106);
+const texCyan=dotTex(0,255,200);
+const texBlue=dotTex(77,166,255);
+const texOrange=dotTex(255,107,53);
+
+/* ═══ LAYER COLORS ═══ */
+const layerCfg=[
+    {name:'Donanım',color:0xff4d6a,rgb:[255,77,106],tex:texRed,radius:3.2,detail:2,geoType:'icosa'},
+    {name:'Çekirdek',color:0x00ffc8,rgb:[0,255,200],tex:texCyan,radius:1.8,detail:1,geoType:'octa'},
+    {name:'IPC',color:0x4da6ff,rgb:[77,166,255],tex:texBlue,radius:2.4,geoType:'torus'},
+    {name:'WASM',color:0xff6b35,rgb:[255,107,53],tex:texOrange,radius:2.8,detail:1,geoType:'dodeca'},
+];
+
+/* ═══ CREATE LAYERS — each with solid + wireframe + particle shell + inner glow ═══ */
+const layers=[];
+
+layerCfg.forEach((cfg,idx)=>{
+    const g=new THREE.Group();
+    
+    // Solid geometry with holographic material
+    let geo;
+    if(cfg.geoType==='icosa') geo=new THREE.IcosahedronGeometry(cfg.radius,cfg.detail);
+    else if(cfg.geoType==='octa') geo=new THREE.OctahedronGeometry(cfg.radius,cfg.detail);
+    else if(cfg.geoType==='torus') geo=new THREE.TorusGeometry(cfg.radius,.06,16,100);
+    else geo=new THREE.DodecahedronGeometry(cfg.radius,cfg.detail);
+    
+    // Holographic shader material
+    const holoMat=new THREE.ShaderMaterial({
+        uniforms:{uTime:{value:0},uColor:{value:new THREE.Color(cfg.color)}},
+        vertexShader:`varying vec3 vN;varying vec3 vP;varying vec2 vUv;
+        void main(){vN=normalize(normalMatrix*normal);vP=position;vUv=uv;
+        gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+        fragmentShader:`
+            uniform float uTime;uniform vec3 uColor;
+            varying vec3 vN;varying vec3 vP;varying vec2 vUv;
+            void main(){
+                vec3 eye=normalize(cameraPosition-vP);
+                float fresnel=pow(1.-abs(dot(eye,vN)),2.5);
+                // Scan lines
+                float scan=sin(vP.y*30.+uTime*3.)*.15+.85;
+                // Hex grid pattern
+                float hex=sin(vP.x*15.)*sin(vP.z*15.)*.1+.9;
+                vec3 col=uColor*fresnel*scan*hex;
+                // Edge glow
+                col+=uColor*.1;
+                float alpha=fresnel*.5*scan;
+                gl_FragColor=vec4(col,alpha);
+            }`,
+        transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide
+    });
+    const solid=new THREE.Mesh(geo,holoMat);
+    if(cfg.geoType==='torus')solid.rotation.x=Math.PI/2;
+    g.add(solid);
+    
+    // Wireframe overlay
+    const wireMat=new THREE.MeshBasicMaterial({
+        color:cfg.color,wireframe:true,transparent:true,opacity:.06
+    });
+    const wire=new THREE.Mesh(geo.clone(),wireMat);
+    if(cfg.geoType==='torus')wire.rotation.x=Math.PI/2;
+    g.add(wire);
+    
+    // Particle shell — points orbiting the layer
+    const shellCount=400;
+    const shellPos=new Float32Array(shellCount*3);
+    const shellR=cfg.radius*1.1;
+    for(let i=0;i<shellCount;i++){
+        const th=Math.random()*Math.PI*2;
+        const ph=Math.acos(2*Math.random()-1);
+        const r=shellR+(.5-Math.random())*.3;
+        shellPos[i*3]=r*Math.sin(ph)*Math.cos(th);
+        shellPos[i*3+1]=cfg.geoType==='torus'?(.5-Math.random())*.3:r*Math.cos(ph);
+        shellPos[i*3+2]=r*Math.sin(ph)*Math.sin(th);
+    }
+    const shellGeo=new THREE.BufferGeometry();
+    shellGeo.setAttribute('position',new THREE.BufferAttribute(shellPos,3));
+    const shellPts=new THREE.Points(shellGeo,new THREE.PointsMaterial({
+        map:cfg.tex,size:.12,transparent:true,opacity:.4,
+        sizeAttenuation:true,blending:THREE.AdditiveBlending,depthWrite:false
+    }));
+    g.add(shellPts);
+    
+    // Inner glow sphere
+    const glowMat=new THREE.MeshBasicMaterial({
+        color:cfg.color,transparent:true,opacity:.03,side:THREE.BackSide
+    });
+    const glowR=cfg.geoType==='torus'?cfg.radius:cfg.radius*.8;
+    g.add(new THREE.Mesh(new THREE.SphereGeometry(glowR,12,12),glowMat));
+    
+    g.userData={baseY:0,label:cfg.name,holoMat,shellPts,shellGeo,cfg};
+    layers.push(g);
+    group.add(g);
+});
+
+/* ═══ DATA FLOW PARTICLES — vertical streams between layers ═══ */
+const flowCount=300;
+const flowPos=new Float32Array(flowCount*3);
+const flowVel=new Float32Array(flowCount);
+const flowCol=new Float32Array(flowCount*3);
+for(let i=0;i<flowCount;i++){
+    const angle=Math.random()*Math.PI*2;
+    const r=.3+Math.random()*1.5;
+    flowPos[i*3]=Math.cos(angle)*r;
+    flowPos[i*3+1]=(Math.random()-.5)*8;
+    flowPos[i*3+2]=Math.sin(angle)*r;
+    flowVel[i]=.5+Math.random()*1.5;
+    // Random layer color
+    const ci=Math.floor(Math.random()*4);
+    const rgb=layerCfg[ci].rgb;
+    flowCol[i*3]=rgb[0]/255;flowCol[i*3+1]=rgb[1]/255;flowCol[i*3+2]=rgb[2]/255;
+}
+const flowGeo=new THREE.BufferGeometry();
+flowGeo.setAttribute('position',new THREE.BufferAttribute(flowPos,3));
+flowGeo.setAttribute('color',new THREE.BufferAttribute(flowCol,3));
+const flowPts=new THREE.Points(flowGeo,new THREE.PointsMaterial({
+    map:dotTex(255,255,255),size:.08,vertexColors:true,transparent:true,opacity:.3,
+    sizeAttenuation:true,blending:THREE.AdditiveBlending,depthWrite:false
+}));
+group.add(flowPts);
+
+/* ═══ ENERGY RINGS — orbiting halos per layer ═══ */
+layerCfg.forEach((cfg,i)=>{
+    const ringGeo=new THREE.TorusGeometry(cfg.radius*1.15,.015,4,80);
+    const ringMat=new THREE.MeshBasicMaterial({
+        color:cfg.color,transparent:true,opacity:.1
+    });
+    const ring=new THREE.Mesh(ringGeo,ringMat);
+    ring.rotation.x=Math.PI/2+i*.15;
+    ring.userData={layerIdx:i};
+    layers[i].add(ring);
+    
+    // Second tilted ring
+    const ring2=new THREE.Mesh(ringGeo.clone(),ringMat.clone());
+    ring2.rotation.x=Math.PI/3;ring2.rotation.z=Math.PI/4+i*.3;
+    ring2.material.opacity=.06;
+    layers[i].add(ring2);
+});
+
+/* ═══ LABELS ═══ */
+function makeLabel(text,color){
+    const c=document.createElement('canvas');c.width=320;c.height=64;
+    const ctx=c.getContext('2d');
+    ctx.shadowColor=`#${color.toString(16).padStart(6,'0')}`;
+    ctx.shadowBlur=10;
+    ctx.font='bold 22px Outfit, sans-serif';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillStyle=`#${color.toString(16).padStart(6,'0')}`;
+    ctx.fillText(text,160,32);
+    const tex=new THREE.CanvasTexture(c);
+    const mat=new THREE.SpriteMaterial({map:tex,transparent:true,opacity:.8,depthWrite:false});
+    const spr=new THREE.Sprite(mat);
+    spr.scale.set(3,.6,1);
+    return spr;
+}
+const labelSprites=[
+    makeLabel('KATMAN 0 · Donanım',0xff4d6a),
+    makeLabel('KATMAN 1 · Çekirdek',0x00ffc8),
+    makeLabel('KATMAN 2 · IPC',0x4da6ff),
+    makeLabel('KATMAN 3 · WASM',0xff6b35),
+];
+labelSprites.forEach(l=>group.add(l));
+
+S.add(group);
+
+/* ═══ LIGHTS ═══ */
+S.add(new THREE.AmbientLight(0x0a1a2a,.3));
+const dl=new THREE.DirectionalLight(0x00ffc8,.6);dl.position.set(5,5,5);S.add(dl);
+const dl2=new THREE.DirectionalLight(0x4da6ff,.2);dl2.position.set(-5,-3,2);S.add(dl2);
+const pl=new THREE.PointLight(0x00ffc8,.5,15);S.add(pl);
+const pl2=new THREE.PointLight(0xff6b35,.3,12);pl2.position.set(0,-3,0);S.add(pl2);
+
+/* ═══ INTERACTION ═══ */
+let explode=.3;
+const slider=document.getElementById('explodeSlider');
+if(slider)slider.addEventListener('input',e=>{explode=e.target.value/100});
+
+let dragging=false,rvx=0,rvy=0;
+canvas.addEventListener('mousedown',()=>dragging=true);
+canvas.addEventListener('mouseup',()=>dragging=false);
+addEventListener('mouseup',()=>dragging=false);
+canvas.addEventListener('mousemove',e=>{
+    if(dragging){rvy+=(e.movementX||0)*.004;rvx+=(e.movementY||0)*.004}
+});
+
+/* ═══ ANIMATION ═══ */
+const clk=new THREE.Clock();
+function anim(){
+    requestAnimationFrame(anim);
+    const t=clk.getElapsedTime();
+
+    // Update shader uniforms
+    layers.forEach(l=>{l.userData.holoMat.uniforms.uTime.value=t});
+
+    // Explode layers vertically
+    const spread=explode*3.5;
+    layers[0].position.y=-spread*1.3;
+    layers[1].position.y=-spread*.4;
+    layers[2].position.y=spread*.4;
+    layers[3].position.y=spread*1.3;
+
+    // Labels follow
+    labelSprites[0].position.set(5,-spread*1.3,0);
+    labelSprites[1].position.set(5,-spread*.4,0);
+    labelSprites[2].position.set(5,spread*.4,0);
+    labelSprites[3].position.set(5,spread*1.3,0);
+    labelSprites.forEach(l=>{l.material.opacity=Math.min(1,explode*3)});
+
+    // Rotation
+    if(!dragging){
+        rvx*=.95;rvy*=.95;
+        group.rotation.y+=.004+rvy;
+        group.rotation.x+=rvx;
+    }else{
+        group.rotation.y+=rvy;
+        group.rotation.x+=rvx;
+        rvx*=.92;rvy*=.92;
+    }
+
+    // Layer individual animations
+    layers[0].children[0].rotation.y=t*.03;   // hardware slow spin
+    layers[1].children[0].rotation.y=t*.08;   // kernel faster
+    layers[2].children[0].rotation.y=t*.15;   // IPC ring spin
+    layers[3].children[0].rotation.y=-t*.05;  // WASM reverse
+
+    // Particle shell orbit
+    layers.forEach((l,idx)=>{
+        const pts=l.userData.shellPts;
+        pts.rotation.y=t*(.1+idx*.05);
+        pts.rotation.x=Math.sin(t*.3+idx)*.1;
+    });
+
+    // Core pulse
+    const pulse=1+Math.sin(t*2)*.03;
+    layers[1].scale.setScalar(pulse);
+
+    // Data flow animation
+    const fArr=flowGeo.attributes.position.array;
+    for(let i=0;i<flowCount;i++){
+        fArr[i*3+1]+=flowVel[i]*.015;
+        if(fArr[i*3+1]>spread*1.5+2){fArr[i*3+1]=-spread*1.5-2}
+        // Slight spiral
+        const x=fArr[i*3],z=fArr[i*3+2];
+        const a=Math.atan2(z,x)+.005;
+        const r=Math.sqrt(x*x+z*z);
+        fArr[i*3]=Math.cos(a)*r;
+        fArr[i*3+2]=Math.sin(a)*r;
+    }
+    flowGeo.attributes.position.needsUpdate=true;
+    flowPts.material.opacity=Math.min(.3,explode*.8);
+
+    // Energy rings pulse
+    layers.forEach((l,idx)=>{
+        l.children.forEach(child=>{
+            if(child.userData&&child.userData.layerIdx!==undefined){
+                child.rotation.z=t*(.3+idx*.1);
+            }
+        });
+    });
+
+    // Ambient light color shift
+    pl.intensity=.3+Math.sin(t)*.2;
+    pl.position.y=Math.sin(t*.5)*3;
+
+    R.render(S,cam);
+}
+anim();
+
+const eObs=new IntersectionObserver(e=>{if(e[0].isIntersecting)resize()},{threshold:.1});
+eObs.observe(canvas.parentElement);
+})();
+</script>
+<script>
+/* ═══════════════════════════════════════════════════════════════════════════════
+   QUANTUM CYBER FIELD v3 — REAL PHYSICS + EPIC VISUALS
+   GPGPU Ping-Pong FBO Schrödinger Solver + Volumetric Visualization
+   ═══════════════════════════════════════════════════════════════════════════════ */
+(function(){
+const canvas=document.getElementById('quantumCanvas');
+if(!canvas)return;
+const R=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});
+R.setPixelRatio(Math.min(devicePixelRatio,2));
+R.setClearColor(0x020208,1);
+R.toneMapping=THREE.ACESFilmicToneMapping;
+R.toneMappingExposure=1.5;
+const S=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(60,1,.1,200);
+cam.position.set(0,8,16);
+const qGroup=new THREE.Group();
+
+function resize(){const r=canvas.parentElement.getBoundingClientRect();R.setSize(r.width,r.height);cam.aspect=r.width/r.height;cam.updateProjectionMatrix();}
+addEventListener('resize',resize);resize();
+
+/* ── Textures ── */
+function glow(r,g,b,sz){
+    const c=document.createElement('canvas');c.width=c.height=sz||64;
+    const x=c.getContext('2d'),h=c.width/2;
+    const gr=x.createRadialGradient(h,h,0,h,h,h);
+    gr.addColorStop(0,`rgba(${r},${g},${b},1)`);
+    gr.addColorStop(.12,`rgba(${r},${g},${b},.7)`);
+    gr.addColorStop(.35,`rgba(${r},${g},${b},.15)`);
+    gr.addColorStop(.6,`rgba(${r},${g},${b},.03)`);
+    gr.addColorStop(1,'rgba(0,0,0,0)');
+    x.fillStyle=gr;x.fillRect(0,0,c.width,c.height);return new THREE.CanvasTexture(c);
+}
+const glowW=glow(255,255,255),glowC=glow(0,255,200),glowR=glow(255,77,106);
+
+/* ══════════════════════════════════
+   §1 — GPGPU SCHRÖDINGER PDE SOLVER
+   Ping-Pong FBO, 256×256, Float32
+   ══════════════════════════════════ */
+const SIM=256;
+const simS=new THREE.Scene(),simCam=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+const simQ=new THREE.Mesh(new THREE.PlaneGeometry(2,2));simS.add(simQ);
+
+function makeFBO(){return new THREE.WebGLRenderTarget(SIM,SIM,{minFilter:THREE.NearestFilter,magFilter:THREE.NearestFilter,format:THREE.RGBAFormat,type:THREE.FloatType,depthBuffer:false,stencilBuffer:false});}
+let fboA=makeFBO(),fboB=makeFBO();
+
+// Init: Gaussian wave packet ψ₀ = exp(-r²/2σ²)·exp(ikx)
+const initMat=new THREE.ShaderMaterial({
+    uniforms:{uK:{value:3.5}},
+    vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position,1.);}`,
+    fragmentShader:`uniform float uK;varying vec2 vUv;void main(){
+        vec2 p=(vUv-.5)*2.;vec2 c=vec2(-.3,0.);float r2=dot(p-c,p-c);
+        float env=exp(-r2/.08);float ph=uK*p.x*20.;
+        float re=env*cos(ph),im=env*sin(ph);
+        float V=0.;if(abs(p.x-.6)<.04)V=15.;
+        V+=smoothstep(.95,1.,length(p))*100.;
+        gl_FragColor=vec4(re,im,V,re*re+im*im);}`
+});
+simQ.material=initMat;R.setRenderTarget(fboA);R.render(simS,simCam);R.setRenderTarget(null);
+
+// Schrödinger PDE solver
+const pdeShader=new THREE.ShaderMaterial({
+    uniforms:{tPsi:{value:null},uDt:{value:.0005},uRes:{value:SIM},uCollapse:{value:0.},uCC:{value:new THREE.Vector2(.5,.5)}},
+    vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position,1.);}`,
+    fragmentShader:`uniform sampler2D tPsi;uniform float uDt,uRes,uCollapse;uniform vec2 uCC;varying vec2 vUv;
+    void main(){
+        float dx=1./uRes;
+        vec4 c=texture2D(tPsi,vUv);
+        vec4 xp=texture2D(tPsi,vUv+vec2(dx,0)),xm=texture2D(tPsi,vUv-vec2(dx,0));
+        vec4 yp=texture2D(tPsi,vUv+vec2(0,dx)),ym=texture2D(tPsi,vUv-vec2(0,dx));
+        float Re=c.r,Im=c.g,V=c.b;
+        float lR=(xp.r+xm.r+yp.r+ym.r-4.*Re)/(dx*dx);
+        float lI=(xp.g+xm.g+yp.g+ym.g-4.*Im)/(dx*dx);
+        float dR=.5*lI-(V)*Im, dI=-.5*lR+(V)*Re;
+        float nR=Re+dR*uDt, nI=Im+dI*uDt;
+        if(uCollapse>.01){float s=mix(.5,.02,uCollapse);vec2 d=vUv-uCC;float e=exp(-dot(d,d)/(2.*s*s));nR*=mix(1.,e,uCollapse);nI*=mix(1.,e,uCollapse);}
+        float edge=smoothstep(.9,1.,length(vUv-.5)*2.);nR*=(1.-edge);nI*=(1.-edge);
+        gl_FragColor=vec4(nR,nI,V,nR*nR+nI*nI);}`
+});
+
+/* ══════════════════════════════════
+   §2 — CENTRAL ψ SPHERE
+   Probability density as glowing orb
+   ══════════════════════════════════ */
+const psiMat=new THREE.ShaderMaterial({
+    uniforms:{tPsi:{value:null},uTime:{value:0},uCollapse:{value:0}},
+    vertexShader:`varying vec3 vN,vP;varying vec2 vUv;void main(){vN=normalize(normalMatrix*normal);vP=position;vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+    fragmentShader:`
+        uniform sampler2D tPsi;uniform float uTime,uCollapse;varying vec3 vN,vP;varying vec2 vUv;
+        float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+        float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
+            return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
+        float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<4;i++){v+=a*noise(p);p*=2.1;a*=.5;}return v;}
+        void main(){
+            vec3 eye=normalize(cameraPosition-vP);
+            float f=pow(1.-abs(dot(eye,vN)),3.);
+            // Sample ψ from FBO using UV mapping
+            vec4 psi=texture2D(tPsi,vUv);
+            float prob=psi.a;
+            // Turbulent surface
+            float turb=fbm(vUv*8.+uTime*.8)*.4+.6;
+            float pulse=sin(uTime*2.)*.08+.92;
+            // Phase color
+            float phase=atan(psi.g,psi.r);
+            vec3 cold=vec3(.1,.3,.9);vec3 mid=vec3(0.,1.,.78);vec3 hot=vec3(1.,.15,.4);vec3 white=vec3(1.,.95,.85);
+            vec3 col=mix(mix(cold,mid,min(1.,prob*8.)),hot,min(1.,prob*prob*30.));
+            col=mix(col,white,min(1.,prob*prob*prob*100.));
+            col*=turb*pulse*f;
+            // Interference fringes
+            col*=sin(vP.x*12.+uTime*3.)*sin(vP.z*12.-uTime*2.)*.2+.8;
+            // Collapse: red shift
+            col=mix(col,vec3(1.,.1,.2)*f*2.,uCollapse);
+            float a=(.2+f*.6+prob*2.)*turb*pulse;
+            gl_FragColor=vec4(col*1.5,a);
+        }`,
+    transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide
+});
+const psiSphere=new THREE.Mesh(new THREE.SphereGeometry(2.5,48,48),psiMat);
+qGroup.add(psiSphere);
+
+// Glow shells
+[3,4,5.5,7.5].forEach((r,i)=>{
+    qGroup.add(new THREE.Mesh(new THREE.SphereGeometry(r,12,12),
+        new THREE.MeshBasicMaterial({color:[0x00ffc8,0x2288aa,0x114466,0x0a1133][i],transparent:true,opacity:[.06,.03,.015,.008][i],side:THREE.BackSide})));
+});
+
+/* ══════════════════════════════════
+   §3 — ORBITAL PROBABILITY PARTICLES
+   3000 particles orbit based on |ψ|²
+   ══════════════════════════════════ */
+const ORB_N=3000;
+const orbPos=new Float32Array(ORB_N*3);
+const orbUV=new Float32Array(ORB_N*2);
+const orbData=[];
+for(let i=0;i<ORB_N;i++){
+    const th=Math.random()*Math.PI*2;
+    const ph=Math.acos(2*Math.random()-1);
+    const r=2.8+Math.random()*2;
+    orbPos[i*3]=r*Math.sin(ph)*Math.cos(th);
+    orbPos[i*3+1]=r*Math.sin(ph)*Math.sin(th);
+    orbPos[i*3+2]=r*Math.cos(ph);
+    const u=(Math.atan2(orbPos[i*3+2],orbPos[i*3])/Math.PI+1)*.5;
+    const v=(Math.asin(orbPos[i*3+1]/r)/Math.PI+.5);
+    orbUV[i*2]=u;orbUV[i*2+1]=v;
+    orbData.push({th,ph,r,speed:.2+Math.random()*.4,phase:Math.random()*Math.PI*2});
+}
+const orbGeo=new THREE.BufferGeometry();
+orbGeo.setAttribute('position',new THREE.BufferAttribute(orbPos,3));
+const orbPts=new THREE.Points(orbGeo,new THREE.PointsMaterial({
+    map:glowC,size:.18,transparent:true,opacity:.5,sizeAttenuation:true,blending:THREE.AdditiveBlending,depthWrite:false
+}));
+qGroup.add(orbPts);
+
+/* ══════════════════════════════════
+   §4 — 5 MODULE NODES
+   ══════════════════════════════════ */
+const mods=[
+    {n:'PRELUDE',c:0x00ffc8,rgb:[0,255,200],a:0},
+    {n:'ORACLE',c:0x4da6ff,rgb:[77,166,255],a:Math.PI*2/5},
+    {n:'MANTIS',c:0xffb347,rgb:[255,179,71],a:Math.PI*4/5},
+    {n:'ARES',c:0xff4d6a,rgb:[255,77,106],a:Math.PI*6/5},
+    {n:'OBSIDIAN',c:0xa78bfa,rgb:[167,139,250],a:Math.PI*8/5},
+];
+const modR=9;
+const modMeshes=[];
+
+mods.forEach((m,i)=>{
+    const g=new THREE.Group();
+    g.position.set(Math.cos(m.a)*modR,0,Math.sin(m.a)*modR);
+    
+    // Core orb — shader
+    const coreMat=new THREE.ShaderMaterial({
+        uniforms:{uTime:{value:0},uColor:{value:new THREE.Color(m.c)},uPulse:{value:0}},
+        vertexShader:`varying vec3 vN,vP;void main(){vN=normalize(normalMatrix*normal);vP=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+        fragmentShader:`uniform float uTime,uPulse;uniform vec3 uColor;varying vec3 vN,vP;
+        void main(){
+            vec3 e=normalize(cameraPosition-vP);float f=pow(1.-abs(dot(e,vN)),2.5);
+            float scan=sin(vP.y*20.+uTime*4.)*.15+.85;
+            vec3 col=uColor*(f+.2)*scan*(1.+uPulse);
+            col+=uColor*uPulse*2.;
+            gl_FragColor=vec4(col,(f*.7+.15)*scan*(1.+uPulse*.5));}`,
+        transparent:true,depthWrite:false,blending:THREE.AdditiveBlending
+    });
+    g.add(new THREE.Mesh(new THREE.SphereGeometry(.7,20,20),coreMat));
+    
+    // Glow halo
+    g.add(new THREE.Mesh(new THREE.SphereGeometry(1.2,10,10),
+        new THREE.MeshBasicMaterial({color:m.c,transparent:true,opacity:.08,side:THREE.BackSide})));
+    
+    // Double ring
+    const ring1=new THREE.Mesh(new THREE.TorusGeometry(1,.02,4,60),new THREE.MeshBasicMaterial({color:m.c,transparent:true,opacity:.2}));
+    ring1.rotation.x=Math.PI/2;g.add(ring1);
+    const ring2=ring1.clone();ring2.rotation.x=Math.PI/3;ring2.rotation.z=Math.PI/4;ring2.material=ring1.material.clone();ring2.material.opacity=.1;g.add(ring2);
+    
+    // Particle cloud
+    const cn=120;const cp=new Float32Array(cn*3);
+    for(let j=0;j<cn;j++){const t=Math.random()*Math.PI*2,p=Math.acos(2*Math.random()-1),r2=.8+Math.random()*.8;
+        cp[j*3]=r2*Math.sin(p)*Math.cos(t);cp[j*3+1]=r2*Math.sin(p)*Math.sin(t);cp[j*3+2]=r2*Math.cos(p);}
+    const cg=new THREE.BufferGeometry();cg.setAttribute('position',new THREE.BufferAttribute(cp,3));
+    g.add(new THREE.Points(cg,new THREE.PointsMaterial({map:glow(m.rgb[0],m.rgb[1],m.rgb[2]),size:.12,transparent:true,opacity:.4,sizeAttenuation:true,blending:THREE.AdditiveBlending,depthWrite:false})));
+    
+    // Label
+    const lc=document.createElement('canvas');lc.width=256;lc.height=48;const lx=lc.getContext('2d');
+    lx.shadowColor=`rgba(${m.rgb[0]},${m.rgb[1]},${m.rgb[2]},.8)`;lx.shadowBlur=10;
+    lx.font='bold 18px "JetBrains Mono",monospace';lx.textAlign='center';lx.textBaseline='middle';
+    lx.fillStyle=`rgb(${m.rgb[0]},${m.rgb[1]},${m.rgb[2]})`;lx.fillText(m.n,128,24);
+    const label=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(lc),transparent:true,opacity:.85}));
+    label.scale.set(2.5,.5,1);label.position.y=1.6;g.add(label);
+    
+    g.userData={coreMat,ring1,ring2};modMeshes.push(g);qGroup.add(g);
+});
+
+/* ══════════════════════════════════
+   §5 — ENTANGLEMENT BEAMS
+   Energy streams between modules
+   ══════════════════════════════════ */
+const pairs=[[0,1],[1,2],[2,3],[3,4],[4,0],[0,2],[1,3],[2,4]];
+const beamFlows=[];
+pairs.forEach(([a,b])=>{
+    const n=20;const pos=new Float32Array(n*3);const prg=new Float32Array(n);const spd=new Float32Array(n);
+    for(let i=0;i<n;i++){prg[i]=Math.random();spd[i]=.4+Math.random()*.5;}
+    const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+    const col=new THREE.Color(mods[a].c).lerp(new THREE.Color(mods[b].c),.5);
+    const pts=new THREE.Points(geo,new THREE.PointsMaterial({map:glowW,size:.12,color:col,transparent:true,opacity:.35,sizeAttenuation:true,blending:THREE.AdditiveBlending,depthWrite:false}));
+    beamFlows.push({pts,geo,prg,spd,a,b,pos});qGroup.add(pts);
+    
+    // Faint beam line
+    const pA=modMeshes[a].position,pB=modMeshes[b].position;
+    qGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([pA.clone(),pB.clone()]),
+        new THREE.LineBasicMaterial({color:col,transparent:true,opacity:.04})));
+});
+
+/* ══════════════════════════════════
+   §6 — FORCE FIELD BARRIER
+   ══════════════════════════════════ */
+const fieldMat=new THREE.ShaderMaterial({
+    uniforms:{uTime:{value:0}},
+    vertexShader:`varying vec3 vN,vP;void main(){vN=normalize(normalMatrix*normal);vP=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+    fragmentShader:`uniform float uTime;varying vec3 vN,vP;
+    void main(){
+        vec3 e=normalize(cameraPosition-vP);float f=pow(1.-abs(dot(e,vN)),1.8);
+        // Hex grid
+        float hx=sin(vP.x*6.)*sin(vP.y*6.)*sin(vP.z*6.);
+        float hex=smoothstep(.0,.3,abs(hx))*.3+.7;
+        // Scan pulse
+        float scan=sin(vP.y*15.+uTime*3.)*.2+.8;
+        float pulse=sin(uTime*2.)*.05+.95;
+        vec3 col=vec3(0.,.8,.65)*f*hex*scan*pulse;
+        gl_FragColor=vec4(col,f*.12*hex*scan);}`,
+    transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide
+});
+const field=new THREE.Mesh(new THREE.SphereGeometry(6.5,40,40),fieldMat);
+qGroup.add(field);
+
+/* ══════════════════════════════════
+   §7 — QUANTUM FOAM
+   ══════════════════════════════════ */
+const fN=2000;const fP=new Float32Array(fN*3);const fPh=new Float32Array(fN);
+for(let i=0;i<fN;i++){const t=Math.random()*Math.PI*2,p=Math.acos(2*Math.random()-1),r=10+Math.random()*14;
+    fP[i*3]=r*Math.sin(p)*Math.cos(t);fP[i*3+1]=r*Math.sin(p)*Math.sin(t);fP[i*3+2]=r*Math.cos(p);fPh[i]=Math.random()*Math.PI*2;}
+const fGeo=new THREE.BufferGeometry();fGeo.setAttribute('position',new THREE.BufferAttribute(fP,3));
+const foam=new THREE.Points(fGeo,new THREE.PointsMaterial({map:glowW,size:.06,transparent:true,opacity:.12,sizeAttenuation:true,blending:THREE.AdditiveBlending,depthWrite:false}));
+qGroup.add(foam);
+
+S.add(qGroup);
+const cLight=new THREE.PointLight(0x00ffc8,2,30);S.add(cLight);
+S.add(new THREE.AmbientLight(0x060618,.2));
+const rLight=new THREE.PointLight(0xff4d6a,.3,20);rLight.position.set(8,5,-6);S.add(rLight);
+
+/* ══════════════════════════════════
+   §8 — BLOOM OVERLAY
+   ══════════════════════════════════ */
+const bC=document.createElement('canvas');
+Object.assign(bC.style,{position:'absolute',top:'0',left:'0',width:'100%',height:'100%',pointerEvents:'none',zIndex:'1',mixBlendMode:'screen',opacity:'.4'});
+canvas.parentElement.appendChild(bC);
+const bX=bC.getContext('2d');
+function bloom(){const w=canvas.width,h=canvas.height;if(bC.width!==w)bC.width=w;if(bC.height!==h)bC.height=h;
+    bX.clearRect(0,0,w,h);bX.drawImage(canvas,0,0,w*.15|0,h*.15|0);
+    bX.filter='blur(6px)';bX.drawImage(bC,0,0,w*.15|0,h*.15|0,0,0,w,h);
+    bX.filter='blur(16px)';bX.globalAlpha=.35;bX.drawImage(bC,0,0,w,h);
+    bX.globalAlpha=1;bX.filter='none';}
+
+/* ══════════════════════════════════
+   §9 — INTERACTION
+   ══════════════════════════════════ */
+let isDrag=false,rvx=0,rvy=0,tY=0,tX=.2,zDist=15;
+canvas.addEventListener('mousedown',()=>isDrag=true);
+canvas.addEventListener('mouseup',()=>isDrag=false);
+addEventListener('mouseup',()=>isDrag=false);
+canvas.addEventListener('mousemove',e=>{if(isDrag){rvy+=(e.movementX||0)*.004;rvx+=(e.movementY||0)*.003;}});
+canvas.addEventListener('wheel',e=>{e.preventDefault();zDist=Math.max(6,Math.min(25,zDist+e.deltaY*.02));},{passive:false});
+
+/* ══════════════════════════════════
+   §10 — COLLAPSE CYCLE
+   ══════════════════════════════════ */
+let cPhase=0,cTimer=0,needsReinit=false;
+function updateCollapse(dt){
+    cTimer+=dt;
+    if(cPhase===0&&cTimer>9){cPhase=1;cTimer=0;
+        document.getElementById('qState').textContent='⚠ |Ψ⟩ COLLAPSING → eigenstate';
+        document.getElementById('qState').style.color='#ff4d6a';}
+    else if(cPhase===1&&cTimer>.6){cPhase=2;cTimer=0;
+        const d=['PRELUDE','ORACLE','MANTIS','ARES','OBSIDIAN'][Math.floor(Math.random()*5)];
+        document.getElementById('qState').textContent='◉ |'+d+'⟩ THREAT DETECTED';
+        document.getElementById('qState').style.color='#ff4d6a';}
+    else if(cPhase===2&&cTimer>2){cPhase=3;cTimer=0;needsReinit=true;
+        document.getElementById('qState').textContent='↻ Restoring superposition...';
+        document.getElementById('qState').style.color='#4da6ff';}
+    else if(cPhase===3&&cTimer>2.5){cPhase=0;cTimer=0;
+        document.getElementById('qState').textContent='|Ψ⟩ = α|SAFE⟩ + β|THREAT⟩';
+        document.getElementById('qState').style.color='#00ffc8';}
+    if(cPhase===1)return Math.min(1,cTimer/.6);
+    if(cPhase===2)return 1;
+    if(cPhase===3)return Math.max(0,1-cTimer/2.5);
+    return 0;
+}
+
+/* ══════════════════════════════════
+   §11 — RENDER LOOP
+   ══════════════════════════════════ */
+const clk=new THREE.Clock();
+let pp=0,bTick=0;
+
+function frame(){
+    requestAnimationFrame(frame);
+    const t=clk.getElapsedTime();
+    const dt=Math.min(clk.getDelta(),.033);
+    const cv=updateCollapse(dt);
+    
+    // Reinit wave
+    if(needsReinit){needsReinit=false;initMat.uniforms.uK.value=2+Math.random()*4;
+        simQ.material=initMat;R.setRenderTarget(fboA);R.render(simS,simCam);R.setRenderTarget(null);pp=0;}
+    
+    // ═══ SOLVE SCHRÖDINGER PDE (4 substeps) ═══
+    for(let s=0;s<4;s++){
+        const rd=pp===0?fboA:fboB,wr=pp===0?fboB:fboA;
+        pdeShader.uniforms.tPsi.value=rd.texture;
+        pdeShader.uniforms.uCollapse.value=cv;
+        pdeShader.uniforms.uCC.value.set(.5+Math.cos(t)*.1,.5+Math.sin(t)*.1);
+        simQ.material=pdeShader;R.setRenderTarget(wr);R.render(simS,simCam);R.setRenderTarget(null);
+        pp=1-pp;
+    }
+    const curFBO=pp===0?fboA:fboB;
+    
+    // ═══ PSI SPHERE ═══
+    psiMat.uniforms.tPsi.value=curFBO.texture;
+    psiMat.uniforms.uTime.value=t;
+    psiMat.uniforms.uCollapse.value=cv;
+    const breathe=1+Math.sin(t*.6)*.12;
+    psiSphere.scale.setScalar(breathe*(1-cv*.3));
+    psiSphere.rotation.y=t*.1;
+    
+    // ═══ ORBITAL PARTICLES ═══
+    const oArr=orbGeo.attributes.position.array;
+    for(let i=0;i<ORB_N;i++){
+        const d=orbData[i];
+        d.th+=d.speed*dt;
+        const wobble=Math.sin(t*.5+d.phase)*.3;
+        const r=d.r+wobble;
+        oArr[i*3]=r*Math.sin(d.ph)*Math.cos(d.th);
+        oArr[i*3+1]=r*Math.cos(d.ph)+Math.sin(t*.3+d.phase)*.2;
+        oArr[i*3+2]=r*Math.sin(d.ph)*Math.sin(d.th);
+    }
+    orbGeo.attributes.position.needsUpdate=true;
+    orbPts.material.opacity=.3+cv*.4;
+    
+    // ═══ MODULES ═══
+    modMeshes.forEach((g,i)=>{
+        g.position.y=Math.sin(t*.4+i*1.2)*.4;
+        const d=g.userData;
+        d.coreMat.uniforms.uTime.value=t;
+        d.coreMat.uniforms.uPulse.value=cPhase===2?.8:cPhase===1?cv*.5:0;
+        d.ring1.rotation.z=t*(.3+i*.06);
+        d.ring2.rotation.z=-t*(.2+i*.04);
+    });
+    
+    // ═══ ENTANGLEMENT BEAMS ═══
+    beamFlows.forEach(bf=>{
+        const pA=modMeshes[bf.a].position,pB=modMeshes[bf.b].position;
+        const arr=bf.geo.attributes.position.array;
+        for(let i=0;i<bf.prg.length;i++){
+            bf.prg[i]+=bf.spd[i]*dt;if(bf.prg[i]>1)bf.prg[i]=0;
+            const p=bf.prg[i];
+            const cy=Math.sin(p*Math.PI)*2;
+            arr[i*3]=pA.x*(1-p)+pB.x*p;
+            arr[i*3+1]=pA.y*(1-p)+pB.y*p+cy;
+            arr[i*3+2]=pA.z*(1-p)+pB.z*p;
+        }
+        bf.geo.attributes.position.needsUpdate=true;
+        bf.pts.material.opacity=cPhase===2?.7:cPhase===1?.5:.3;
+    });
+    
+    // ═══ FORCE FIELD ═══
+    fieldMat.uniforms.uTime.value=t;
+    field.rotation.y=t*.03;
+    
+    // ═══ QUANTUM FOAM ═══
+    const fa=fGeo.attributes.position.array;
+    for(let i=0;i<fN;i++){
+        const flk=Math.sin(t*3+fPh[i]*10)>.3?1:0;
+        fa[i*3]+=Math.sin(t*4+fPh[i])*.002*flk;
+        fa[i*3+1]+=Math.cos(t*3+fPh[i])*.002*flk;
+    }
+    fGeo.attributes.position.needsUpdate=true;
+    
+    // ═══ LIGHTING ═══
+    cLight.intensity=2+Math.sin(t*2)*.5+cv*4;
+    cLight.color.setHex(cPhase===2?0xff4d6a:cPhase===1?0xffffff:0x00ffc8);
+    
+    // Collapse shake
+    if(cPhase===1){qGroup.position.x=Math.sin(t*50)*.08*cv;qGroup.position.z=Math.cos(t*45)*.08*cv;}
+    else{qGroup.position.x*=.9;qGroup.position.z*=.9;}
+    
+    // ═══ CAMERA ═══
+    if(!isDrag){rvx*=.95;rvy*=.95;tY+=.0005;}
+    tY+=rvy;tX=Math.max(-.15,Math.min(.6,tX+rvx));
+    qGroup.rotation.y+=(tY-qGroup.rotation.y)*.025;
+    qGroup.rotation.x+=(tX-qGroup.rotation.x)*.025;
+    cam.position.z+=(zDist-cam.position.z)*.04;
+    cam.position.y+=(zDist*.45-cam.position.y)*.03;
+    cam.lookAt(0,0,0);
+    
+    // Uncertainty display
+    document.getElementById('qUncertainty').textContent=`GPGPU ${SIM}×${SIM} · Ping-Pong FBO · 4 substeps · Finite Diff. Laplacian`;
+    
+    R.render(S,cam);
+    bTick++;if(bTick%2===0)bloom();
+}
+frame();
+new IntersectionObserver(e=>{if(e[0].isIntersecting)resize()},{threshold:.1}).observe(canvas.parentElement);
+})();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script>
+/* ═══════ D3.JS RADIAL DEPENDENCY TREE — SIPAHI ARCHITECTURE ═══════ */
+(function(){
+const svg=d3.select('#d3Graph');
+if(svg.empty())return;
+const container=svg.node().parentElement;
+let W=container.clientWidth,H=container.clientHeight;
+svg.attr('viewBox',`0 0 ${W} ${H}`);
+
+const colors={core:'#00ffc8',hw:'#ff4d6a',ipc:'#4da6ff',wasm:'#ff6b35',formal:'#a78bfa'};
+
+/* ── Hierarchical data ── */
+const treeData={
+    name:'Sipahi',group:'core',
+    children:[
+        {name:'Trap Handler',group:'core',children:[
+            {name:'PMP',group:'hw',children:[{name:'RISC-V Hart',group:'hw'}]},
+            {name:'CLINT',group:'hw',children:[{name:'Timer IRQ',group:'hw'}]},
+            {name:'WDT',group:'hw'},
+        ]},
+        {name:'Scheduler',group:'core',children:[
+            {name:'Priority Queue',group:'core'},
+            {name:'Hart Affinity',group:'hw'},
+            {name:'Deadline Monitor',group:'core'},
+        ]},
+        {name:'Cap Broker',group:'core',children:[
+            {name:'IPC Channel',group:'ipc',children:[
+                {name:'SPSC Ring',group:'ipc'},
+                {name:'Blackbox',group:'ipc'},
+                {name:'Shared Mem',group:'ipc'},
+            ]},
+            {name:'Cap Table',group:'core'},
+        ]},
+        {name:'WASM Runtime',group:'wasm',children:[
+            {name:'wasmi Engine',group:'wasm',children:[
+                {name:'Sensor Mod',group:'wasm'},
+                {name:'Robot Ctrl',group:'wasm'},
+                {name:'Comm Mod',group:'wasm'},
+            ]},
+            {name:'Cycle Acct',group:'wasm'},
+            {name:'Mem Sandbox',group:'wasm'},
+        ]},
+        {name:'Formal',group:'formal',children:[
+            {name:'Kani',group:'formal'},
+            {name:'Lean 4',group:'formal'},
+            {name:'Miri',group:'formal'},
+        ]},
+    ]
+};
+
+const cx=W/2,cy=H/2;
+const radius=Math.min(W,H)*0.38;
+
+/* ── Create hierarchy ── */
+const root=d3.hierarchy(treeData);
+const treeLayout=d3.tree()
+    .size([2*Math.PI,radius])
+    .separation((a,b)=>(a.parent===b.parent?1:1.5)/a.depth);
+treeLayout(root);
+
+/* ── Radial projection ── */
+function project(d){
+    const angle=d.x-Math.PI/2;
+    const r=d.y;
+    return [cx+r*Math.cos(angle),cy+r*Math.sin(angle)];
+}
+
+/* ── Defs: filters + gradients ── */
+const defs=svg.append('defs');
+
+// Glow filter
+const glow=defs.append('filter').attr('id','nodeGlow').attr('x','-50%').attr('y','-50%').attr('width','200%').attr('height','200%');
+glow.append('feGaussianBlur').attr('in','SourceGraphic').attr('stdDeviation','4').attr('result','blur');
+glow.append('feMerge').selectAll('feMergeNode').data(['blur','SourceGraphic']).join('feMergeNode').attr('in',d=>d);
+
+// Pulse glow
+const pulseGlow=defs.append('filter').attr('id','pulseGlow').attr('x','-100%').attr('y','-100%').attr('width','300%').attr('height','300%');
+pulseGlow.append('feGaussianBlur').attr('in','SourceGraphic').attr('stdDeviation','8').attr('result','blur');
+pulseGlow.append('feMerge').selectAll('feMergeNode').data(['blur','blur','SourceGraphic']).join('feMergeNode').attr('in',d=>d);
+
+/* ── Orbital rings ── */
+const depths=[...new Set(root.descendants().map(d=>d.y))].filter(d=>d>0).sort((a,b)=>a-b);
+svg.append('g').selectAll('circle').data(depths).join('circle')
+    .attr('cx',cx).attr('cy',cy)
+    .attr('r',d=>d)
+    .attr('fill','none')
+    .attr('stroke','rgba(255,255,255,.03)')
+    .attr('stroke-width',1)
+    .attr('stroke-dasharray','3,8');
+
+/* ── Links — curved paths ── */
+const linkGroup=svg.append('g');
+const linkPaths=linkGroup.selectAll('path').data(root.links()).join('path')
+    .attr('d',d=>{
+        const s=project(d.source);
+        const t=project(d.target);
+        const mx=(s[0]+t[0])/2,my=(s[1]+t[1])/2;
+        // Curve toward center for organic feel
+        const dx=mx-cx,dy=my-cy;
+        const dist=Math.sqrt(dx*dx+dy*dy);
+        const pull=.15;
+        const cpx=mx-dx*pull,cpy=my-dy*pull;
+        return `M${s[0]},${s[1]}Q${cpx},${cpy},${t[0]},${t[1]}`;
+    })
+    .attr('fill','none')
+    .attr('stroke',d=>colors[d.target.data.group])
+    .attr('stroke-opacity',.12)
+    .attr('stroke-width',1.5);
+
+/* ── Data flow particles along links ── */
+const flowGroup=svg.append('g');
+const flows=[];
+root.links().forEach((link,i)=>{
+    const color=colors[link.target.data.group];
+    for(let p=0;p<2;p++){
+        flows.push({
+            linkIdx:i,
+            progress:Math.random(),
+            speed:.003+Math.random()*.004,
+            color,size:2+Math.random()*2
+        });
+    }
+});
+
+const flowDots=flowGroup.selectAll('circle').data(flows).join('circle')
+    .attr('r',d=>d.size)
+    .attr('fill',d=>d.color)
+    .attr('opacity',.6)
+    .attr('filter','url(#nodeGlow)');
+
+/* ── Nodes ── */
+const nodeGroup=svg.append('g');
+const nodeGs=nodeGroup.selectAll('g').data(root.descendants()).join('g')
+    .attr('transform',d=>{const p=project(d);return `translate(${p[0]},${p[1]})`});
+
+// Outer ring
+nodeGs.append('circle')
+    .attr('r',d=>d.depth===0?22:d.children?12:8)
+    .attr('fill','none')
+    .attr('stroke',d=>colors[d.data.group])
+    .attr('stroke-width',d=>d.depth===0?2:1)
+    .attr('stroke-opacity',.3)
+    .attr('stroke-dasharray',d=>d.children?'none':'2,3');
+
+// Core fill
+nodeGs.append('circle')
+    .attr('r',d=>d.depth===0?18:d.children?9:6)
+    .attr('fill',d=>colors[d.data.group])
+    .attr('fill-opacity',d=>d.depth===0?.25:.1)
+    .attr('stroke',d=>colors[d.data.group])
+    .attr('stroke-width',d=>d.depth===0?2.5:1.5)
+    .attr('filter',d=>d.depth===0?'url(#pulseGlow)':'url(#nodeGlow)')
+    .attr('class',d=>d.depth===0?'core-node':'');
+
+// Inner dot
+nodeGs.append('circle')
+    .attr('r',d=>d.depth===0?4:d.children?2.5:1.5)
+    .attr('fill',d=>colors[d.data.group])
+    .attr('opacity',.9);
+
+// Labels
+nodeGs.append('text')
+    .text(d=>d.data.name)
+    .attr('dy',d=>d.depth===0?32:(d.children?18:14))
+    .attr('text-anchor','middle')
+    .attr('fill',d=>colors[d.data.group])
+    .attr('font-family','JetBrains Mono, monospace')
+    .attr('font-size',d=>d.depth===0?'11px':d.children?'8px':'7px')
+    .attr('font-weight',d=>d.depth===0?'bold':'normal')
+    .attr('opacity',d=>d.depth===0?1:.65)
+    .attr('letter-spacing',d=>d.depth===0?'1.5px':'.5px');
+
+// Group label for root
+nodeGs.filter(d=>d.depth===0).append('text')
+    .text('MICROKERNEL')
+    .attr('dy',44)
+    .attr('text-anchor','middle')
+    .attr('fill',colors.core)
+    .attr('font-family','JetBrains Mono, monospace')
+    .attr('font-size','6px')
+    .attr('opacity',.35)
+    .attr('letter-spacing','3px');
+
+/* ── Hover interaction ── */
+nodeGs.on('mouseenter',function(e,d){
+    const g=d3.select(this);
+    g.select('circle:nth-child(2)')
+        .transition().duration(200)
+        .attr('fill-opacity',.3)
+        .attr('stroke-width',2.5);
+    // Highlight connected links
+    linkPaths.attr('stroke-opacity',l=>
+        (l.source===d||l.target===d)?.4:.06);
+    // Highlight connected nodes
+    const connected=new Set();
+    root.links().forEach(l=>{
+        if(l.source===d)connected.add(l.target);
+        if(l.target===d)connected.add(l.source);
+    });
+    connected.add(d);
+    nodeGs.attr('opacity',n=>connected.has(n)?1:.2);
+})
+.on('mouseleave',function(){
+    const g=d3.select(this);
+    g.select('circle:nth-child(2)')
+        .transition().duration(300)
+        .attr('fill-opacity',d=>d.depth===0?.25:.1)
+        .attr('stroke-width',d=>d.depth===0?2.5:1.5);
+    linkPaths.attr('stroke-opacity',.12);
+    nodeGs.attr('opacity',1);
+});
+
+/* ── Core pulse animation ── */
+function pulseCore(){
+    svg.selectAll('.core-node')
+        .transition().duration(1500).ease(d3.easeSinInOut)
+        .attr('r',21).attr('fill-opacity',.35)
+        .transition().duration(1500).ease(d3.easeSinInOut)
+        .attr('r',18).attr('fill-opacity',.2)
+        .on('end',pulseCore);
+}
+pulseCore();
+
+/* ── Data flow animation ── */
+function animateFlow(){
+    requestAnimationFrame(animateFlow);
+    const paths=linkPaths.nodes();
+    flowDots.each(function(d){
+        d.progress+=d.speed;
+        if(d.progress>1)d.progress=0;
+        const path=paths[d.linkIdx];
+        if(!path)return;
+        const len=path.getTotalLength();
+        const pt=path.getPointAtLength(d.progress*len);
+        d3.select(this).attr('cx',pt.x).attr('cy',pt.y);
+    });
+    // Fade based on position
+    flowDots.attr('opacity',d=>{
+        const fade=Math.sin(d.progress*Math.PI);
+        return fade*.5;
+    });
+}
+animateFlow();
+
+/* ── Link pulse — periodic glow waves ── */
+function pulsePaths(){
+    linkPaths
+        .transition().duration(2000).ease(d3.easeSinInOut)
+        .attr('stroke-opacity',.2)
+        .transition().duration(2000).ease(d3.easeSinInOut)
+        .attr('stroke-opacity',.08)
+        .on('end',pulsePaths);
+}
+pulsePaths();
+
+/* ── Resize ── */
+new ResizeObserver(()=>{
+    W=container.clientWidth;H=container.clientHeight;
+    svg.attr('viewBox',`0 0 ${W} ${H}`);
+}).observe(container);
+})();
+</script>
+<script src="../assests/js/senior.js"></script>
+</body>
+</html>

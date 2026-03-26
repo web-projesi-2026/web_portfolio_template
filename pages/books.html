@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kitaplık — gzhno</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0f;--bg-card:#11111a;--border:#1e1e2e;--border-glow:#00ffc840;--text:#e0e0e8;--text-dim:#6e6e82;--accent:#00ffc8;--accent-dim:#00ffc830;--blood:#c4141a;--amber:#ffb347;--blue:#4da6ff;--purple:#a78bfa}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;line-height:1.7;overflow-x:hidden}
+::selection{background:var(--accent);color:#000}
+body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:.12;pointer-events:none;z-index:0}
+.container{max-width:1200px;margin:0 auto;padding:0 40px;position:relative;z-index:1}
+nav{padding:20px 40px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);background:rgba(10,10,15,.9)}
+.logo{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;color:var(--accent);letter-spacing:-.5px;text-decoration:none}.logo span{color:var(--text-dim);font-weight:300}
+.nav-links{display:flex;gap:24px}
+.nav-links a{color:var(--text-dim);text-decoration:none;font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase;transition:color .3s}
+.nav-links a:hover,.nav-links a.active{color:var(--accent)}
+section{padding:70px 0}
+.section-header{display:flex;align-items:center;gap:16px;margin-bottom:44px}
+.section-number{font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--accent);opacity:.6}
+.section-title{font-size:1.8rem;font-weight:600;letter-spacing:-.5px}
+.section-line{flex:1;height:1px;background:var(--border)}
+
+/* HERO STATS */
+.stats-bar{display:flex;gap:32px;margin-bottom:48px;flex-wrap:wrap}
+.stat{text-align:center;padding:24px 32px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;flex:1;min-width:150px;transition:all .4s}
+.stat:hover{border-color:var(--border-glow);transform:translateY(-4px)}
+.stat-val{font-family:'JetBrains Mono',monospace;font-size:2.2rem;font-weight:700;color:var(--accent)}
+.stat-label{font-size:.85rem;color:var(--text-dim);margin-top:4px}
+
+/* FILTERS */
+.filters{display:flex;gap:8px;margin-bottom:32px;flex-wrap:wrap}
+.filter-btn{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:8px 16px;border:1px solid var(--border);border-radius:20px;background:transparent;color:var(--text-dim);cursor:pointer;transition:all .3s;letter-spacing:1px;text-transform:uppercase}
+.filter-btn:hover,.filter-btn.active{background:var(--accent);color:#000;border-color:var(--accent)}
+
+/* BOOK GRID */
+.books-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:20px}
+.book-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;transition:all .4s;position:relative;overflow:hidden;display:flex}
+.book-card:hover{border-color:var(--border-glow);transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,255,200,.05)}
+.book-cover{width:80px;min-height:120px;background-size:cover;background-position:center;flex-shrink:0;position:relative}
+.book-cover::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 60%,var(--bg-card))}
+.book-cover-placeholder{width:80px;min-height:120px;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:1.8rem;font-weight:700;color:rgba(255,255,255,.15);flex-shrink:0}
+.book-info{padding:16px 20px;flex:1;display:flex;flex-direction:column;justify-content:center}
+.book-card[data-cat="cultivation"] .book-cover-placeholder{background:linear-gradient(135deg,#2d1b4e,#4a2d7a)}
+.book-card[data-cat="fantasy"] .book-cover-placeholder{background:linear-gradient(135deg,#3a2510,#6b4420)}
+.book-card[data-cat="system"] .book-cover-placeholder{background:linear-gradient(135deg,#0a2a25,#0d4a3a)}
+.book-card[data-cat="dark"] .book-cover-placeholder{background:linear-gradient(135deg,#2a0a10,#4a1020)}
+
+.book-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.book-title{font-family:'Outfit',sans-serif;font-size:1.05rem;font-weight:600;color:var(--text);line-height:1.3}
+.book-chapters{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--accent);white-space:nowrap;margin-left:12px}
+.book-cat{font-family:'JetBrains Mono',monospace;font-size:.55rem;padding:4px 10px;border-radius:12px;letter-spacing:1px;text-transform:uppercase;display:inline-block;margin-bottom:10px}
+.cat-cultivation{color:var(--purple);border:1px solid rgba(167,139,250,.25);background:rgba(167,139,250,.05)}
+.cat-fantasy{color:var(--amber);border:1px solid rgba(255,179,71,.25);background:rgba(255,179,71,.05)}
+.cat-system{color:var(--accent);border:1px solid rgba(0,255,200,.2);background:rgba(0,255,200,.05)}
+.cat-dark{color:var(--blood);border:1px solid rgba(196,20,26,.25);background:rgba(196,20,26,.05)}
+.cat-physical{color:var(--blue);border:1px solid rgba(77,166,255,.25);background:rgba(77,166,255,.05)}
+
+/* PROGRESS BAR */
+.book-progress{width:100%;height:4px;background:var(--border);border-radius:4px;overflow:hidden;margin-top:10px}
+.book-progress-fill{height:100%;border-radius:4px;transition:width 1.5s ease}
+.book-progress-fill.cult{background:linear-gradient(90deg,var(--purple),#c4b5fd)}
+.book-progress-fill.fan{background:linear-gradient(90deg,var(--amber),#ffd97a)}
+.book-progress-fill.sys{background:linear-gradient(90deg,var(--accent),#6fffdc)}
+.book-progress-fill.dark{background:linear-gradient(90deg,var(--blood),#ff6b7a)}
+.book-progress-fill.phys{background:linear-gradient(90deg,var(--blue),#93c5fd)}
+
+.book-status{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--text-dim);margin-top:6px;display:flex;justify-content:space-between}
+
+/* PHYSICAL BOOKS */
+.physical-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:24px}
+.phys-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:20px;transition:all .3s}
+.phys-card:hover{border-color:rgba(77,166,255,.3);transform:translateY(-2px)}
+.phys-title{font-weight:600;margin-bottom:4px}
+.phys-author{font-size:.85rem;color:var(--text-dim)}
+.phys-status{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--accent);margin-top:8px;letter-spacing:1px}
+
+/* QUOTE */
+.quote-block{background:var(--bg-card);border-left:3px solid var(--accent);padding:32px;margin-top:48px;border-radius:0 12px 12px 0}
+.quote-text{font-family:'Cinzel',serif;font-size:1.1rem;font-style:italic;color:var(--text);line-height:1.9}
+.quote-source{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--accent);margin-top:12px}
+
+footer{padding:48px 0;border-top:1px solid var(--border);text-align:center}
+footer p{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--text-dim)}
+.fade-in{opacity:0;transform:translateY(24px);transition:all .7s cubic-bezier(.16,1,.3,1)}.fade-in.visible{opacity:1;transform:translateY(0)}
+
+@media(max-width:768px){
+    nav{padding:14px 16px}.nav-links{gap:14px}.nav-links a{font-size:.65rem}
+    .stats-bar{gap:12px}.stat{padding:16px}.stat-val{font-size:1.6rem}
+    .books-grid{grid-template-columns:1fr}.filters{gap:4px}.filter-btn{font-size:.55rem;padding:6px 10px}
+    .container{padding:0 16px}
+}
+</style>
+</head>
+<body>
+<nav>
+    <a href="../index.html" class="logo">gzhno<span>_sec</span></a>
+    <div class="nav-links">
+        <a href="../index.html">Ana Sayfa</a>
+        <a href="project.html">Projeler</a>
+        <a href="rust.html">Rust</a>
+        <a href="scenario.html">Senaryo</a>
+        <a href="about.html">Hakkımda</a>
+        <a href="books.html" class="active">Kitaplık</a>
+        <a href="contact.html">İletişim</a>
+    </div>
+</nav>
+
+<div class="container">
+
+<!-- GALAXY HERO -->
+<section style="padding:40px 0 0">
+    <div style="position:relative;width:100%;height:92vh;min-height:700px;border-radius:16px;overflow:hidden;border:1px solid var(--border);background:#010105">
+        <canvas id="galaxyCanvas" style="width:100%;height:100%"></canvas>
+        <!-- Tooltip -->
+        <div id="galaxyTooltip" style="display:none;position:absolute;background:rgba(10,10,20,.95);border:1px solid var(--accent);border-radius:8px;padding:12px 16px;pointer-events:none;z-index:10;backdrop-filter:blur(8px);min-width:180px">
+            <div id="ttTitle" style="font-family:'Outfit',sans-serif;font-size:.95rem;font-weight:600;color:#fff;margin-bottom:4px"></div>
+            <div id="ttChapters" style="font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--accent)"></div>
+            <div id="ttCat" style="font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--text-dim);margin-top:2px;text-transform:uppercase;letter-spacing:1px"></div>
+        </div>
+        <!-- Labels -->
+        <div style="position:absolute;top:16px;left:20px;z-index:2">
+            <div style="font-family:'Cinzel',serif;font-size:1.4rem;color:#fff;letter-spacing:2px;text-shadow:0 0 30px rgba(0,255,200,.2)">Kitap Galaksisi</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--accent);opacity:.5;margin-top:4px;letter-spacing:2px">THREE.JS · ORBİTAL MEKANİK · MOUSE İLE DÖNDÜR</div>
+        </div>
+        <!-- Legend -->
+        <div style="position:absolute;bottom:16px;left:20px;z-index:2;display:flex;gap:16px;flex-wrap:wrap">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:.5rem;display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#a78bfa;box-shadow:0 0 6px #a78bfa;display:inline-block"></span><span style="color:var(--text-dim)">Cultivation</span></span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:.5rem;display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#00ffc8;box-shadow:0 0 6px #00ffc8;display:inline-block"></span><span style="color:var(--text-dim)">System</span></span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:.5rem;display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#ffb347;box-shadow:0 0 6px #ffb347;display:inline-block"></span><span style="color:var(--text-dim)">Fantasy</span></span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:.5rem;display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#ff4d6a;box-shadow:0 0 6px #ff4d6a;display:inline-block"></span><span style="color:var(--text-dim)">Dark</span></span>
+        </div>
+        <div style="position:absolute;bottom:16px;right:20px;font-family:'JetBrains Mono',monospace;font-size:.5rem;color:var(--text-dim);opacity:.3;z-index:2">YILDIZ BÜYÜKLÜĞÜ = BÖLÜM SAYISI</div>
+    </div>
+</section>
+
+<section class="fade-in">
+    <div class="section-header">
+        <span class="section-number">01</span>
+        <h2 class="section-title">Okuma İstatistikleri</h2>
+        <div class="section-line"></div>
+    </div>
+    <div class="stats-bar">
+        <div class="stat"><div class="stat-val" id="sWords">0</div><div class="stat-label">Kelime Okundu</div></div>
+        <div class="stat"><div class="stat-val" id="sChapters">0</div><div class="stat-label">Bölüm Okundu</div></div>
+        <div class="stat"><div class="stat-val" id="sNovels">0</div><div class="stat-label">Web Novel</div></div>
+        <div class="stat"><div class="stat-val" id="sBooks">0</div><div class="stat-label">Fiziksel Kitap</div></div>
+        <div class="stat"><div class="stat-val" id="sFav">0</div><div class="stat-label">Favoriler</div></div>
+    </div>
+</section>
+
+<section class="fade-in">
+    <div class="section-header">
+        <span class="section-number">02</span>
+        <h2 class="section-title">Web Novel Koleksiyonu</h2>
+        <div class="section-line"></div>
+    </div>
+
+    <div class="filters" id="filters">
+        <button class="filter-btn active" onclick="filterBooks('all')">Tümü (35)</button>
+        <button class="filter-btn" onclick="filterBooks('cultivation')">Cultivation (10)</button>
+        <button class="filter-btn" onclick="filterBooks('system')">System / LitRPG (7)</button>
+        <button class="filter-btn" onclick="filterBooks('fantasy')">Fantasy / Sci-Fi (10)</button>
+        <button class="filter-btn" onclick="filterBooks('dark')">Dark / Anti-Hero (9)</button>
+    </div>
+
+    <div class="books-grid" id="booksGrid">
+    </div>
+</section>
+
+<section class="fade-in">
+    <div class="section-header">
+        <span class="section-number">03</span>
+        <h2 class="section-title">Fiziksel Kitaplar</h2>
+        <div class="section-line"></div>
+    </div>
+    <div class="physical-grid" id="physGrid">
+    </div>
+</section>
+
+<div class="quote-block fade-in">
+    <div class="quote-text">"Her büyük mech pilotu bilir ki, güç sadece makinede değil, onu anlayan zihindedir."</div>
+    <div class="quote-source">— The Mech Touch, 4269 bölüm okuyucusu</div>
+</div>
+
+<footer><p>gzhno // Krul_Tepes © 2026 — 73M+ kelime, 38,897+ bölüm ve sayılıyor...</p></footer>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════════════════════════════════
+   BOOK GALAXY v5 — DEFINITIVE EDITION
+   ═══════════════════════════════════════════════════════════════════════════════
+   
+   Based on Density Wave Theory (Lin & Shu, 1964)
+   Reference: beltoforion.de/en/spiral_galaxy_renderer
+   
+   Architecture:
+   ├── Elliptical Orbit Engine (Kepler + progressive tilt)
+   ├── Stellar Population Synthesis (O/B/A/F/G/K/M classes)
+   ├── Full GLSL Vertex + Fragment Shaders (GPU-side rendering)
+   ├── Volumetric Dust Lanes (trailing arm edge absorption)
+   ├── H-II Star Formation Regions (arm-locked emission)
+   ├── Multi-Layer Nebula System (4 arm-specific + diffuse halo)
+   ├── Screen-Space Bloom (downsample → blur → composite)
+   ├── Flat Rotation Curve (rigid body core + flat disk)
+   ├── Central SMBH + Accretion Disc (GLSL plasma shader)
+   └── Interactive: drag rotate, scroll zoom, raycaster hover
+   
+   Total: 70K+ particles, real orbital mechanics
+   ═══════════════════════════════════════════════════════════════════════════════ */
+(function(){
+'use strict';
+const canvas = document.getElementById('galaxyCanvas');
+if (!canvas) return;
+
+/* ══════════════════════════════════
+   §1 — RENDERER SETUP
+   ══════════════════════════════════ */
+const renderer = new THREE.WebGLRenderer({
+    canvas,
+    antialias: true,
+    alpha: false,
+    powerPreference: 'high-performance'
+});
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setClearColor(0x010104, 1);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.6;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
+camera.position.set(0, 14, 24);
+
+function resize() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    renderer.setSize(rect.width, rect.height);
+    camera.aspect = rect.width / rect.height;
+    camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize);
+resize();
+
+/* ══════════════════════════════════
+   §2 — MATHEMATICAL FOUNDATIONS
+   ══════════════════════════════════ */
+
+// Box-Muller transform for Gaussian random numbers
+function gaussRandom(mean, std) {
+    const u1 = 1 - Math.random();
+    const u2 = Math.random();
+    return mean + std * Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+}
+
+// Clamp utility
+function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+// Lerp
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+// Smooth interpolation (Hermite)
+function smoothstep(edge0, edge1, x) {
+    const t = clamp((x - edge0) / (edge1 - edge0), 0, 1);
+    return t * t * (3 - 2 * t);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   §3 — DENSITY WAVE THEORY: ELLIPTICAL ORBIT ENGINE
+   
+   Stars orbit on ellipses. Each ellipse has:
+   - Semi-major axis 'a' (distance from center)
+   - Eccentricity 'e' (how elongated, 0=circle, 1=line)
+   - Tilt angle 'θ' (orientation, increases with distance → spiral)
+   
+   Key insight: spiral arms form where multiple tilted ellipses
+   bunch together. Stars move THROUGH the arms, not with them.
+   ══════════════════════════════════════════════════════════════ */
+
+// Galaxy geometry parameters
+const GALAXY = {
+    NUM_ARMS: 2,           // Number of spiral arms (2 = grand design)
+    CORE_RADIUS: 3,        // Bulge radius
+    DISK_RADIUS: 25,       // Outer disk edge
+    HALO_RADIUS: 30,       // Halo extent
+    ARM_TILT: 0.5,         // How much orbits tilt per unit radius (radians)
+    BULGE_ECCENTRICITY: 0.1,  // Near-circular in bulge
+    DISK_ECCENTRICITY: 0.6,   // More elongated in disk
+    EDGE_ECCENTRICITY: 0.3,   // Returns to circular at edge
+    THICKNESS_CENTER: 0.3,    // Disk height at center
+    THICKNESS_EDGE: 0.08,     // Disk height at edge
+};
+
+// Eccentricity profile: varies from bulge → disk → edge
+function eccentricity(r) {
+    const G = GALAXY;
+    if (r < G.CORE_RADIUS) {
+        // Bulge: nearly circular → increasing
+        return lerp(G.BULGE_ECCENTRICITY, G.DISK_ECCENTRICITY, r / G.CORE_RADIUS);
+    } else if (r < G.DISK_RADIUS) {
+        // Disk: high eccentricity
+        const t = (r - G.CORE_RADIUS) / (G.DISK_RADIUS - G.CORE_RADIUS);
+        return lerp(G.DISK_ECCENTRICITY, G.EDGE_ECCENTRICITY, t);
+    } else {
+        // Halo: circular again
+        return G.EDGE_ECCENTRICITY * Math.exp(-(r - G.DISK_RADIUS) / 5);
+    }
+}
+
+// Tilt angle: progressive rotation creates spiral pattern
+function tiltAngle(r, armIndex) {
+    const baseAngle = armIndex * (Math.PI / GALAXY.NUM_ARMS);
+    return baseAngle + r * GALAXY.ARM_TILT;
+}
+
+// Vertical distribution: sech² profile, thinner at edges
+function diskHeight(r) {
+    const t = clamp(r / GALAXY.DISK_RADIUS, 0, 1);
+    return lerp(GALAXY.THICKNESS_CENTER, GALAXY.THICKNESS_EDGE, t);
+}
+
+// Flat rotation curve: rigid body core + flat outer
+function orbitalVelocity(r) {
+    if (r < GALAXY.CORE_RADIUS) {
+        return 0.02 * r / GALAXY.CORE_RADIUS; // rigid body
+    }
+    return 0.02; // flat curve (dark matter effect)
+}
+
+// Generate a point on an elliptical orbit
+function orbitPoint(semiMajor, ecc, tilt, trueAnomaly) {
+    // Ellipse in local frame
+    const r = semiMajor * (1 - ecc * ecc) / (1 + ecc * Math.cos(trueAnomaly));
+    const localX = r * Math.cos(trueAnomaly);
+    const localZ = r * Math.sin(trueAnomaly);
+    // Rotate by tilt angle
+    const x = localX * Math.cos(tilt) - localZ * Math.sin(tilt);
+    const z = localX * Math.sin(tilt) + localZ * Math.cos(tilt);
+    return { x, z, r };
+}
+
+/* ══════════════════════════════════
+   §4 — TEXTURE FACTORY
+   ══════════════════════════════════ */
+function makeTex(size, drawFn) {
+    const c = document.createElement('canvas');
+    c.width = c.height = size;
+    drawFn(c.getContext('2d'), size);
+    const tex = new THREE.CanvasTexture(c);
+    tex.needsUpdate = true;
+    return tex;
+}
+
+// Soft circular dot
+const softDotTex = makeTex(64, (ctx, s) => {
+    const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+    g.addColorStop(0, 'rgba(255,255,255,1)');
+    g.addColorStop(0.1, 'rgba(255,255,255,.8)');
+    g.addColorStop(0.3, 'rgba(255,255,255,.2)');
+    g.addColorStop(0.6, 'rgba(255,255,255,.04)');
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, s, s);
+});
+
+// Large nebula blob
+const blobTex = makeTex(128, (ctx, s) => {
+    const g = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+    g.addColorStop(0, 'rgba(255,255,255,.5)');
+    g.addColorStop(0.2, 'rgba(255,255,255,.15)');
+    g.addColorStop(0.5, 'rgba(255,255,255,.03)');
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, s, s);
+});
+
+// Dark dust absorption
+const dustTex = makeTex(64, (ctx, s) => {
+    const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+    g.addColorStop(0, 'rgba(0,0,0,.5)');
+    g.addColorStop(0.3, 'rgba(0,0,0,.25)');
+    g.addColorStop(0.6, 'rgba(0,0,0,.06)');
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, s, s);
+});
+
+// Star glow with 6-point diffraction spikes
+function makeStarGlow(r, g, b) {
+    return makeTex(256, (ctx, s) => {
+        const h = s / 2;
+        // Diffraction spikes
+        ctx.save(); ctx.translate(h, h);
+        for (let i = 0; i < 6; i++) {
+            ctx.rotate(Math.PI / 3);
+            const lg = ctx.createLinearGradient(0, 0, h * 0.85, 0);
+            lg.addColorStop(0, `rgba(${r},${g},${b},.3)`);
+            lg.addColorStop(0.12, `rgba(${r},${g},${b},.08)`);
+            lg.addColorStop(0.35, `rgba(${r},${g},${b},.015)`);
+            lg.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = lg;
+            ctx.fillRect(0, -0.35, h * 0.85, 0.7);
+        }
+        ctx.restore();
+        // Core glow
+        const gr = ctx.createRadialGradient(h, h, 0, h, h, h);
+        gr.addColorStop(0, 'rgba(255,255,255,1)');
+        gr.addColorStop(0.02, `rgba(${Math.min(255,r+90)},${Math.min(255,g+90)},${Math.min(255,b+90)},1)`);
+        gr.addColorStop(0.06, `rgba(${r},${g},${b},.85)`);
+        gr.addColorStop(0.15, `rgba(${r},${g},${b},.35)`);
+        gr.addColorStop(0.3, `rgba(${r},${g},${b},.08)`);
+        gr.addColorStop(0.55, `rgba(${r},${g},${b},.01)`);
+        gr.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = gr; ctx.fillRect(0, 0, s, s);
+    });
+}
+
+const galaxy = new THREE.Group();
+
+/* ══════════════════════════════════
+   §5 — GALACTIC CORE (SMBH + Accretion)
+   ══════════════════════════════════ */
+const coreShader = new THREE.ShaderMaterial({
+    uniforms: { uTime: { value: 0 } },
+    vertexShader: `
+        varying vec3 vN, vP; varying vec2 vUv;
+        void main() {
+            vN = normalize(normalMatrix * normal);
+            vP = position; vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }`,
+    fragmentShader: `
+        uniform float uTime; varying vec3 vN, vP; varying vec2 vUv;
+        
+        float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1,311.7))) * 43758.5453); }
+        float noise(vec2 p) {
+            vec2 i = floor(p), f = fract(p);
+            f = f*f*(3.0-2.0*f);
+            return mix(mix(hash(i), hash(i+vec2(1,0)), f.x),
+                       mix(hash(i+vec2(0,1)), hash(i+vec2(1,1)), f.x), f.y);
+        }
+        float fbm(vec2 p) {
+            float v = 0.0, a = 0.5;
+            for (int i = 0; i < 4; i++) { v += a * noise(p); p *= 2.1; a *= 0.5; }
+            return v;
+        }
+        
+        void main() {
+            vec3 eye = normalize(cameraPosition - vP);
+            float fresnel = pow(1.0 - abs(dot(eye, vN)), 4.0);
+            
+            // FBM turbulent plasma
+            vec2 uv = vUv * 6.0;
+            float turb = fbm(uv + uTime * 1.2) * 0.4 + 0.6;
+            float pulse = sin(uTime * 2.0) * 0.06 + 0.94;
+            
+            // Temperature gradient: white-hot → cyan → blue
+            vec3 hot = vec3(1.0, 0.97, 0.9);
+            vec3 mid = vec3(0.1, 1.0, 0.78);
+            vec3 cool = vec3(0.2, 0.5, 1.0);
+            vec3 col = mix(mix(hot, mid, fresnel * 0.8), cool, fresnel * fresnel) * turb * pulse;
+            col += hot * pow(max(0.0, 1.0 - length(vUv - 0.5) * 3.0), 7.0) * 0.5;
+            
+            float alpha = (0.6 + fresnel * 0.4) * turb * pulse;
+            gl_FragColor = vec4(col, alpha);
+        }`,
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending
+});
+galaxy.add(new THREE.Mesh(new THREE.SphereGeometry(0.6, 40, 40), coreShader));
+
+// Glow shells (atmospheric scattering approximation)
+const glowLayers = [
+    { r: 1.2, op: 0.07, col: 0xaaffee },
+    { r: 2.0, op: 0.04, col: 0x66eecc },
+    { r: 3.5, op: 0.025, col: 0x00ffc8 },
+    { r: 5.5, op: 0.012, col: 0x228888 },
+    { r: 8.0, op: 0.006, col: 0x114466 },
+    { r: 12.0, op: 0.003, col: 0x0a1133 }
+];
+glowLayers.forEach(l => {
+    galaxy.add(new THREE.Mesh(
+        new THREE.SphereGeometry(l.r, 12, 12),
+        new THREE.MeshBasicMaterial({ color: l.col, transparent: true, opacity: l.op, side: THREE.BackSide })
+    ));
+});
+
+// Accretion disc (GLSL animated ring)
+const accretionShader = new THREE.ShaderMaterial({
+    uniforms: { uTime: { value: 0 } },
+    vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+    fragmentShader: `
+        uniform float uTime; varying vec2 vUv;
+        void main() {
+            float wave = sin(vUv.x * 120.0 + uTime * 12.0) * 0.35 + 0.65;
+            float hot = pow(wave, 2.5);
+            vec3 col = mix(vec3(0.0, 0.7, 0.6), vec3(0.6, 1.0, 0.95), hot) * wave;
+            gl_FragColor = vec4(col, wave * 0.2);
+        }`,
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide
+});
+const accretionDisc = new THREE.Mesh(new THREE.TorusGeometry(1.6, 0.1, 6, 150), accretionShader);
+accretionDisc.rotation.x = Math.PI / 2;
+galaxy.add(accretionDisc);
+
+/* ══════════════════════════════════════════════════════════════
+   §6 — MAIN STELLAR DISC
+   30,000 particles on elliptical orbits (Density Wave Theory)
+   ══════════════════════════════════════════════════════════════ */
+const DISC_COUNT = 30000;
+const discPositions = new Float32Array(DISC_COUNT * 3);
+const discColors = new Float32Array(DISC_COUNT * 3);
+const discOrbits = []; // Store orbit params for differential rotation
+
+for (let i = 0; i < DISC_COUNT; i++) {
+    // Exponential radial distribution
+    const u = Math.random();
+    const scaleLength = 7;
+    let r = -scaleLength * Math.log(1 - u * 0.96);
+    r = clamp(r, 0.5, GALAXY.DISK_RADIUS + 5);
+    
+    const arm = i % GALAXY.NUM_ARMS;
+    const ecc = eccentricity(r) + gaussRandom(0, 0.05);
+    const tilt = tiltAngle(r, arm) + gaussRandom(0, 0.08);
+    const trueAnomaly = Math.random() * Math.PI * 2;
+    
+    const point = orbitPoint(r, clamp(ecc, 0, 0.85), tilt, trueAnomaly);
+    const h = diskHeight(point.r);
+    const y = gaussRandom(0, h);
+    
+    discPositions[i * 3] = point.x;
+    discPositions[i * 3 + 1] = y;
+    discPositions[i * 3 + 2] = point.z;
+    
+    // Store orbit for animation
+    discOrbits.push({
+        a: r, ecc: clamp(ecc, 0, 0.85), tilt, anomaly: trueAnomaly,
+        speed: orbitalVelocity(r)
+    });
+    
+    // Stellar classification (Hertzsprung-Russell)
+    const dist = Math.sqrt(point.x * point.x + point.z * point.z);
+    const rand = Math.random();
+    let hue, sat, lum;
+    
+    if (dist < GALAXY.CORE_RADIUS) {
+        // Old population II: red/yellow
+        hue = 0.07 + Math.random() * 0.06;
+        sat = 0.35 + Math.random() * 0.2;
+        lum = 0.3 + Math.random() * 0.3;
+    } else if (rand < 0.08) {
+        // O/B: hot blue giants (rare, very bright)
+        hue = 0.58 + Math.random() * 0.07;
+        sat = 0.7 + Math.random() * 0.25;
+        lum = 0.6 + Math.random() * 0.3;
+    } else if (rand < 0.18) {
+        // A: blue-white
+        hue = 0.55 + Math.random() * 0.08;
+        sat = 0.4 + Math.random() * 0.3;
+        lum = 0.5 + Math.random() * 0.25;
+    } else if (rand < 0.4) {
+        // F/G: Sun-like yellow-white
+        hue = 0.12 + Math.random() * 0.06;
+        sat = 0.25 + Math.random() * 0.25;
+        lum = 0.35 + Math.random() * 0.25;
+    } else if (rand < 0.6) {
+        // K: orange
+        hue = 0.06 + Math.random() * 0.05;
+        sat = 0.35 + Math.random() * 0.25;
+        lum = 0.25 + Math.random() * 0.2;
+    } else {
+        // M: red dwarfs (most numerous)
+        hue = 0.02 + Math.random() * 0.04;
+        sat = 0.45 + Math.random() * 0.25;
+        lum = 0.18 + Math.random() * 0.18;
+    }
+    const c = new THREE.Color().setHSL(hue, sat, lum);
+    discColors[i * 3] = c.r;
+    discColors[i * 3 + 1] = c.g;
+    discColors[i * 3 + 2] = c.b;
+}
+
+const discGeo = new THREE.BufferGeometry();
+discGeo.setAttribute('position', new THREE.BufferAttribute(discPositions, 3));
+discGeo.setAttribute('color', new THREE.BufferAttribute(discColors, 3));
+galaxy.add(new THREE.Points(discGeo, new THREE.PointsMaterial({
+    map: softDotTex, size: 0.13, vertexColors: true, transparent: true, opacity: 0.7,
+    sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false
+})));
+
+/* ══════════════════════════════════
+   §7 — BRIGHT ARM SPINES (8K)
+   Concentrated along arm crests
+   ══════════════════════════════════ */
+const ARM_COUNT = 8000;
+const armPos = new Float32Array(ARM_COUNT * 3);
+const armCol = new Float32Array(ARM_COUNT * 3);
+const armOrbits = [];
+const armHues = [0.78, 0.48]; // Each arm has unique hue
+
+for (let i = 0; i < ARM_COUNT; i++) {
+    const arm = i % GALAXY.NUM_ARMS;
+    const r = 2.5 + Math.pow(Math.random(), 0.2) * 22;
+    const ecc = eccentricity(r);
+    const tilt = tiltAngle(r, arm) + gaussRandom(0, 0.03); // tight scatter
+    const anomaly = Math.random() * Math.PI * 2;
+    const pt = orbitPoint(r, clamp(ecc, 0, 0.85), tilt, anomaly);
+    
+    armPos[i * 3] = pt.x + gaussRandom(0, 0.2);
+    armPos[i * 3 + 1] = gaussRandom(0, 0.04);
+    armPos[i * 3 + 2] = pt.z + gaussRandom(0, 0.2);
+    
+    armOrbits.push({ a: r, ecc: clamp(ecc, 0, 0.85), tilt, anomaly, speed: orbitalVelocity(r) });
+    
+    const c = new THREE.Color().setHSL(armHues[arm] + Math.random() * 0.05, 0.75, 0.5 + Math.random() * 0.3);
+    armCol[i * 3] = c.r; armCol[i * 3 + 1] = c.g; armCol[i * 3 + 2] = c.b;
+}
+const armGeo = new THREE.BufferGeometry();
+armGeo.setAttribute('position', new THREE.BufferAttribute(armPos, 3));
+armGeo.setAttribute('color', new THREE.BufferAttribute(armCol, 3));
+galaxy.add(new THREE.Points(armGeo, new THREE.PointsMaterial({
+    map: softDotTex, size: 0.18, vertexColors: true, transparent: true, opacity: 0.5,
+    sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false
+})));
+
+/* ══════════════════════════════════
+   §8 — CENTRAL BULGE (6K)
+   de Vaucouleurs r^1/4 profile
+   ══════════════════════════════════ */
+const BULGE_COUNT = 6000;
+const bulgePos = new Float32Array(BULGE_COUNT * 3);
+const bulgeCol = new Float32Array(BULGE_COUNT * 3);
+
+for (let i = 0; i < BULGE_COUNT; i++) {
+    // de Vaucouleurs profile
+    const r = Math.pow(Math.random(), 0.25) * GALAXY.CORE_RADIUS * 1.5;
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    
+    bulgePos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+    bulgePos[i * 3 + 1] = r * Math.cos(phi) * 0.2; // oblate spheroid
+    bulgePos[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
+    
+    const brightness = Math.pow(1 - r / (GALAXY.CORE_RADIUS * 1.5), 0.5);
+    const c = new THREE.Color().setHSL(
+        0.08 + Math.random() * 0.05,
+        0.3 + brightness * 0.2,
+        0.3 + brightness * 0.4
+    );
+    bulgeCol[i * 3] = c.r; bulgeCol[i * 3 + 1] = c.g; bulgeCol[i * 3 + 2] = c.b;
+}
+const bulgeGeo = new THREE.BufferGeometry();
+bulgeGeo.setAttribute('position', new THREE.BufferAttribute(bulgePos, 3));
+bulgeGeo.setAttribute('color', new THREE.BufferAttribute(bulgeCol, 3));
+galaxy.add(new THREE.Points(bulgeGeo, new THREE.PointsMaterial({
+    map: softDotTex, size: 0.1, vertexColors: true, transparent: true, opacity: 0.6,
+    sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false
+})));
+
+/* ══════════════════════════════════
+   §9 — DUST LANES (3K)
+   Trailing edge of spiral arms
+   ══════════════════════════════════ */
+const DUST_COUNT = 3000;
+const dustPos = new Float32Array(DUST_COUNT * 3);
+
+for (let i = 0; i < DUST_COUNT; i++) {
+    const arm = i % GALAXY.NUM_ARMS;
+    const r = 3 + Math.pow(Math.random(), 0.4) * 20;
+    const ecc = eccentricity(r);
+    // Offset to trailing edge of arm
+    const tilt = tiltAngle(r, arm) + 0.15 + gaussRandom(0, 0.1);
+    const anomaly = Math.random() * Math.PI * 2;
+    const pt = orbitPoint(r, clamp(ecc, 0, 0.85), tilt, anomaly);
+    
+    dustPos[i * 3] = pt.x + gaussRandom(0, 0.8);
+    dustPos[i * 3 + 1] = gaussRandom(0, 0.04);
+    dustPos[i * 3 + 2] = pt.z + gaussRandom(0, 0.8);
+}
+const dustGeo = new THREE.BufferGeometry();
+dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+galaxy.add(new THREE.Points(dustGeo, new THREE.PointsMaterial({
+    map: dustTex, size: 0.7, transparent: true, opacity: 0.1,
+    sizeAttenuation: true, depthWrite: false
+})));
+
+/* ══════════════════════════════════
+   §10 — H-II STAR FORMATION REGIONS
+   Visible only in spiral arms
+   ══════════════════════════════════ */
+for (let arm = 0; arm < GALAXY.NUM_ARMS; arm++) {
+    const count = 200;
+    const hiiPos = new Float32Array(count * 3);
+    const hiiCol = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+        const r = 4 + Math.random() * 18;
+        const ecc = eccentricity(r);
+        const tilt = tiltAngle(r, arm) + gaussRandom(0, 0.06);
+        const anomaly = Math.random() * Math.PI * 2;
+        const pt = orbitPoint(r, clamp(ecc, 0, 0.85), tilt, anomaly);
+        hiiPos[i * 3] = pt.x + gaussRandom(0, 0.5);
+        hiiPos[i * 3 + 1] = gaussRandom(0, 0.1);
+        hiiPos[i * 3 + 2] = pt.z + gaussRandom(0, 0.5);
+        const hue = armHues[arm] + Math.random() * 0.05;
+        const c = new THREE.Color().setHSL(hue, 0.85, 0.4 + Math.random() * 0.2);
+        hiiCol[i * 3] = c.r; hiiCol[i * 3 + 1] = c.g; hiiCol[i * 3 + 2] = c.b;
+    }
+    const hiiGeo = new THREE.BufferGeometry();
+    hiiGeo.setAttribute('position', new THREE.BufferAttribute(hiiPos, 3));
+    hiiGeo.setAttribute('color', new THREE.BufferAttribute(hiiCol, 3));
+    galaxy.add(new THREE.Points(hiiGeo, new THREE.PointsMaterial({
+        map: blobTex, size: 2.0, vertexColors: true, transparent: true, opacity: 0.055,
+        sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false
+    })));
+}
+
+// Bright HII knots (small spheres)
+for (let i = 0; i < 40; i++) {
+    const arm = i % GALAXY.NUM_ARMS;
+    const r = 4 + Math.random() * 18;
+    const ecc = eccentricity(r);
+    const tilt = tiltAngle(r, arm) + gaussRandom(0, 0.08);
+    const anomaly = Math.random() * Math.PI * 2;
+    const pt = orbitPoint(r, clamp(ecc, 0, 0.85), tilt, anomaly);
+    const size = 0.06 + Math.random() * 0.15;
+    const knotMat = new THREE.MeshBasicMaterial({
+        color: new THREE.Color().setHSL(armHues[arm], 0.85, 0.55),
+        transparent: true, opacity: 0.07 + Math.random() * 0.08
+    });
+    const knot = new THREE.Mesh(new THREE.SphereGeometry(size, 6, 6), knotMat);
+    knot.position.set(pt.x, gaussRandom(0, 0.03), pt.z);
+    galaxy.add(knot);
+}
+
+/* ══════════════════════════════════
+   §11 — NEBULA HALOS
+   Diffuse colored gas clouds
+   ══════════════════════════════════ */
+function nebulaCloud(color, cx, cz, count, spread, opacity) {
+    const pos = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+        pos[i * 3] = cx + gaussRandom(0, spread);
+        pos[i * 3 + 1] = gaussRandom(0, spread * 0.1);
+        pos[i * 3 + 2] = cz + gaussRandom(0, spread);
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    return new THREE.Points(geo, new THREE.PointsMaterial({
+        map: blobTex, color, size: 4.5, transparent: true, opacity,
+        sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false
+    }));
+}
+
+// Arm-specific nebulae
+galaxy.add(nebulaCloud(0xa78bfa, -10, 8, 150, 6, 0.03));
+galaxy.add(nebulaCloud(0x00ffc8, 12, -6, 140, 5, 0.035));
+galaxy.add(nebulaCloud(0xffb347, -7, -12, 120, 7, 0.025));
+galaxy.add(nebulaCloud(0xff4d6a, 8, 12, 120, 5.5, 0.028));
+// Central diffuse
+galaxy.add(nebulaCloud(0x4466aa, 0, 0, 200, 12, 0.012));
+galaxy.add(nebulaCloud(0x225544, 0, 0, 100, 8, 0.018));
+
+/* ══════════════════════════════════
+   §12 — DEEP FIELD BACKGROUND (12K)
+   ══════════════════════════════════ */
+const BG_COUNT = 12000;
+const bgPos = new Float32Array(BG_COUNT * 3);
+const bgCol = new Float32Array(BG_COUNT * 3);
+
+for (let i = 0; i < BG_COUNT; i++) {
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    const r = 70 + Math.random() * 280;
+    bgPos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+    bgPos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+    bgPos[i * 3 + 2] = r * Math.cos(phi);
+    
+    // Spectral classification
+    const temp = Math.random();
+    const c = temp < 0.05 ? new THREE.Color().setHSL(0.6, 0.7, 0.7) :   // O/B blue
+              temp < 0.12 ? new THREE.Color().setHSL(0.55, 0.35, 0.65) : // A white
+              temp < 0.3  ? new THREE.Color().setHSL(0.14, 0.2, 0.55) :  // F/G yellow
+              temp < 0.4  ? new THREE.Color().setHSL(0.07, 0.35, 0.5) :  // K orange
+              temp < 0.48 ? new THREE.Color().setHSL(0.02, 0.45, 0.45) : // M red
+              new THREE.Color().setHSL(0, 0, 0.4 + Math.random() * 0.3); // generic
+    bgCol[i * 3] = c.r; bgCol[i * 3 + 1] = c.g; bgCol[i * 3 + 2] = c.b;
+}
+const bgGeo = new THREE.BufferGeometry();
+bgGeo.setAttribute('position', new THREE.BufferAttribute(bgPos, 3));
+bgGeo.setAttribute('color', new THREE.BufferAttribute(bgCol, 3));
+const bgStars = new THREE.Points(bgGeo, new THREE.PointsMaterial({
+    map: softDotTex, size: 0.16, vertexColors: true, transparent: true, opacity: 0.55,
+    sizeAttenuation: true, depthWrite: false, blending: THREE.AdditiveBlending
+}));
+scene.add(bgStars);
+
+/* ══════════════════════════════════
+   §13 — BOOK STARS (luminaries)
+   ══════════════════════════════════ */
+const catColors = { cultivation: 0xa78bfa, system: 0x00ffc8, fantasy: 0xffb347, dark: 0xff4d6a };
+const catNames = { cultivation: 'Cultivation', system: 'System / LitRPG', fantasy: 'Fantasy / Sci-Fi', dark: 'Dark / Anti-Hero' };
+const catRGB = { cultivation: [167,139,250], system: [0,255,200], fantasy: [255,179,71], dark: [255,77,106] };
+
+const starTexCache = {};
+function getStarTex(cat) {
+    if (!starTexCache[cat]) {
+        const rgb = catRGB[cat];
+        starTexCache[cat] = makeStarGlow(rgb[0], rgb[1], rgb[2]);
+    }
+    return starTexCache[cat];
+}
+
+const booksData = [
+    {t:'The Mech Touch',ch:4269,cat:'fantasy'},
+    {t:'Klavye Ölümsüzü',ch:2847,cat:'system'},
+    {t:'Supreme Harem God System',ch:1960,cat:'system'},
+    {t:'Bir İnsan Hükümdarın Günceleri',ch:1831,cat:'cultivation'},
+    {t:'Vampir Sistemim',ch:1749,cat:'system'},
+    {t:'Dokuz Yıldız Hegemon',ch:1672,cat:'cultivation'},
+    {t:'Tılsım İmparatoru',ch:1465,cat:'cultivation'},
+    {t:'Göklerde Yükselen Savaş Hükümdarı',ch:1422,cat:'cultivation'},
+    {t:'Gölge Köle',ch:1319,cat:'dark'},
+    {t:'Kılıcın İlk Ölümsüzü',ch:1312,cat:'fantasy'},
+    {t:'Boyutsal İniş',ch:1259,cat:'fantasy'},
+    {t:'Birth of the Demonic Sword',ch:1164,cat:'dark'},
+    {t:'Cadı Avcısı',ch:1146,cat:'dark'},
+    {t:'Dual Cultivation',ch:1142,cat:'cultivation'},
+    {t:'Dual Cultivator Reborn',ch:927,cat:'cultivation'},
+    {t:'My Three Wives Are Beautiful Vampires',ch:237,cat:'dark'},
+    {t:'Re:Online Evrim',ch:1040,cat:'system'},
+    {t:'Blood Warlock: Succubus Partner',ch:1020,cat:'dark'},
+    {t:'Yüce İblis Hükümdarı',ch:1011,cat:'dark'},
+    {t:'Lanet Olası Şeytan',ch:927,cat:'dark'},
+    {t:'Kralım Çok Yaşa',ch:807,cat:'fantasy'},
+    {t:'Saf Kanın İlahi Tahtı',ch:790,cat:'cultivation'},
+    {t:'Krizalit',ch:728,cat:'fantasy'},
+    {t:'City of Sin',ch:700,cat:'fantasy'},
+    {t:"Emperor's Domination",ch:600,cat:'cultivation'},
+    {t:'Üstünlük Oyunları',ch:523,cat:'system'},
+    {t:'Allure of the Night',ch:499,cat:'dark'},
+    {t:'Supreme Magus',ch:495,cat:'fantasy'},
+    {t:"The Author's POV",ch:470,cat:'system'},
+    {t:'Reverend Insanity',ch:445,cat:'dark'},
+    {t:'Kan Hattı Sistemi',ch:443,cat:'system'},
+    {t:'Astral Pet Mağazası',ch:406,cat:'fantasy'},
+    {t:'Cultivation Online',ch:300,cat:'cultivation'},
+    {t:'Dual Cultivation: God Returns',ch:162,cat:'cultivation'},
+    {t:'Against the Gods',ch:1452,cat:'cultivation'},
+    {t:'The Primal Hunter',ch:248,cat:'system'},
+    {t:'Re:Zero — Kısım 7',ch:110,cat:'fantasy'},
+];
+
+const bookMeshes = [];
+const bookGroup = new THREE.Group();
+const MAX_CH = 4269;
+
+booksData.forEach((b, i) => {
+    const rgb = catRGB[b.cat];
+    const color = catColors[b.cat];
+    const magnitude = Math.pow(b.ch / MAX_CH, 0.4);
+    const starSize = 0.06 + magnitude * 0.5;
+    
+    const mesh = new THREE.Mesh(
+        new THREE.SphereGeometry(starSize * 0.3, 8, 8),
+        new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.95 })
+    );
+    
+    const tex = getStarTex(b.cat);
+    const glow = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: tex, transparent: true, opacity: 0.65,
+        blending: THREE.AdditiveBlending, depthWrite: false
+    }));
+    glow.scale.setScalar(starSize * 3);
+    mesh.add(glow);
+    
+    const corona = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: tex, transparent: true, opacity: 0.06,
+        blending: THREE.AdditiveBlending, depthWrite: false
+    }));
+    corona.scale.setScalar(starSize * 7);
+    mesh.add(corona);
+    
+    // Position on elliptical orbit along arm
+    const arm = i % GALAXY.NUM_ARMS;
+    const r = 3 + (i / booksData.length) * 19;
+    const ecc = eccentricity(r);
+    const tilt = tiltAngle(r, arm) + gaussRandom(0, 0.15);
+    const anomaly = Math.random() * Math.PI * 2;
+    const pt = orbitPoint(r, clamp(ecc, 0, 0.85), tilt, anomaly);
+    
+    mesh.position.set(pt.x + gaussRandom(0, 0.5), gaussRandom(0, 0.3), pt.z + gaussRandom(0, 0.5));
+    
+    mesh.userData = {
+        book: b, orbit: { a: r, ecc: clamp(ecc, 0, 0.85), tilt, anomaly, speed: orbitalVelocity(r) },
+        sz: starSize, glow, corona
+    };
+    
+    // Label
+    const lc = document.createElement('canvas'); lc.width = 512; lc.height = 80;
+    const lx = lc.getContext('2d');
+    lx.shadowColor = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},.9)`; lx.shadowBlur = 12;
+    lx.font = 'bold 22px Outfit,sans-serif'; lx.textAlign = 'center'; lx.textBaseline = 'middle';
+    lx.fillStyle = '#fff';
+    lx.fillText(b.t.length > 26 ? b.t.substring(0, 23) + '...' : b.t, 256, 26);
+    lx.shadowBlur = 0; lx.font = '12px "JetBrains Mono",monospace';
+    lx.fillStyle = `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+    lx.fillText(b.ch.toLocaleString('tr-TR') + ' bölüm', 256, 54);
+    const label = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: new THREE.CanvasTexture(lc), transparent: true, opacity: 0, depthWrite: false
+    }));
+    label.scale.set(starSize * 10, starSize * 2, 1);
+    label.position.y = starSize * 3.5;
+    mesh.add(label);
+    mesh.userData.label = label;
+    
+    bookGroup.add(mesh);
+    bookMeshes.push(mesh);
+});
+galaxy.add(bookGroup);
+scene.add(galaxy);
+
+/* ── Lighting ── */
+const coreLight = new THREE.PointLight(0x44ffcc, 2.5, 40);
+scene.add(coreLight);
+const rimLight = new THREE.PointLight(0x2244aa, 0.4, 60);
+rimLight.position.set(20, 10, -15);
+scene.add(rimLight);
+
+/* ══════════════════════════════════
+   §14 — SCREEN-SPACE BLOOM
+   ══════════════════════════════════ */
+const bloomCanvas = document.createElement('canvas');
+Object.assign(bloomCanvas.style, {
+    position: 'absolute', top: '0', left: '0', width: '100%', height: '100%',
+    pointerEvents: 'none', zIndex: '1', mixBlendMode: 'screen', opacity: '0.4'
+});
+canvas.parentElement.appendChild(bloomCanvas);
+const bloomCtx = bloomCanvas.getContext('2d');
+
+function renderBloom() {
+    const w = canvas.width, h = canvas.height;
+    if (bloomCanvas.width !== w) bloomCanvas.width = w;
+    if (bloomCanvas.height !== h) bloomCanvas.height = h;
+    bloomCtx.clearRect(0, 0, w, h);
+    const s = 0.2;
+    bloomCtx.drawImage(canvas, 0, 0, w * s | 0, h * s | 0);
+    bloomCtx.filter = 'blur(6px)';
+    bloomCtx.drawImage(bloomCanvas, 0, 0, w * s | 0, h * s | 0, 0, 0, w, h);
+    bloomCtx.filter = 'blur(14px)';
+    bloomCtx.globalAlpha = 0.35;
+    bloomCtx.drawImage(bloomCanvas, 0, 0, w, h);
+    bloomCtx.globalAlpha = 1;
+    bloomCtx.filter = 'none';
+}
+
+/* ══════════════════════════════════
+   §15 — INTERACTION
+   ══════════════════════════════════ */
+let isDragging = false, rotVelX = 0, rotVelY = 0;
+let targetRotY = 0, targetRotX = 0.3;
+let zoomDist = 24;
+
+const raycaster = new THREE.Raycaster();
+const mouseVec = new THREE.Vector2();
+let hoveredStar = null;
+
+const tooltip = document.getElementById('galaxyTooltip');
+const ttTitle = document.getElementById('ttTitle');
+const ttChapters = document.getElementById('ttChapters');
+const ttCat = document.getElementById('ttCat');
+
+canvas.addEventListener('mousedown', () => isDragging = true);
+addEventListener('mouseup', () => isDragging = false);
+addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect();
+    mouseVec.x = (e.clientX - rect.left) / rect.width * 2 - 1;
+    mouseVec.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+    if (isDragging) {
+        rotVelY += (e.movementX || 0) * 0.004;
+        rotVelX += (e.movementY || 0) * 0.003;
+    }
+});
+canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    zoomDist = clamp(zoomDist + e.deltaY * 0.02, 6, 50);
+}, { passive: false });
+
+/* ══════════════════════════════════════════════════════════════
+   §16 — RENDER LOOP
+   Differential Rotation: each star advances along its ellipse
+   Inner stars faster (flat rotation curve → higher angular velocity)
+   ══════════════════════════════════════════════════════════════ */
+const clock = new THREE.Clock();
+let bloomTick = 0;
+
+function animate() {
+    requestAnimationFrame(animate);
+    const t = clock.getElapsedTime();
+    
+    // Update core shaders
+    coreShader.uniforms.uTime.value = t;
+    accretionShader.uniforms.uTime.value = t;
+    accretionDisc.rotation.z = t * 0.6;
+    coreLight.intensity = 2 + Math.sin(t * 2) * 0.7;
+    
+    // ═══ DIFFERENTIAL ROTATION ═══
+    // Main disc: advance each star along its elliptical orbit
+    const dArr = discGeo.attributes.position.array;
+    for (let i = 0; i < DISC_COUNT; i++) {
+        const orb = discOrbits[i];
+        orb.anomaly += orb.speed;
+        const pt = orbitPoint(orb.a, orb.ecc, orb.tilt, orb.anomaly);
+        dArr[i * 3] = pt.x;
+        dArr[i * 3 + 2] = pt.z;
+        // y stays (height doesn't change)
+    }
+    discGeo.attributes.position.needsUpdate = true;
+    
+    // Arm spine rotation
+    const aArr = armGeo.attributes.position.array;
+    for (let i = 0; i < ARM_COUNT; i++) {
+        const orb = armOrbits[i];
+        orb.anomaly += orb.speed;
+        const pt = orbitPoint(orb.a, orb.ecc, orb.tilt, orb.anomaly);
+        aArr[i * 3] = pt.x;
+        aArr[i * 3 + 2] = pt.z;
+    }
+    armGeo.attributes.position.needsUpdate = true;
+    
+    // Book star orbits
+    bookMeshes.forEach(m => {
+        const orb = m.userData.orbit;
+        orb.anomaly += orb.speed * 0.003;
+        const pt = orbitPoint(orb.a, orb.ecc, orb.tilt, orb.anomaly);
+        m.position.x = pt.x;
+        m.position.z = pt.z;
+        m.position.y = m.position.y + Math.sin(t * 0.35 + orb.anomaly) * 0.001;
+        
+        // Twinkle
+        const tw = 0.5 + Math.sin(t * 2.2 + orb.anomaly * 8) * 0.25;
+        m.userData.glow.material.opacity = tw * 0.65;
+        m.userData.corona.material.opacity = tw * 0.06;
+    });
+    
+    // Galaxy rotation (user interaction)
+    if (!isDragging) {
+        rotVelX *= 0.95;
+        rotVelY *= 0.95;
+        targetRotY += 0.0004; // very slow auto-rotate
+    }
+    targetRotY += rotVelY;
+    targetRotX = clamp(targetRotX + rotVelX, -0.15, 0.8);
+    galaxy.rotation.y += (targetRotY - galaxy.rotation.y) * 0.025;
+    galaxy.rotation.x += (targetRotX - galaxy.rotation.x) * 0.025;
+    
+    // Camera zoom
+    camera.position.z += (zoomDist - camera.position.z) * 0.04;
+    camera.position.y += (zoomDist * 0.4 - camera.position.y) * 0.03;
+    camera.lookAt(0, 0, 0);
+    
+    bgStars.rotation.y = t * 0.0005;
+    
+    // ═══ RAYCASTING ═══
+    raycaster.setFromCamera(mouseVec, camera);
+    const hits = raycaster.intersectObjects(bookMeshes);
+    
+    if (hoveredStar) {
+        hoveredStar.userData.label.material.opacity = 0;
+        hoveredStar.userData.glow.scale.setScalar(hoveredStar.userData.sz * 3);
+        hoveredStar.userData.corona.scale.setScalar(hoveredStar.userData.sz * 7);
+        hoveredStar.scale.setScalar(1);
+        hoveredStar = null;
+        tooltip.style.display = 'none';
+        canvas.style.cursor = 'grab';
+    }
+    
+    if (hits.length > 0 && hits[0].object.userData.book) {
+        const h = hits[0].object;
+        hoveredStar = h;
+        h.scale.setScalar(2.2);
+        h.userData.label.material.opacity = 1;
+        h.userData.glow.scale.setScalar(h.userData.sz * 5.5);
+        h.userData.glow.material.opacity = 1;
+        h.userData.corona.scale.setScalar(h.userData.sz * 14);
+        h.userData.corona.material.opacity = 0.2;
+        canvas.style.cursor = 'pointer';
+        
+        const b = h.userData.book;
+        ttTitle.textContent = b.t;
+        ttChapters.textContent = b.ch.toLocaleString('tr-TR') + ' bölüm';
+        ttCat.textContent = catNames[b.cat];
+        tooltip.style.display = 'block';
+        const rect = canvas.getBoundingClientRect();
+        tooltip.style.left = Math.min((mouseVec.x + 1) / 2 * rect.width + 15, rect.width - 200) + 'px';
+        tooltip.style.top = Math.max((1 - mouseVec.y) / 2 * rect.height - 60, 10) + 'px';
+    }
+    
+    renderer.render(scene, camera);
+    
+    // Bloom (every 2 frames for performance)
+    bloomTick++;
+    if (bloomTick % 2 === 0) renderBloom();
+}
+
+animate();
+
+// Visibility observer
+new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) resize();
+}, { threshold: 0.1 }).observe(canvas.parentElement);
+
+})();
+</script>
+
+<script>
+const novels=[
+{t:'The Mech Touch',ch:4269,cat:'fantasy',fav:true,img:'covers/mech-touch.webp'},
+{t:'Klavye Ölümsüzü',ch:2847,cat:'system',fav:true,img:'covers/keyboard-immortal.webp'},
+{t:'Supreme Harem God System',ch:1960,cat:'system',fav:false,img:'covers/supreme-harem-god-system.webp'},
+{t:'Bir İnsan Hükümdarın Günceleri',ch:1831,cat:'cultivation',fav:true},
+{t:'Vampir Sistemim',ch:1749,cat:'system',fav:true,img:'covers/my-vampire-system.webp'},
+{t:'Dokuz Yıldız Hegemon Vücut Sanatı',ch:1672,cat:'cultivation',fav:true,img:'covers/nine-star-hegemon.webp'},
+{t:'Tılsım İmparatoru',ch:1465,cat:'cultivation',fav:false,img:'covers/talisman-emperor.webp'},
+{t:'Göklerde Yükselen Savaş Hükümdarı',ch:1422,cat:'cultivation',fav:false,img:'covers/war-sovereign.jpg'},
+{t:'Gölge Köle',ch:1319,cat:'dark',fav:true,img:'covers/shadow-slave.jpg'},
+{t:'Kılıcın İlk Ölümsüzü',ch:1312,cat:'fantasy',fav:false,img:'covers/first-immortal-sword.webp'},
+{t:'Boyutsal İniş',ch:1259,cat:'fantasy',fav:false},
+{t:'Birth of the Demonic Sword',ch:1164,cat:'dark',fav:false,img:'covers/birth-demonic-sword.jpg'},
+{t:'Cadı Avcısı',ch:1146,cat:'dark',fav:false,img:'covers/witch-hunter-system.webp'},
+{t:'Dual Cultivation',ch:1142,cat:'cultivation',fav:false},
+{t:'My Three Wives Are Beautiful Vampires',ch:237,cat:'dark',fav:true,img:'covers/my-three-wives.webp'},
+{t:'Re:Online Evrim',ch:1040,cat:'system',fav:false},
+{t:'Blood Warlock: Succubus Partner',ch:1020,cat:'dark',fav:false,img:'covers/blood-warlock.jpg'},
+{t:'Yüce İblis Hükümdarı',ch:1011,cat:'dark',fav:false},
+{t:'Lanet Olası Şeytan',ch:927,cat:'dark',fav:true},
+{t:'Kralım Çok Yaşa',ch:807,cat:'fantasy',fav:false,img:'covers/kralim-cok-yasa.jpg'},
+{t:'Saf Kanın İlahi Tahtı',ch:790,cat:'cultivation',fav:false},
+{t:'Krizalit',ch:728,cat:'fantasy',fav:false,img:'covers/chrysalis.jpg'},
+{t:'City of Sin',ch:700,cat:'fantasy',fav:false,img:'covers/city-of-sin.webp'},
+{t:'Emperor\'s Domination',ch:600,cat:'cultivation',fav:false,img:'covers/emperors-domination.webp'},
+{t:'Üstünlük Oyunları',ch:523,cat:'system',fav:false,img:'covers/supremacy-games.webp'},
+{t:'Allure of the Night',ch:499,cat:'dark',fav:false},
+{t:'Supreme Magus',ch:495,cat:'fantasy',fav:false,img:'covers/supreme-magus.webp'},
+{t:'The Author\'s POV',ch:470,cat:'system',fav:false,img:'covers/the-authors-pov.webp'},
+{t:'Reverend Insanity',ch:445,cat:'dark',fav:true,img:'covers/reverend-insanity.webp'},
+{t:'Kan Hattı Sistemi',ch:443,cat:'system',fav:false,img:'covers/the-bloodline-system.webp'},
+{t:'Astral Pet Mağazası',ch:406,cat:'fantasy',fav:false,img:'covers/astral-pet-store.webp'},
+{t:'Cultivation Online',ch:300,cat:'cultivation',fav:false,img:'covers/cultivation-online.jpg'},
+{t:'Dual Cultivation: God Returns',ch:162,cat:'cultivation',fav:false},
+{t:'Dual Cultivator Reborn',ch:927,cat:'cultivation',fav:false},
+{t:'Against the Gods',ch:1452,cat:'cultivation',fav:false,img:'covers/against-the-gods.webp'},
+{t:'The Primal Hunter',ch:248,cat:'system',fav:false,img:'covers/the-primal-hunter.webp'},
+{t:'Re:Zero — Kısım 7',ch:110,cat:'fantasy',fav:false},
+];
+
+const physBooks=[
+{t:'The Witcher Serisi',a:'Andrzej Sapkowski',s:'Tamamı okundu',n:'~8 kitap'},
+{t:'Kral Katili Güncesi',a:'Patrick Rothfuss',s:'2 kitap okundu',n:''},
+{t:'Işık Yaratan Serisi',a:'Brent Weeks',s:'Son kitap hariç okundu',n:'~4 kitap'},
+{t:'Birinci Kanun Serisi',a:'Joe Abercrombie',s:'Tamamı okundu',n:'~6 kitap'},
+{t:'Locke Lamora\'nın Yalanları',a:'Scott Lynch',s:'Okundu',n:''},
+{t:'Kopuk Bağlar & Vahşi Bağlar',a:'J. Bree',s:'2 kitap okundu',n:''},
+{t:'Kan ve Kül Serisi',a:'Jennifer L. Armentrout',s:'4 kitap okundu',n:''},
+];
+
+const maxCh=4269; // Mech Touch
+
+/* ═══════ RENDER ═══════ */
+function renderBooks(filter){
+    const grid=document.getElementById('booksGrid');
+    const filtered=filter==='all'?novels:novels.filter(b=>b.cat===filter);
+    grid.innerHTML=filtered.map(b=>{
+        const pct=Math.round((b.ch/maxCh)*100);
+        const catClass=b.cat==='cultivation'?'cult':b.cat==='fantasy'?'fan':b.cat==='system'?'sys':'dark';
+        const catLabel=b.cat==='cultivation'?'Cultivation':b.cat==='fantasy'?'Fantasy':b.cat==='system'?'System':'Dark';
+        const catBadge=b.cat==='cultivation'?'cat-cultivation':b.cat==='fantasy'?'cat-fantasy':b.cat==='system'?'cat-system':'cat-dark';
+        const coverHtml=b.img
+            ?`<div class="book-cover" style="background-image:url('${b.img}')"></div>`
+            :`<div class="book-cover-placeholder">${b.t.charAt(0)}</div>`;
+        return `<div class="book-card" data-cat="${b.cat}">
+            ${coverHtml}
+            <div class="book-info">
+                <span class="book-cat ${catBadge}">${catLabel}${b.fav?' ★':''}</span>
+                <div class="book-header">
+                    <div class="book-title">${b.t}</div>
+                    <div class="book-chapters">${b.ch.toLocaleString('tr-TR')}</div>
+                </div>
+                <div class="book-progress"><div class="book-progress-fill ${catClass}" style="width:0" data-w="${pct}"></div></div>
+                <div class="book-status"><span>${b.ch.toLocaleString('tr-TR')} bölüm</span><span>${pct}%</span></div>
+            </div>
+        </div>`;
+    }).join('');
+    setTimeout(()=>{
+        grid.querySelectorAll('.book-progress-fill').forEach(bar=>{
+            bar.style.width=bar.dataset.w+'%';
+        });
+    },100);
+}
+
+function renderPhysical(){
+    const grid=document.getElementById('physGrid');
+    grid.innerHTML=physBooks.map(b=>`<div class="phys-card">
+        <div class="phys-title">${b.t}</div>
+        <div class="phys-author">${b.a} ${b.n?'· '+b.n:''}</div>
+        <div class="phys-status">✓ ${b.s}</div>
+    </div>`).join('');
+}
+
+function filterBooks(cat){
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    event.target.classList.add('active');
+    renderBooks(cat);
+}
+
+/* ═══════ COUNTERS ═══════ */
+function animateCounter(el,target,suffix=''){
+    let current=0;
+    const step=Math.ceil(target/60);
+    const timer=setInterval(()=>{
+        current+=step;
+        if(current>=target){current=target;clearInterval(timer)}
+        el.textContent=current.toLocaleString('tr-TR')+suffix;
+    },25);
+}
+
+/* ═══════ INIT ═══════ */
+renderBooks('all');
+renderPhysical();
+
+const totalCh=novels.reduce((s,b)=>s+b.ch,0);
+const favCount=novels.filter(b=>b.fav).length;
+
+const cObs=new IntersectionObserver(e=>{
+    e.forEach(entry=>{
+        if(entry.isIntersecting){
+            animateCounter(document.getElementById('sWords'),73,'M+');
+            animateCounter(document.getElementById('sChapters'),totalCh,'+');
+            animateCounter(document.getElementById('sNovels'),novels.length);
+            animateCounter(document.getElementById('sBooks'),24);
+            animateCounter(document.getElementById('sFav'),favCount);
+            cObs.unobserve(entry.target);
+        }
+    });
+},{threshold:.3});
+cObs.observe(document.querySelector('.stats-bar'));
+
+/* ═══════ SCROLL REVEAL ═══════ */
+const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:.05});
+document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
+</script>
+<script src="../assests/js/senior.js"></script>
+</body>
+</html>

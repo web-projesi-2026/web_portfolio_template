@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rust Nedir? — Sipahi'nin Dili</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#08060c;--bg2:#0e0c14;--card:#12101c;--border:#1e1a30;--text:#e4e0f0;--dim:#4a4468;--rust:#ff6b35;--rust-dim:#ff6b3518;--rust-glow:#ff6b3540;--orange:#ff9a56;--crab:#ff8844;--green:#00ffc8;--red:#ff3355;--blue:#4da6ff}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;line-height:1.7;overflow-x:hidden}
+::selection{background:var(--rust);color:#fff}
+
+/* Rust-colored grid */
+body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,107,53,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,107,53,.03) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0}
+
+.container{max-width:1200px;margin:0 auto;padding:0 40px;position:relative;z-index:1}
+
+/* NAV */
+nav{padding:18px 32px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);background:rgba(8,6,12,.9)}
+.logo{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:700;color:var(--rust);text-decoration:none;letter-spacing:1px}
+.logo span{color:var(--dim);font-weight:300}
+.nav-links{display:flex;gap:24px}
+.nav-links a{color:var(--dim);text-decoration:none;font-size:.8rem;font-weight:500;letter-spacing:1px;text-transform:uppercase;transition:color .3s}
+.nav-links a:hover,.nav-links a.active{color:var(--rust)}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:100px 24px 60px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(255,107,53,.06) 0%,transparent 60%);pointer-events:none}
+
+.hero-content{text-align:center;position:relative;z-index:1}
+
+/* FERRIS IMAGE */
+.ferris-container{margin:0 auto 48px;position:relative;width:320px;height:220px}
+.ferris-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:400px;height:400px;background:radial-gradient(circle,var(--rust-glow),transparent 70%);animation:ferrisGlow 3s ease infinite;pointer-events:none}
+@keyframes ferrisGlow{0%,100%{opacity:.4;transform:translate(-50%,-50%) scale(1)}50%{opacity:.8;transform:translate(-50%,-50%) scale(1.15)}}
+.ferris-img{width:320px;height:auto;animation:ferrisFloat 4s ease-in-out infinite;filter:drop-shadow(0 20px 40px rgba(255,107,53,.25))}
+@keyframes ferrisFloat{0%,100%{transform:translateY(0) rotate(0deg)}25%{transform:translateY(-14px) rotate(1deg)}75%{transform:translateY(-6px) rotate(-1deg)}50%{transform:translateY(-16px)}}
+
+.hero-badge{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:3px;color:var(--rust);text-transform:uppercase;margin-bottom:20px;opacity:.7}
+.hero-title{font-size:clamp(2.8rem,7vw,5rem);font-weight:700;letter-spacing:-2px;line-height:1.05;margin-bottom:24px}
+.hero-title .r{color:var(--rust)}
+.hero-sub{font-size:1.15rem;color:var(--dim);max-width:600px;margin:0 auto 36px;line-height:1.9;font-weight:300}
+.hero-quote{font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--rust);opacity:.6;font-style:italic}
+
+/* SECTION */
+section{padding:80px 0}
+.section-marker{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:3px;color:var(--rust);text-transform:uppercase;opacity:.5;margin-bottom:16px}
+.section-title{font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:600;letter-spacing:-1px;margin-bottom:44px}
+
+/* FEATURE CARDS */
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.feat{background:var(--card);border:1px solid var(--border);padding:32px;transition:all .4s cubic-bezier(.16,1,.3,1);position:relative;overflow:hidden}
+.feat::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:3px;background:var(--rust);transform:scaleX(0);transform-origin:left;transition:transform .4s}
+.feat:hover{border-color:var(--rust-glow);transform:translateY(-4px)}
+.feat:hover::after{transform:scaleX(1)}
+.feat-icon{font-size:2.2rem;margin-bottom:16px}
+.feat-title{font-family:'JetBrains Mono',monospace;font-size:.95rem;font-weight:700;margin-bottom:10px}
+.feat-desc{font-size:.9rem;color:var(--dim);line-height:1.8}
+
+/* OWNERSHIP VISUALIZATION */
+.ownership-demo{background:var(--card);border:1px solid var(--border);padding:32px;margin-top:40px;position:relative;overflow:hidden}
+.ownership-demo::before{content:'';position:absolute;top:-50%;right:-30%;width:400px;height:400px;background:radial-gradient(circle,var(--rust-dim),transparent 70%);pointer-events:none}
+.code-block{background:#0a0816;border:1px solid var(--border);padding:24px;font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:2.2;margin:20px 0;overflow-x:auto;position:relative}
+.code-block .kw{color:var(--rust)}.code-block .fn{color:var(--orange)}.code-block .str{color:var(--green)}.code-block .cm{color:var(--dim)}.code-block .tp{color:var(--blue)}.code-block .num{color:#c792ea}
+
+/* WHY RUST STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:40px}
+.stat{background:var(--card);border:1px solid var(--border);padding:24px;text-align:center;transition:all .3s}
+.stat:hover{border-color:var(--rust-glow);transform:translateY(-2px)}
+.stat-num{font-family:'JetBrains Mono',monospace;font-size:2.2rem;font-weight:700;color:var(--rust)}
+.stat-label{font-size:.75rem;color:var(--dim);margin-top:6px;letter-spacing:.5px}
+
+/* COMPARE TABLE */
+.compare-table{width:100%;border-collapse:collapse;margin-top:24px;font-size:.8rem}
+.compare-table th{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);text-align:left;padding:14px 16px;border-bottom:1px solid var(--border)}
+.compare-table td{padding:14px 16px;border-bottom:1px solid rgba(30,26,48,.5)}
+.compare-table tr:hover td{background:rgba(255,107,53,.02)}
+.compare-table .lang{font-family:'JetBrains Mono',monospace;font-weight:600}
+.check{color:var(--green)}.cross{color:var(--red)}.partial{color:var(--orange)}
+
+/* USERS */
+.users-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:24px}
+.user-card{background:var(--card);border:1px solid var(--border);padding:20px;transition:all .3s}
+.user-card:hover{border-color:var(--rust-glow)}
+.user-icon{font-size:1.8rem;margin-bottom:10px}
+.user-name{font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:600;margin-bottom:6px}
+.user-desc{font-size:.8rem;color:var(--dim);line-height:1.7}
+
+/* TIMELINE */
+.rust-timeline{position:relative;padding-left:32px}
+.rust-timeline::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--rust),var(--orange),var(--green))}
+.rt-item{position:relative;margin-bottom:28px}
+.rt-item::before{content:'';position:absolute;left:-37px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--rust);border:2px solid var(--bg)}
+.rt-year{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--rust);letter-spacing:2px;margin-bottom:4px}
+.rt-text{font-size:.9rem;color:var(--dim);line-height:1.8}
+.rt-text strong{color:var(--text);font-weight:600}
+
+/* FERRIS SAYS */
+.ferris-says{background:var(--card);border:1px solid var(--border);padding:36px;margin-top:44px;display:flex;gap:28px;align-items:center}
+.ferris-mini{width:100px;flex-shrink:0}
+.ferris-mini img{width:100px;height:auto;filter:drop-shadow(0 8px 16px rgba(255,107,53,.2))}
+.ferris-quote{font-size:.95rem;color:var(--dim);line-height:2;font-style:italic}
+.ferris-quote strong{color:var(--rust);font-style:normal}
+
+/* CTA */
+.cta{text-align:center;padding:60px 0;position:relative}
+.cta::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:400px;height:400px;background:radial-gradient(circle,var(--rust-dim),transparent 70%);pointer-events:none}
+.cta-title{font-size:1.8rem;font-weight:700;margin-bottom:14px;position:relative}
+.cta-sub{color:var(--dim);font-size:.95rem;margin-bottom:32px;position:relative}
+.cta-btn{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:14px 32px;background:var(--rust);color:#fff;border:none;cursor:pointer;text-decoration:none;display:inline-block;transition:all .3s;letter-spacing:1px;position:relative}
+.cta-btn:hover{box-shadow:0 0 30px var(--rust-glow);transform:translateY(-2px)}
+
+footer{padding:32px 24px;border-top:1px solid var(--border);text-align:center}
+footer p{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--dim);letter-spacing:1px}
+
+/* ANIMATIONS */
+.fade-in{opacity:0;transform:translateY(20px);transition:all .8s cubic-bezier(.16,1,.3,1)}.fade-in.visible{opacity:1;transform:translateY(0)}
+
+@media(max-width:768px){
+    .features{grid-template-columns:1fr}
+    .stats-grid{grid-template-columns:1fr 1fr}
+    .ferris-says{flex-direction:column;text-align:center}
+    .users-grid{grid-template-columns:1fr}
+    nav{padding:14px 16px}
+    .nav-links{gap:14px}
+    .nav-links a{font-size:.6rem}
+}
+</style>
+</head>
+<body>
+
+<nav>
+    <a href="../index.html" class="logo">gzhno<span>_sec</span></a>
+    <div class="nav-links">
+        <a href="../index.html">Ana Sayfa</a>
+        <a href="project.html">Projeler</a>
+        <a href="rust.html" class="active">Rust</a>
+        <a href="scenario.html">Senaryo</a>
+        <a href="about.html">Hakkımda</a>
+        <a href="books.html">Kitaplık</a>
+        <a href="contact.html">İletişim</a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+    <div class="hero-content">
+        <div class="ferris-container">
+            <div class="ferris-glow"></div>
+            <img src="ferris.png" alt="Ferris - Rust Mascot" class="ferris-img">
+        </div>
+
+        <div class="hero-badge">Rust Programming Language Mascot — Ferris 🦀</div>
+        <h1 class="hero-title">Merhaba, ben <span class="r">Ferris!</span><br>Rust'ın dünyasına hoş geldin.</h1>
+        <p class="hero-sub">
+            Rust, performans, güvenilirlik ve üretkenliği bir arada sunan bir sistem programlama dilidir.
+            Bellek güvenliğini çöp toplayıcı olmadan garanti eder. Sipahi çekirdeği Rust ile yazılıyor — işte nedeni.
+        </p>
+        <div class="hero-quote">"Fearless concurrency. Zero-cost abstractions. Memory safety without garbage collection."</div>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- WHY RUST -->
+    <section class="fade-in">
+        <div class="section-marker">// 001 — Neden Rust?</div>
+        <h2 class="section-title">C/C++ Performansı, Modern Güvenlik</h2>
+
+        <div class="features">
+            <div class="feat">
+                <div class="feat-icon">🛡️</div>
+                <div class="feat-title">Bellek Güvenliği</div>
+                <div class="feat-desc">Ownership sistemi sayesinde null pointer, dangling reference ve buffer overflow derleme zamanında yakalanır. Runtime maliyeti sıfır.</div>
+            </div>
+            <div class="feat">
+                <div class="feat-icon">⚡</div>
+                <div class="feat-title">Sıfır Maliyetli Soyutlama</div>
+                <div class="feat-desc">Yüksek seviye soyutlamalar (iteratörler, trait'ler, generics) derlendikten sonra C kadar hızlı makine koduna dönüşür.</div>
+            </div>
+            <div class="feat">
+                <div class="feat-icon">🔒</div>
+                <div class="feat-title">Korkusuz Eşzamanlılık</div>
+                <div class="feat-desc">Ownership ve tip sistemi, data race'leri derleme zamanında engelleyerek güvenli çok iş parçacıklı programlama sağlar.</div>
+            </div>
+            <div class="feat">
+                <div class="feat-icon">📦</div>
+                <div class="feat-title">Cargo & Crates.io</div>
+                <div class="feat-desc">Dünyanın en sevilen paket yöneticisi. Bağımlılık yönetimi, derleme, test ve belgeleme tek araçla.</div>
+            </div>
+            <div class="feat">
+                <div class="feat-icon">🔧</div>
+                <div class="feat-title">no_std & Bare-Metal</div>
+                <div class="feat-desc">İşletim sistemi olmadan çalışır. Mikrodenetleyiciler, çekirdekler ve gömülü sistemler için ideal. Sipahi bu modda çalışıyor.</div>
+            </div>
+            <div class="feat">
+                <div class="feat-icon">🧪</div>
+                <div class="feat-title">Formal Doğrulama</div>
+                <div class="feat-desc">Kani model checker ile Rust kodu üzerinde matematiksel ispat yapılabilir. "Bu fonksiyon asla panic etmez" kanıtlanabilir.</div>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-grid">
+            <div class="stat"><div class="stat-num">#1</div><div class="stat-label">En Sevilen Dil (Stack Overflow 9 yıl)</div></div>
+            <div class="stat"><div class="stat-num">%70</div><div class="stat-label">Microsoft güvenlik açıkları bellek hatası</div></div>
+            <div class="stat"><div class="stat-num">0</div><div class="stat-label">Garbage Collector gereksinimi</div></div>
+            <div class="stat"><div class="stat-num">C≈</div><div class="stat-label">C/C++ seviyesinde performans</div></div>
+        </div>
+    </section>
+
+    <!-- OWNERSHIP -->
+    <section class="fade-in">
+        <div class="section-marker">// 002 — Ownership Sistemi</div>
+        <h2 class="section-title">Rust'ın Süper Gücü: Ownership</h2>
+
+        <p style="color:var(--dim);font-size:.95rem;line-height:1.9;margin-bottom:28px">
+            Rust'ın bellek güvenliğinin sırrı üç basit kurala dayanır: her değerin tek bir sahibi vardır,
+            aynı anda ya bir değiştirilebilir referans ya da birden fazla salt okunur referans olabilir,
+            ve referanslar her zaman geçerli olmalıdır.
+        </p>
+
+        <!-- OWNERSHIP ANIMATION -->
+        <div style="position:relative;width:100%;height:280px;background:#0a0816;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:28px">
+            <canvas id="ownerCanvas" style="width:100%;height:100%"></canvas>
+            <div style="position:absolute;top:12px;left:16px;font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--rust);letter-spacing:2px;opacity:.5">OTOMATİK ANİMASYON</div>
+        </div>
+
+        <div class="ownership-demo">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:2px;color:var(--rust);margin-bottom:16px">OWNERSHIP ÖRNEĞİ</div>
+            <div class="code-block">
+<span class="kw">fn</span> <span class="fn">main</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">let</span> s1 = <span class="tp">String</span>::<span class="fn">from</span>(<span class="str">"Sipahi"</span>); <span class="cm">// s1 sahibi</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">let</span> s2 = s1; <span class="cm">// Ownership s2'ye taşındı (move)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// println!("{}", s1); ← DERLEME HATASI! s1 artık geçersiz</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">println!</span>(<span class="str">"{}"</span>, s2); <span class="cm">// ✓ s2 geçerli tek sahip</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">let</span> s3 = s2.<span class="fn">clone</span>(); <span class="cm">// Derin kopya — iki bağımsız sahip</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">println!</span>(<span class="str">"{} {}"</span>, s2, s3); <span class="cm">// ✓ İkisi de geçerli</span><br>
+}
+            </div>
+            <p style="font-size:.85rem;color:var(--dim);line-height:1.9;margin-top:16px">
+                <strong style="color:var(--rust)">C++'da bu kod çalışır</strong> — iki pointer aynı belleğe işaret eder, biri serbest bırakılınca diğeri "dangling pointer" olur. 
+                <strong style="color:var(--green)">Rust'ta derleme zamanında yakalanır</strong> — program çalışmadan önce hata bulunur. Sıfır runtime maliyeti.
+            </p>
+        </div>
+
+        <div class="ferris-says">
+            <div class="ferris-mini">
+                <img src="ferris.png" alt="Ferris">
+            </div>
+            <div class="ferris-quote">
+                "C'de 10 yılda bulunacak bellek hatasını, Rust <strong>derlerken</strong> yakalar.
+                Bu yüzden Sipahi çekirdeği Rust ile yazılıyor — çünkü hava savunma sisteminde
+                <strong>'segmentation fault'</strong> lüksümüz yok." 🦀
+            </div>
+        </div>
+    </section>
+
+    <!-- COMPARISON -->
+    <section class="fade-in">
+        <div class="section-marker">// 003 — Dil Karşılaştırması</div>
+        <h2 class="section-title">Rust vs Diğer Diller</h2>
+
+        <table class="compare-table">
+            <thead>
+                <tr><th>Özellik</th><th>Rust 🦀</th><th>C</th><th>C++</th><th>Go</th><th>Python</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Bellek Güvenliği</td><td class="lang" style="color:var(--green)">Compile-time ✓</td><td class="cross">Manuel ✗</td><td class="cross">Manuel ✗</td><td class="check">GC ile ✓</td><td class="check">GC ile ✓</td></tr>
+                <tr><td>Data Race Koruması</td><td class="lang" style="color:var(--green)">Compile-time ✓</td><td class="cross">Yok ✗</td><td class="cross">Yok ✗</td><td class="partial">Kısmi ~</td><td class="check">GIL ile ✓</td></tr>
+                <tr><td>Bare-Metal Desteği</td><td class="lang" style="color:var(--green)">no_std ✓</td><td class="check">✓</td><td class="partial">Kısmi ~</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+                <tr><td>Performans</td><td class="lang" style="color:var(--green)">C seviyesi</td><td class="check">Referans</td><td class="check">C seviyesi</td><td class="partial">Yakın</td><td class="cross">Yavaş</td></tr>
+                <tr><td>Garbage Collector</td><td class="lang" style="color:var(--green)">Yok (gerekmiyor)</td><td class="check">Yok</td><td class="check">Yok</td><td class="cross">Var</td><td class="cross">Var</td></tr>
+                <tr><td>Formal Doğrulama</td><td class="lang" style="color:var(--green)">Kani ✓</td><td class="partial">CBMC ~</td><td class="partial">Zor ~</td><td class="cross">Sınırlı ✗</td><td class="cross">✗</td></tr>
+                <tr><td>RTOS / Kernel Yazımı</td><td class="lang" style="color:var(--green)">İdeal ✓</td><td class="check">Geleneksel ✓</td><td class="partial">Mümkün ~</td><td class="cross">Uygun değil ✗</td><td class="cross">✗</td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- WHO USES RUST -->
+    <section class="fade-in">
+        <div class="section-marker">// 004 — Kimler Kullanıyor?</div>
+        <h2 class="section-title">Rust'ı Kullanan Devler</h2>
+
+        <div class="users-grid">
+            <div class="user-card"><div class="user-icon">🌐</div><div class="user-name">Mozilla / Firefox</div><div class="user-desc">Rust'ı yarattılar. Servo tarayıcı motoru ve Firefox bileşenleri Rust ile yazıldı.</div></div>
+            <div class="user-card"><div class="user-icon">☁️</div><div class="user-name">Amazon AWS</div><div class="user-desc">Firecracker (Lambda'nın altındaki microVM), Bottlerocket OS ve S3 bileşenleri.</div></div>
+            <div class="user-card"><div class="user-icon">🔍</div><div class="user-name">Google</div><div class="user-desc">Android'in bazı bileşenleri, Chromium güvenlik modülleri ve Fuchsia OS parçaları.</div></div>
+            <div class="user-card"><div class="user-icon">💻</div><div class="user-name">Microsoft</div><div class="user-desc">Windows çekirdeği Rust'a taşınıyor. Azure IoT Edge ve güvenlik kritik bileşenler.</div></div>
+            <div class="user-card"><div class="user-icon">🐧</div><div class="user-name">Linux Kernel</div><div class="user-desc">Linux 6.1'den itibaren Rust resmi olarak çekirdek dili. Driver'lar Rust ile yazılabiliyor.</div></div>
+            <div class="user-card"><div class="user-icon">🔗</div><div class="user-name">Solana</div><div class="user-desc">Tüm on-chain programlar Rust ile yazılıyor. Sipahi'nin audit yaptığı ekosistem.</div></div>
+        </div>
+    </section>
+
+    <!-- RUST TIMELINE -->
+    <section class="fade-in">
+        <div class="section-marker">// 005 — Tarihçe</div>
+        <h2 class="section-title">Rust'ın Yolculuğu</h2>
+
+        <div class="rust-timeline">
+            <div class="rt-item"><div class="rt-year">2006</div><div class="rt-text"><strong>Graydon Hoare</strong> kişisel proje olarak Rust'ı başlatıyor. İsim, rust mantarından geliyor.</div></div>
+            <div class="rt-item"><div class="rt-year">2009</div><div class="rt-text"><strong>Mozilla</strong> projeyi resmi olarak desteklemeye başlıyor. Servo tarayıcı motoru için geliştiriliyor.</div></div>
+            <div class="rt-item"><div class="rt-year">2015</div><div class="rt-text"><strong>Rust 1.0</strong> yayınlanıyor. Stabilite garantisi başlıyor. Ownership sistemi olgunlaşıyor.</div></div>
+            <div class="rt-item"><div class="rt-year">2016–2024</div><div class="rt-text"><strong>Stack Overflow</strong> anketlerinde 9 yıl üst üste "en sevilen dil" seçiliyor.</div></div>
+            <div class="rt-item"><div class="rt-year">2022</div><div class="rt-text"><strong>Linux 6.1</strong> Rust'ı resmi çekirdek dili olarak kabul ediyor. Tarihi bir an.</div></div>
+            <div class="rt-item"><div class="rt-year">2024–2026</div><div class="rt-text"><strong>Sipahi Microkernel</strong> — RISC-V üzerinde Rust ile safety-critical RTOS geliştiriliyor.</div></div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <div class="cta fade-in">
+        <h2 class="cta-title">Sipahi Neden Rust ile Yazılıyor?</h2>
+        <p class="cta-sub">Çünkü bir hava savunma sisteminde "undefined behavior" lüksü yoktur.</p>
+        <a href="scenario.html" class="cta-btn">Savaş Senaryosunu İzle →</a>
+    </div>
+
+    <footer>
+        <p>🦀 RUST + SİPAHİ-CORE /// gzhno © 2026</p>
+    </footer>
+</div>
+
+<script>
+const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:.05});
+document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
+
+/* ═══════ OWNERSHIP ANIMATION ═══════ */
+(function(){
+const C=document.getElementById('ownerCanvas');
+if(!C)return;
+const X=C.getContext('2d');
+let W,H;
+function resize(){
+    const r=C.parentElement.getBoundingClientRect();
+    W=C.width=r.width;H=C.height=r.height;
+}
+addEventListener('resize',resize);resize();
+
+const font='bold 13px "JetBrains Mono", monospace';
+const fontSm='11px "JetBrains Mono", monospace';
+const fontXs='9px "JetBrains Mono", monospace';
+
+/* Steps of the animation */
+const steps=[
+    {dur:4500,label:'let s1 = String::from("Sipahi")',desc:'s1 belleğe "Sipahi" yazıyor — s1 tek sahip',
+     boxes:[{name:'s1',x:.25,y:.45,val:'Sipahi',alive:true,color:'#ff6b35'}],
+     heap:[{x:.65,y:.45,val:'Sipahi',color:'#ff6b35'}],
+     arrows:[{from:0,to:0,color:'#ff6b35'}]},
+    {dur:4500,label:'let s2 = s1  (MOVE)',desc:'Ownership s2\'ye taşındı — s1 artık GEÇERSİZ',
+     boxes:[{name:'s1',x:.15,y:.45,val:'⊘',alive:false,color:'#ff335580'},{name:'s2',x:.35,y:.45,val:'Sipahi',alive:true,color:'#00ffc8'}],
+     heap:[{x:.65,y:.45,val:'Sipahi',color:'#00ffc8'}],
+     arrows:[{from:1,to:0,color:'#00ffc8'}]},
+    {dur:4500,label:'let s3 = s2.clone()',desc:'Derin kopya yapıldı — iki bağımsız sahip, iki ayrı bellek',
+     boxes:[{name:'s1',x:.1,y:.45,val:'⊘',alive:false,color:'#ff335540'},{name:'s2',x:.28,y:.35,val:'Sipahi',alive:true,color:'#00ffc8'},{name:'s3',x:.28,y:.6,val:'Sipahi',alive:true,color:'#4da6ff'}],
+     heap:[{x:.65,y:.35,val:'Sipahi',color:'#00ffc8'},{x:.65,y:.6,val:'Sipahi (kopya)',color:'#4da6ff'}],
+     arrows:[{from:1,to:0,color:'#00ffc8'},{from:2,to:1,color:'#4da6ff'}]},
+    {dur:4500,label:'} — Scope bitiyor: drop(s2), drop(s3)',desc:'Her sahip kendi belleğini temizler — sıfır leak, sıfır double-free',
+     boxes:[{name:'s2',x:.28,y:.35,val:'DROP',alive:false,color:'#ff335580'},{name:'s3',x:.28,y:.6,val:'DROP',alive:false,color:'#ff335580'}],
+     heap:[{x:.65,y:.35,val:'FREED',color:'#ff335560'},{x:.65,y:.6,val:'FREED',color:'#ff335560'}],
+     arrows:[]},
+];
+
+let stepIdx=0,stepStart=performance.now(),transitioning=false;
+
+function lerp(a,b,t){return a+(b-a)*t}
+function easeOut(t){return 1-Math.pow(1-t,3)}
+
+function drawBox(cx,cy,name,val,alive,color,alpha){
+    const bw=90,bh=44;
+    const x=cx-bw/2,y=cy-bh/2;
+    X.globalAlpha=alpha;
+    X.fillStyle=alive?'#0e0c14':'#0a0810';
+    X.strokeStyle=color;X.lineWidth=alive?2:1;
+    X.beginPath();X.roundRect(x,y,bw,bh,6);X.fill();X.stroke();
+    // Name label
+    X.font=fontXs;X.fillStyle=color;X.textAlign='center';
+    X.fillText(name,cx,y-6);
+    // Value
+    X.font=fontSm;X.fillStyle=alive?'#e4e0f0':'#ff335580';
+    X.fillText(val,cx,cy+4);
+    X.globalAlpha=1;
+}
+
+function drawHeap(cx,cy,val,color,alpha){
+    const bw=120,bh=36;
+    const x=cx-bw/2,y=cy-bh/2;
+    X.globalAlpha=alpha;
+    X.fillStyle='#0a0816';X.strokeStyle=color;X.lineWidth=1.5;
+    X.setLineDash([4,3]);
+    X.beginPath();X.roundRect(x,y,bw,bh,4);X.fill();X.stroke();
+    X.setLineDash([]);
+    X.font=fontXs;X.fillStyle=color+'80';X.textAlign='center';
+    X.fillText('HEAP',cx,y-5);
+    X.font=fontSm;X.fillStyle=color;
+    X.fillText(val,cx,cy+4);
+    X.globalAlpha=1;
+}
+
+function drawArrow(x1,y1,x2,y2,color,alpha){
+    X.globalAlpha=alpha;
+    X.strokeStyle=color;X.lineWidth=1.5;
+    X.setLineDash([6,4]);
+    X.beginPath();X.moveTo(x1,y1);X.lineTo(x2,y2);X.stroke();
+    X.setLineDash([]);
+    // Arrowhead
+    const ang=Math.atan2(y2-y1,x2-x1);
+    X.beginPath();
+    X.moveTo(x2,y2);
+    X.lineTo(x2-8*Math.cos(ang-.3),y2-8*Math.sin(ang-.3));
+    X.lineTo(x2-8*Math.cos(ang+.3),y2-8*Math.sin(ang+.3));
+    X.closePath();X.fillStyle=color;X.fill();
+    X.globalAlpha=1;
+}
+
+function frame(now){
+    requestAnimationFrame(frame);
+    X.clearRect(0,0,W,H);
+    
+    const elapsed=now-stepStart;
+    const step=steps[stepIdx];
+    const t=Math.min(elapsed/1000,1); // entry animation
+    const alpha=easeOut(t);
+
+    // Label
+    X.font=font;X.fillStyle=`rgba(255,107,53,${alpha*.8})`;X.textAlign='center';
+    X.fillText(step.label,W/2,28);
+    
+    // Description
+    X.font=fontSm;X.fillStyle=`rgba(74,68,104,${alpha})`;
+    X.fillText(step.desc,W/2,H-18);
+
+    // Boxes (stack)
+    X.font=fontXs;X.fillStyle='rgba(74,68,104,.3)';X.textAlign='left';
+    X.fillText('STACK',W*.08,H*.2);
+    X.fillStyle='rgba(74,68,104,.3)';X.textAlign='left';
+    X.fillText('HEAP',W*.58,H*.2);
+
+    step.boxes.forEach(b=>{
+        drawBox(b.x*W,b.y*H,b.name,b.val,b.alive,b.color,alpha);
+    });
+
+    step.heap.forEach(h=>{
+        drawHeap(h.x*W,h.y*H,h.val,h.color,alpha);
+    });
+
+    // Arrows
+    step.arrows.forEach(a=>{
+        const box=step.boxes[a.from];
+        const heap=step.heap[a.to];
+        if(box&&heap){
+            drawArrow(box.x*W+48,box.y*H,heap.x*W-65,heap.y*H,a.color,alpha*.5);
+        }
+    });
+
+    // Auto advance
+    if(elapsed>step.dur){
+        stepIdx=(stepIdx+1)%steps.length;
+        stepStart=now;
+    }
+}
+requestAnimationFrame(frame);
+
+const oObs=new IntersectionObserver(e=>{
+    if(e[0].isIntersecting)resize();
+},{threshold:.1});
+oObs.observe(C.parentElement);
+})();
+</script>
+<script src="../assests/js/senior.js"></script>
+</body>
+</html>

@@ -1,1 +1,557 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İletişim — gzhno</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assests/css/style.css">
+    <style>
+:root{--bg:#0a0a0f;--bg-card:#11111a;--bg-card-hover:#161622;--border:#1e1e2e;--border-glow:#00ffc840;--text:#e0e0e8;--text-dim:#6e6e82;--accent:#00ffc8;--accent-dim:#00ffc830;--red:#ff4d6a;--amber:#ffb347;--blue:#4da6ff}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;line-height:1.7;overflow-x:hidden}
+body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:.12;pointer-events:none;z-index:0}
+.container{max-width:1200px;margin:0 auto;padding:0 40px;position:relative;z-index:1}
+.scroll-progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--blue));z-index:10000;width:0}
+nav{padding:20px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);background:rgba(10,10,15,.85)}
+.logo{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;color:var(--accent);letter-spacing:-.5px;text-decoration:none}.logo span{color:var(--text-dim);font-weight:300}
+.nav-links{display:flex;gap:28px}
+.nav-links a{color:var(--text-dim);text-decoration:none;font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase;transition:color .3s;position:relative}
+.nav-links a:hover,.nav-links a.active{color:var(--accent)}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;background:var(--accent);transition:width .3s}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+.menu-toggle{display:none;background:none;border:none;color:var(--text);font-size:1.5rem;cursor:pointer}
+section{padding:60px 0}
+.section-header{display:flex;align-items:center;gap:16px;margin-bottom:40px}
+.section-number{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--accent);opacity:.6}
+.section-title{font-size:1.5rem;font-weight:600;letter-spacing:-.5px}
+.section-line{flex:1;height:1px;background:var(--border)}
+footer{padding:40px 0;border-top:1px solid var(--border);margin-top:60px;text-align:center}
+footer p{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--text-dim)}
+.fade-in{opacity:0;transform:translateY(24px);transition:all .7s cubic-bezier(.16,1,.3,1)}
+.fade-in.visible{opacity:1;transform:translateY(0)}
 
+/* ═══════ CONTACT GRID ═══════ */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+
+/* ═══════ CONTACT CARDS ═══════ */
+.contact-cards{display:flex;flex-direction:column;gap:12px}
+.contact-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;transition:all .4s;cursor:pointer;text-decoration:none;display:block;position:relative;overflow:hidden}
+.contact-card::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.contact-card:hover{border-color:var(--border-glow);transform:translateX(8px)}
+.contact-card:hover::after{transform:scaleX(1)}
+.contact-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--accent);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px}
+.contact-value{color:var(--text);font-size:.95rem;transition:color .3s}
+.contact-card:hover .contact-value{color:var(--accent)}
+.contact-arrow{position:absolute;right:20px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:1.2rem;transition:all .3s}
+.contact-card:hover .contact-arrow{color:var(--accent);right:16px}
+
+/* ═══════ CONTACT FORM ═══════ */
+.contact-form{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:32px}
+.form-title{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;margin-bottom:24px;display:flex;align-items:center;gap:8px}
+.form-title span{color:var(--accent)}
+.form-group{margin-bottom:20px;position:relative}
+.form-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;display:block}
+.form-input,.form-textarea,.form-select{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 16px;color:var(--text);font-family:'Outfit',sans-serif;font-size:.9rem;transition:all .3s;outline:none}
+.form-input:focus,.form-textarea:focus,.form-select:focus{border-color:var(--accent);box-shadow:0 0 16px var(--accent-dim)}
+.form-input::placeholder,.form-textarea::placeholder{color:#3a3a4a}
+.form-textarea{min-height:120px;resize:vertical}
+.form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%236e6e82'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;cursor:pointer}
+.form-select option{background:var(--bg);color:var(--text)}
+.form-error{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--red);margin-top:4px;display:none}
+.form-group.error .form-input,
+.form-group.error .form-textarea,
+.form-group.error .form-select{border-color:var(--red)}
+.form-group.error .form-error{display:block}
+.form-group.success .form-input,
+.form-group.success .form-textarea{border-color:var(--accent)}
+.char-count{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text-dim);text-align:right;margin-top:4px}
+
+.btn{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;transition:all .3s;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:var(--accent);color:var(--bg);box-shadow:0 0 20px var(--accent-dim);width:100%;justify-content:center}
+.btn-primary:hover{box-shadow:0 0 40px var(--accent-dim);transform:translateY(-2px)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-primary .spinner{display:none;width:16px;height:16px;border:2px solid var(--bg);border-top-color:transparent;border-radius:50%;animation:spin .6s linear infinite}
+.btn-primary.loading .spinner{display:inline-block}
+.btn-primary.loading span{display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ═══════ TOAST ═══════ */
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg-card);border:1px solid var(--accent);border-radius:12px;padding:16px 24px;font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--accent);z-index:10000;box-shadow:0 0 32px var(--accent-dim);transition:transform .4s cubic-bezier(.16,1,.3,1);display:flex;align-items:center;gap:10px}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.error{border-color:var(--red);color:var(--red);box-shadow:0 0 32px rgba(255,77,106,.2)}
+
+/* ═══════ COLLAB SECTION ═══════ */
+.collab-section{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:40px;margin-top:40px;position:relative;overflow:hidden}
+.collab-section::before{content:'';position:absolute;top:-50%;right:-20%;width:400px;height:400px;background:radial-gradient(circle,var(--accent-dim) 0%,transparent 70%);pointer-events:none}
+.collab-title{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;position:relative}
+.collab-text{color:var(--text-dim);font-size:1rem;line-height:1.9;max-width:600px;position:relative}
+.collab-tags{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap;position:relative}
+.collab-tag{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:6px 14px;border-radius:6px;font-weight:500;letter-spacing:.5px;cursor:default;transition:all .3s}
+.collab-tag:hover{transform:translateY(-2px)}
+.ct-green{background:#00ffc812;color:var(--accent);border:1px solid #00ffc825}
+.ct-blue{background:#4da6ff12;color:var(--blue);border:1px solid #4da6ff25}
+.ct-amber{background:#ffb34712;color:var(--amber);border:1px solid #ffb34725}
+
+.back-to-top{position:fixed;bottom:32px;right:32px;width:44px;height:44px;border-radius:50%;background:var(--bg-card);border:1px solid var(--border);color:var(--accent);font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:100;opacity:0;transform:translateY(20px);transition:all .3s;pointer-events:none}
+.back-to-top.visible{opacity:1;transform:translateY(0);pointer-events:auto}
+.back-to-top:hover{border-color:var(--accent);box-shadow:0 0 24px var(--accent-dim)}
+
+@media(max-width:768px){
+    .contact-grid{grid-template-columns:1fr}
+    .nav-links{display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg);border-bottom:1px solid var(--border);flex-direction:column;padding:20px 24px;gap:16px}
+    .nav-links.open{display:flex}
+    .menu-toggle{display:block}
+}
+    </style>
+</head>
+<body>
+<div class="scroll-progress" id="scrollProgress"></div>
+<div class="container">
+    <nav>
+        <a href="../index.html" class="logo">gzhno<span>_sec</span></a>
+        <button class="menu-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+        <div class="nav-links">
+            <a href="../index.html">Ana Sayfa</a>
+            <a href="project.html">Projeler</a>
+            <a href="rust.html">Rust</a>
+            <a href="scenario.html">Senaryo</a>
+            <a href="about.html">Hakkımda</a>
+            <a href="books.html">Kitaplık</a>
+            <a href="contact.html" class="active">İletişim</a>
+        </div>
+    </nav>
+
+    <!-- MYSTICAL PORTAL -->
+    <section style="padding:40px 0 0;text-align:center">
+        <div style="position:relative;width:100%;height:400px;overflow:hidden;border-radius:16px;border:1px solid var(--border);background:#08080e">
+            <canvas id="portalCanvas" style="width:100%;height:100%"></canvas>
+            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;z-index:2">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:6px;color:#00ffc880;text-transform:uppercase;margin-bottom:8px">Portal Açık</div>
+                <div style="font-family:'Outfit',sans-serif;font-size:clamp(1.4rem,3vw,2rem);font-weight:600;color:#e0e0e8;text-shadow:0 0 40px rgba(0,255,200,.3)">Bana Ulaş</div>
+            </div>
+            <div style="position:absolute;bottom:10px;right:16px;font-family:'JetBrains Mono',monospace;font-size:.45rem;color:#00ffc8;opacity:.2;letter-spacing:2px">THREE.JS · GLSL RUNES</div>
+        </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="fade-in">
+        <div class="section-header">
+            <span class="section-number">01</span>
+            <h2 class="section-title">İletişim</h2>
+            <div class="section-line"></div>
+        </div>
+
+        <div class="contact-grid">
+            <!-- LEFT: Cards -->
+            <div class="contact-cards">
+                <a href="https://github.com/gzhno" target="_blank" class="contact-card">
+                    <div class="contact-label">GitHub</div>
+                    <div class="contact-value">github.com/gzhno</div>
+                    <div class="contact-arrow">→</div>
+                </a>
+                <a href="https://code4rena.com/@Krul_Tepes" target="_blank" class="contact-card">
+                    <div class="contact-label">Code4rena</div>
+                    <div class="contact-value">@Krul_Tepes</div>
+                    <div class="contact-arrow">→</div>
+                </a>
+                <a href="https://immunefi.com" target="_blank" class="contact-card">
+                    <div class="contact-label">Immunefi</div>
+                    <div class="contact-value">immunefi.com</div>
+                    <div class="contact-arrow">→</div>
+                </a>
+                <div class="contact-card" style="cursor:default">
+                    <div class="contact-label">Konum</div>
+                    <div class="contact-value">Türkiye 🇹🇷</div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Form -->
+            <div class="contact-form">
+                <div class="form-title"><span>⚡</span> Mesaj Gönder</div>
+
+                <div class="form-group" id="nameGroup">
+                    <label class="form-label">İsim</label>
+                    <input class="form-input" type="text" id="formName" placeholder="Adınız" maxlength="50">
+                    <div class="form-error">İsim alanı zorunludur.</div>
+                </div>
+
+                <div class="form-group" id="emailGroup">
+                    <label class="form-label">E-posta</label>
+                    <input class="form-input" type="email" id="formEmail" placeholder="ornek@email.com">
+                    <div class="form-error">Geçerli bir e-posta adresi girin.</div>
+                </div>
+
+                <div class="form-group" id="subjectGroup">
+                    <label class="form-label">Konu</label>
+                    <select class="form-select" id="formSubject">
+                        <option value="">Konu seçin...</option>
+                        <option value="audit">Güvenlik Denetimi İş Birliği</option>
+                        <option value="bounty">Bug Bounty</option>
+                        <option value="sipahi">Sipahi Projesi</option>
+                        <option value="other">Diğer</option>
+                    </select>
+                    <div class="form-error">Lütfen bir konu seçin.</div>
+                </div>
+
+                <div class="form-group" id="messageGroup">
+                    <label class="form-label">Mesaj</label>
+                    <textarea class="form-textarea" id="formMessage" placeholder="Mesajınızı yazın..." maxlength="500"></textarea>
+                    <div class="char-count"><span id="charCount">0</span>/500</div>
+                    <div class="form-error">Mesaj en az 10 karakter olmalıdır.</div>
+                </div>
+
+                <button class="btn btn-primary" id="submitBtn" onclick="submitForm()">
+                    <span>Gönder →</span>
+                    <div class="spinner"></div>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- COLLAB -->
+    <div class="collab-section fade-in">
+        <div class="collab-title">İş Birliği Alanları</div>
+        <p class="collab-text">
+            Güvenlik denetimi, bug bounty iş birliği veya teknik konularda
+            iletişime geçmek isterseniz formu kullanabilir veya GitHub
+            üzerinden ulaşabilirsiniz. Özellikle Solana/Rust ekosisteminde
+            güvenlik araştırmalarına ve embedded systems projelerine açığım.
+        </p>
+        <div class="collab-tags">
+            <span class="collab-tag ct-green">Audit İş Birliği</span>
+            <span class="collab-tag ct-blue">Bug Bounty</span>
+            <span class="collab-tag ct-amber">Embedded Systems</span>
+        </div>
+    </div>
+
+    <footer><p>gzhno // Krul_Tepes © 2026</p></footer>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+window.addEventListener('scroll',()=>{
+    const h=document.documentElement.scrollHeight-window.innerHeight;
+    document.getElementById('scrollProgress').style.width=(window.scrollY/h*100)+'%';
+    document.getElementById('backToTop').classList.toggle('visible',window.scrollY>400);
+});
+
+// Scroll reveal
+const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
+},{threshold:.05});
+document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
+
+// Character counter
+document.getElementById('formMessage').addEventListener('input',function(){
+    document.getElementById('charCount').textContent=this.value.length;
+});
+
+// Real-time validation
+document.getElementById('formName').addEventListener('blur',function(){
+    toggleError('nameGroup',!this.value.trim());
+});
+document.getElementById('formEmail').addEventListener('blur',function(){
+    const v=this.value;
+    toggleError('emailGroup',!v||!v.includes('@')||!v.includes('.'));
+});
+document.getElementById('formSubject').addEventListener('change',function(){
+    toggleError('subjectGroup',!this.value);
+});
+document.getElementById('formMessage').addEventListener('blur',function(){
+    toggleError('messageGroup',this.value.trim().length<10);
+});
+
+function toggleError(id,hasError){
+    const g=document.getElementById(id);
+    g.classList.toggle('error',hasError);
+    g.classList.toggle('success',!hasError);
+}
+
+// Form submission
+function submitForm(){
+    const name=document.getElementById('formName').value.trim();
+    const email=document.getElementById('formEmail').value.trim();
+    const subject=document.getElementById('formSubject').value;
+    const message=document.getElementById('formMessage').value.trim();
+    let valid=true;
+
+    if(!name){toggleError('nameGroup',true);valid=false;}
+    if(!email||!email.includes('@')||!email.includes('.')){toggleError('emailGroup',true);valid=false;}
+    if(!subject){toggleError('subjectGroup',true);valid=false;}
+    if(message.length<10){toggleError('messageGroup',true);valid=false;}
+
+    if(!valid){
+        showToast('Lütfen tüm alanları doğru doldurun.','error');
+        return;
+    }
+
+    const btn=document.getElementById('submitBtn');
+    btn.classList.add('loading');
+    btn.disabled=true;
+
+    // Simulate sending
+    setTimeout(()=>{
+        btn.classList.remove('loading');
+        btn.disabled=false;
+        showToast('✓ Mesajınız başarıyla gönderildi!','success');
+
+        // Reset form
+        document.getElementById('formName').value='';
+        document.getElementById('formEmail').value='';
+        document.getElementById('formSubject').value='';
+        document.getElementById('formMessage').value='';
+        document.getElementById('charCount').textContent='0';
+        document.querySelectorAll('.form-group').forEach(g=>{g.classList.remove('success','error')});
+    },1500);
+}
+
+function showToast(msg,type){
+    const t=document.getElementById('toast');
+    t.textContent=msg;
+    t.className='toast show'+(type==='error'?' error':'');
+    setTimeout(()=>t.classList.remove('show'),3500);
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ═══════ MYSTICAL RUNE PORTAL ═══════ */
+(function(){
+const canvas=document.getElementById('portalCanvas');
+if(!canvas)return;
+const R=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+R.setPixelRatio(Math.min(devicePixelRatio,2));
+R.setClearColor(0x000000,0);
+const S=new THREE.Scene();
+S.fog=new THREE.FogExp2(0x08080e,0.06);
+const cam=new THREE.PerspectiveCamera(50,1,0.1,100);
+cam.position.set(0,3,7);
+cam.lookAt(0,0,0);
+
+function resize(){
+    const r=canvas.parentElement.getBoundingClientRect();
+    R.setSize(r.width,r.height);
+    cam.aspect=r.width/r.height;
+    cam.updateProjectionMatrix();
+}
+addEventListener('resize',resize);resize();
+
+const portal=new THREE.Group();
+
+/* ── Inner energy orb ── */
+const orbGeo=new THREE.SphereGeometry(.6,32,32);
+const orbMat=new THREE.ShaderMaterial({
+    uniforms:{uTime:{value:0}},
+    vertexShader:`
+        varying vec3 vPos;varying vec3 vNorm;
+        void main(){vPos=position;vNorm=normalize(normalMatrix*normal);
+        gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+    fragmentShader:`
+        uniform float uTime;varying vec3 vPos;varying vec3 vNorm;
+        void main(){
+            float pulse=sin(uTime*3.0+vPos.y*5.0)*.3+.7;
+            float fresnel=pow(1.0-abs(dot(normalize(cameraPosition-vPos),vNorm)),2.0);
+            vec3 col=mix(vec3(0.0,.8,.6),vec3(0.0,1.0,.78),fresnel)*pulse;
+            float alpha=(.3+fresnel*.6)*pulse;
+            gl_FragColor=vec4(col,alpha);
+        }`,
+    transparent:true,side:THREE.DoubleSide,depthWrite:false,blending:THREE.AdditiveBlending
+});
+const orb=new THREE.Mesh(orbGeo,orbMat);
+orb.position.y=.3;
+portal.add(orb);
+
+// Orb glow
+const glowMat=new THREE.MeshBasicMaterial({color:0x00ffc8,transparent:true,opacity:.04,side:THREE.BackSide});
+const glow=new THREE.Mesh(new THREE.SphereGeometry(1.2,16,16),glowMat);
+glow.position.y=.3;
+portal.add(glow);
+
+/* ── Main rune ring ── */
+const ringGeo=new THREE.TorusGeometry(2.8,.04,8,120);
+const ringMat=new THREE.ShaderMaterial({
+    uniforms:{uTime:{value:0}},
+    vertexShader:`
+        varying vec2 vUv;varying vec3 vPos;
+        void main(){vUv=uv;vPos=position;
+        gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+    fragmentShader:`
+        uniform float uTime;varying vec2 vUv;varying vec3 vPos;
+        void main(){
+            float t=uTime*.5;
+            float glow=sin(vUv.x*60.0+t*6.0)*.5+.5;
+            float pulse=sin(t*2.0)*.15+.85;
+            vec3 col=vec3(0.0,1.0,.78)*glow*pulse;
+            float alpha=(.4+glow*.5)*pulse;
+            gl_FragColor=vec4(col,alpha);
+        }`,
+    transparent:true,depthWrite:false,blending:THREE.AdditiveBlending
+});
+const ring1=new THREE.Mesh(ringGeo,ringMat);
+ring1.rotation.x=Math.PI/2;
+portal.add(ring1);
+
+/* ── Second ring (tilted, thinner) ── */
+const ring2Mat=ringMat.clone();
+ring2Mat.uniforms={uTime:{value:0}};
+const ring2=new THREE.Mesh(new THREE.TorusGeometry(3.2,.02,8,100),ring2Mat);
+ring2.rotation.x=Math.PI/2;
+portal.add(ring2);
+
+/* ── Third ring (opposite tilt) ── */
+const ring3Mat=new THREE.MeshBasicMaterial({color:0x00ffc8,transparent:true,opacity:.08,wireframe:true});
+const ring3=new THREE.Mesh(new THREE.TorusGeometry(3.5,.015,8,80),ring3Mat);
+ring3.rotation.x=Math.PI/2;
+portal.add(ring3);
+
+/* ── Rune symbols floating on ring ── */
+function makeRune(text,angle,radius,size){
+    const c=document.createElement('canvas');c.width=128;c.height=128;
+    const ctx=c.getContext('2d');
+    ctx.font=`bold ${size}px serif`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.shadowColor='#00ffc8';ctx.shadowBlur=15;
+    ctx.fillStyle='#00ffc8';
+    ctx.fillText(text,64,64);
+    const tex=new THREE.CanvasTexture(c);
+    const mat=new THREE.SpriteMaterial({map:tex,transparent:true,opacity:.6,depthWrite:false,blending:THREE.AdditiveBlending});
+    const spr=new THREE.Sprite(mat);
+    spr.scale.set(.7,.7,1);
+    spr.position.set(Math.cos(angle)*radius,0.05,Math.sin(angle)*radius);
+    spr.userData={angle,radius,baseY:0.05};
+    return spr;
+}
+const runeSymbols=['ᚱ','ᚢ','ᛊ','ᛏ','ᚨ','ᚺ','ᛁ','ᚲ','ᚱ','ᚢ','ᛚ','ᛏ'];
+runeSymbols.forEach((sym,i)=>{
+    const angle=(i/runeSymbols.length)*Math.PI*2;
+    portal.add(makeRune(sym,angle,2.8,48));
+});
+
+/* ── Floating particles around portal ── */
+const partCount=150;
+const partGeo=new THREE.BufferGeometry();
+const partPos=new Float32Array(partCount*3);
+const partVel=[];
+for(let i=0;i<partCount;i++){
+    const a=Math.random()*Math.PI*2;
+    const r=2+Math.random()*2;
+    partPos[i*3]=Math.cos(a)*r;
+    partPos[i*3+1]=(Math.random()-.5)*2;
+    partPos[i*3+2]=Math.sin(a)*r;
+    partVel.push({a,r,speed:.2+Math.random()*.3,ySpeed:.01+Math.random()*.02,phase:Math.random()*Math.PI*2});
+}
+partGeo.setAttribute('position',new THREE.BufferAttribute(partPos,3));
+const partMat=new THREE.PointsMaterial({color:0x00ffc8,size:.04,transparent:true,opacity:.5,sizeAttenuation:true,blending:THREE.AdditiveBlending});
+const particleSys=new THREE.Points(partGeo,partMat);
+portal.add(particleSys);
+
+/* ── Vertical energy beams ── */
+for(let i=0;i<6;i++){
+    const a=(i/6)*Math.PI*2;
+    const beamGeo=new THREE.CylinderGeometry(.008,.008,3,4);
+    const beamMat=new THREE.MeshBasicMaterial({color:0x00ffc8,transparent:true,opacity:.06});
+    const beam=new THREE.Mesh(beamGeo,beamMat);
+    beam.position.set(Math.cos(a)*2.8,1.5,Math.sin(a)*2.8);
+    portal.add(beam);
+}
+
+/* ── Ground plane subtle glow ── */
+const groundGeo=new THREE.RingGeometry(1,4,64);
+const groundMat=new THREE.ShaderMaterial({
+    uniforms:{uTime:{value:0}},
+    vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+    fragmentShader:`
+        uniform float uTime;varying vec2 vUv;
+        void main(){
+            float dist=length(vUv-.5)*2.0;
+            float ring=sin(dist*20.0-uTime*2.0)*.5+.5;
+            float alpha=(.08-dist*.06)*ring;
+            gl_FragColor=vec4(0.0,1.0,.78,max(0.0,alpha));
+        }`,
+    transparent:true,side:THREE.DoubleSide,depthWrite:false,blending:THREE.AdditiveBlending
+});
+const ground=new THREE.Mesh(groundGeo,groundMat);
+ground.rotation.x=-Math.PI/2;
+portal.add(ground);
+
+S.add(portal);
+
+// Lights
+S.add(new THREE.AmbientLight(0x0a1a2a,.3));
+const pl=new THREE.PointLight(0x00ffc8,.8,12);pl.position.set(0,3,0);S.add(pl);
+const pl2=new THREE.PointLight(0x4da6ff,.3,10);pl2.position.set(3,1,3);S.add(pl2);
+
+// Mouse
+let mX=0,mY=0;
+document.addEventListener('mousemove',e=>{mX=(e.clientX/innerWidth-.5)*2;mY=(e.clientY/innerHeight-.5)*2});
+
+const clk=new THREE.Clock();
+function anim(){
+    requestAnimationFrame(anim);
+    const t=clk.getElapsedTime();
+
+    // Update shader uniforms
+    orbMat.uniforms.uTime.value=t;
+    ringMat.uniforms.uTime.value=t;
+    ring2Mat.uniforms.uTime.value=t;
+    groundMat.uniforms.uTime.value=t;
+
+    // Rotate rings
+    ring1.rotation.z=t*.3;
+    ring2.rotation.z=-t*.2;
+    ring2.rotation.y=Math.sin(t*.2)*.1;
+    ring3.rotation.z=t*.15;
+    ring3.rotation.y=Math.cos(t*.15)*.08;
+
+    // Orb pulse
+    const pulse=1+Math.sin(t*2)*.08;
+    orb.scale.setScalar(pulse);
+    glow.scale.setScalar(1+Math.sin(t*1.5)*.15);
+    glowMat.opacity=.03+Math.sin(t*2)*.015;
+
+    // Rune symbols orbit and float
+    portal.children.forEach(child=>{
+        if(child.isSprite&&child.userData.angle!==undefined){
+            const d=child.userData;
+            d.angle+=.003;
+            child.position.x=Math.cos(d.angle)*d.radius;
+            child.position.z=Math.sin(d.angle)*d.radius;
+            child.position.y=d.baseY+Math.sin(t*1.5+d.angle*3)*.15;
+            child.material.opacity=.3+Math.sin(t*2+d.angle*5)*.25;
+        }
+    });
+
+    // Particles spiral
+    const pArr=partGeo.attributes.position.array;
+    for(let i=0;i<partCount;i++){
+        const v=partVel[i];
+        v.a+=v.speed*.01;
+        pArr[i*3]=Math.cos(v.a)*v.r;
+        pArr[i*3+1]=Math.sin(t*v.ySpeed*10+v.phase)*1.5;
+        pArr[i*3+2]=Math.sin(v.a)*v.r;
+    }
+    partGeo.attributes.position.needsUpdate=true;
+
+    // Point light pulse
+    pl.intensity=.6+Math.sin(t*2)*.2;
+
+    // Mouse influence
+    portal.rotation.y+=(mX*.15-portal.rotation.y)*.03;
+    portal.rotation.x+=(-mY*.1+.3-portal.rotation.x)*.03;
+
+    R.render(S,cam);
+}
+anim();
+
+const pObs=new IntersectionObserver(e=>{if(e[0].isIntersecting)resize()},{threshold:.1});
+pObs.observe(canvas.parentElement);
+})();
+</script>
+<script src="../assests/js/senior.js"></script>
+</body>
+</html>

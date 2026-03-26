@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sipahi — Hava Savunma Simülasyonu</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#04060a;--green:#00ffc8;--red:#ff3355;--amber:#ffb347;--rust:#ff6b35;--cpp:#6b8aff;--text:#c8d4e8;--dim:#2a3650;--border:#132040}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;overflow-x:hidden}
+::selection{background:var(--green);color:var(--bg)}
+
+/* VIDEO BG */
+.video-bg{position:fixed;inset:0;z-index:0;overflow:hidden}
+.video-bg video{width:100%;height:100%;object-fit:cover;opacity:.35;filter:saturate(.6) contrast(1.2)}
+.video-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,6,10,.4) 0%,rgba(4,6,10,.2) 40%,rgba(4,6,10,.6) 80%,rgba(4,6,10,.95) 100%)}
+
+/* SCANLINES + VIGNETTE */
+.scanlines{position:fixed;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,200,.005) 2px,rgba(0,255,200,.005) 4px)}
+.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at center,transparent 50%,rgba(4,6,10,.7) 100%)}
+.flash{position:fixed;inset:0;z-index:6;pointer-events:none;transition:background .3s}
+
+/* HUD LAYER */
+.hud{position:fixed;inset:0;z-index:3;pointer-events:none;padding:20px}
+
+/* Corners */
+.hud-tl{position:absolute;top:20px;left:20px;font-size:.45rem;color:var(--green);opacity:.4;letter-spacing:2px;line-height:2.2}
+.hud-tr{position:absolute;top:20px;right:20px;text-align:right;font-size:.45rem;color:var(--green);opacity:.4;letter-spacing:2px;line-height:2.2}
+.hud-bl{position:absolute;bottom:20px;left:20px;font-size:.4rem;color:var(--dim);letter-spacing:1.5px;line-height:2.2}
+.hud-br{position:absolute;bottom:20px;right:20px;text-align:right}
+
+/* Crosshairs */
+.crosshair{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;pointer-events:none;opacity:.12}
+.crosshair svg{width:120px;height:120px}
+
+/* Center panel */
+.hud-center{position:absolute;top:4%;left:50%;transform:translateX(-50%);text-align:center;width:92%;max-width:700px}
+.kernel-badge{font-size:.6rem;letter-spacing:3px;padding:5px 18px;border:1px solid;display:inline-block;margin-bottom:8px;transition:all .6s}
+.kernel-badge.cpp{color:var(--cpp);border-color:rgba(107,138,255,.3);background:rgba(107,138,255,.05)}
+.kernel-badge.rust{color:var(--rust);border-color:rgba(255,107,53,.3);background:rgba(255,107,53,.05)}
+.phase-text{font-family:'Outfit',sans-serif;font-size:clamp(.85rem,2vw,1.4rem);font-weight:600;letter-spacing:-.5px;min-height:1.4em;transition:all .4s;text-shadow:0 0 30px rgba(0,0,0,.8)}
+.status-line{font-size:.55rem;letter-spacing:.5px;margin-top:6px;min-height:1.2em;transition:all .4s;font-weight:300;text-shadow:0 0 20px rgba(0,0,0,.8)}
+
+/* Telemetry */
+.telem{position:absolute;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:1px}
+.telem-l{left:16px}.telem-r{right:16px}
+.tc{background:rgba(4,6,10,.65);border:1px solid rgba(19,32,64,.6);padding:7px 12px;min-width:105px;backdrop-filter:blur(6px)}
+.tc-l{font-size:.38rem;color:var(--dim);letter-spacing:1.5px;text-transform:uppercase}
+.tc-v{font-size:.75rem;font-weight:700;margin-top:1px;transition:all .3s}
+
+/* Bottom */
+.hud-bc{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);text-align:center}
+.round-txt{font-size:.45rem;letter-spacing:2px;color:var(--dim);margin-bottom:4px}
+.prog-bar{width:200px;height:2px;background:rgba(19,32,64,.5);overflow:hidden;margin:0 auto}
+.prog-fill{height:100%;width:0;transition:width .4s}
+
+/* Classification strip */
+.classif{position:fixed;top:0;left:0;right:0;z-index:4;text-align:center;padding:3px 0;font-size:.45rem;letter-spacing:4px;color:var(--red);background:rgba(255,51,85,.06);border-bottom:1px solid rgba(255,51,85,.1);animation:classifBlink 3s ease infinite}
+@keyframes classifBlink{0%,100%{opacity:.7}50%{opacity:.3}}
+
+/* RESULT OVERLAY */
+.result{position:fixed;inset:0;z-index:7;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity .8s;pointer-events:none;background:rgba(4,6,10,.7);backdrop-filter:blur(12px)}
+.result.show{opacity:1}
+.r-icon{font-size:3rem;margin-bottom:12px}
+.r-title{font-family:'Outfit',sans-serif;font-size:clamp(1.5rem,4vw,2.6rem);font-weight:700;letter-spacing:-1px;text-shadow:0 0 40px rgba(0,0,0,.5)}
+.r-sub{font-size:.7rem;margin-top:8px;letter-spacing:1px;font-family:'Outfit',sans-serif;font-weight:300;color:var(--dim)}
+.r-time{font-size:1.6rem;font-weight:700;margin-top:14px}
+.r-bar{display:flex;gap:40px;margin-top:24px}
+.r-stat{text-align:center}
+.r-num{font-size:2rem;font-weight:700}
+.r-label{font-size:.45rem;color:var(--dim);letter-spacing:1px;margin-top:4px;text-transform:uppercase}
+
+/* SCROLLABLE CONTENT */
+.content{position:relative;z-index:5;max-width:1000px;margin:0 auto;padding:0 24px}
+.spacer{height:100vh}
+.content-bg{background:var(--bg);position:relative;z-index:5;border-top:1px solid var(--border);margin-top:-2px}
+section{padding:70px 0}
+.section-marker{font-size:.5rem;letter-spacing:3px;color:var(--green);text-transform:uppercase;opacity:.4;margin-bottom:14px}
+.section-title{font-family:'Outfit',sans-serif;font-size:clamp(1.4rem,2.5vw,2rem);font-weight:600;letter-spacing:-1px;margin-bottom:36px}
+
+/* Comparison */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--border);border:1px solid var(--border)}
+.compare-side{background:rgba(4,6,10,.9);padding:28px;backdrop-filter:blur(4px)}
+.compare-badge{font-size:.5rem;letter-spacing:2px;text-transform:uppercase;padding:3px 9px;display:inline-block;margin-bottom:14px}
+.badge-rust{color:var(--rust);border:1px solid rgba(255,107,53,.25)}
+.badge-cpp{color:var(--cpp);border:1px solid rgba(107,138,255,.25)}
+.compare-name{font-family:'Outfit',sans-serif;font-size:1rem;font-weight:600;margin-bottom:3px}
+.compare-sub{font-size:.6rem;color:var(--dim);margin-bottom:20px}
+.mr{margin-bottom:16px}
+.mh{display:flex;justify-content:space-between;margin-bottom:4px}
+.ml{font-size:.5rem;color:var(--dim);letter-spacing:1px;text-transform:uppercase}
+.mv{font-size:.75rem;font-weight:700}
+.mv.g{color:var(--green)}.mv.w{color:var(--amber)}.mv.b{color:var(--red)}
+.mt{height:3px;background:var(--border);overflow:hidden}
+.mf{height:100%;transition:width 2s cubic-bezier(.16,1,.3,1)}
+.fr{background:var(--rust)}.fc{background:var(--cpp)}
+
+/* Timeline */
+.tl{position:relative;padding-left:28px}
+.tl::before{content:'';position:absolute;left:0;top:0;bottom:0;width:1px;background:var(--border)}
+.te{position:relative;margin-bottom:28px;padding:18px;background:rgba(10,14,22,.85);border:1px solid var(--border);backdrop-filter:blur(4px);transition:border-color .3s}
+.te:hover{border-color:rgba(0,255,200,.15)}
+.te::before{content:'';position:absolute;left:-33px;top:22px;width:8px;height:8px;border:1px solid var(--border);background:var(--bg)}
+.te.a::before{border-color:var(--green);background:var(--green);box-shadow:0 0 10px rgba(0,255,200,.3)}
+.te.c::before{border-color:var(--red);background:var(--red);box-shadow:0 0 10px rgba(255,51,85,.3)}
+.tt{font-size:.45rem;color:var(--green);letter-spacing:2px;margin-bottom:3px}
+.th{font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:600;margin-bottom:5px}
+.td{font-size:.7rem;color:var(--dim);line-height:1.7;font-family:'Outfit',sans-serif;margin-bottom:10px}
+.ts{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.tr{padding:8px;font-size:.55rem;line-height:1.6;border:1px solid}
+.tr1{border-color:rgba(255,107,53,.1);color:#cc9480;background:rgba(255,107,53,.03)}
+.tr2{border-color:rgba(107,138,255,.1);color:#8a9cc8;background:rgba(107,138,255,.03)}
+
+.verdict{text-align:center;padding:60px 20px;position:relative}
+.verdict::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:350px;height:350px;background:radial-gradient(circle,rgba(0,255,200,.03),transparent 70%);pointer-events:none}
+.vr{display:flex;justify-content:center;gap:50px;margin-top:32px;position:relative}
+.vs{text-align:center}
+.vn{font-size:2.4rem;font-weight:700;line-height:1}
+.vn.g{color:var(--green)}.vn.b{color:var(--red)}
+.vl{font-size:.45rem;color:var(--dim);letter-spacing:1px;margin-top:6px;text-transform:uppercase}
+
+footer{padding:28px 20px;border-top:1px solid var(--border);text-align:center;position:relative;z-index:5}
+footer p{font-size:.5rem;color:var(--dim);letter-spacing:1px}
+
+.fade-in{opacity:0;transform:translateY(20px);transition:all .8s cubic-bezier(.16,1,.3,1)}.fade-in.visible{opacity:1;transform:translateY(0)}
+
+@media(max-width:768px){.telem{display:none}.compare{grid-template-columns:1fr}.ts{grid-template-columns:1fr}.vr{flex-direction:column;gap:20px}.r-bar{flex-direction:column;gap:16px}}
+</style>
+</head>
+<body>
+
+<!-- VIDEO BACKGROUND -->
+<div class="video-bg">
+    <video autoplay muted loop playsinline id="bgVideo">
+        <source src="defense.mp4" type="video/mp4">
+    </video>
+</div>
+
+<!-- EFFECTS -->
+<div class="scanlines"></div>
+<div class="vignette"></div>
+<div class="flash" id="flash"></div>
+
+<!-- CROSSHAIR -->
+<div class="crosshair">
+    <svg viewBox="0 0 120 120" fill="none" stroke="rgba(0,255,200,.2)" stroke-width=".5">
+        <circle cx="60" cy="60" r="40"/><circle cx="60" cy="60" r="20"/>
+        <line x1="60" y1="10" x2="60" y2="35"/><line x1="60" y1="85" x2="60" y2="110"/>
+        <line x1="10" y1="60" x2="35" y2="60"/><line x1="85" y1="60" x2="110" y2="60"/>
+    </svg>
+</div>
+
+<!-- CLASSIFICATION -->
+<div class="classif">GİZLİ // RESTRICTED — SİPAHİ KERNEL SAVAŞ SİMÜLASYONU</div>
+
+<!-- HUD -->
+<div class="hud">
+    <div class="hud-tl">SİPAHİ-CORE v0.4.2<br>RISC-V RV64GC<br>PMP REGIONS: 8</div>
+    <div class="hud-tr">WASM SANDBOX: RDY<br>CAPABILITY: ARMED<br>SCHEDULER: PRE-RR</div>
+
+    <div class="hud-center">
+        <div class="kernel-badge cpp" id="kB">C++ RTOS — YÜKLENIYOR</div>
+        <div class="phase-text" id="ph">Simülasyon Başlıyor...</div>
+        <div class="status-line" id="sl" style="color:var(--dim)">Sistem başlatılıyor</div>
+    </div>
+
+    <div class="telem telem-l">
+        <div class="tc"><div class="tc-l">Tehdit</div><div class="tc-v" id="vT" style="color:var(--dim)">0</div></div>
+        <div class="tc"><div class="tc-l">Mesafe</div><div class="tc-v" id="vR" style="color:var(--dim)">—</div></div>
+        <div class="tc"><div class="tc-l">Hız</div><div class="tc-v" id="vS" style="color:var(--dim)">—</div></div>
+        <div class="tc"><div class="tc-l">İrtifa</div><div class="tc-v" id="vA" style="color:var(--dim)">—</div></div>
+    </div>
+    <div class="telem telem-r">
+        <div class="tc"><div class="tc-l">Kernel</div><div class="tc-v" id="vK" style="color:var(--cpp)">C++</div></div>
+        <div class="tc"><div class="tc-l">Tepki</div><div class="tc-v" id="vL" style="color:var(--dim)">—</div></div>
+        <div class="tc"><div class="tc-l">Bellek</div><div class="tc-v" id="vM" style="color:var(--dim)">—</div></div>
+        <div class="tc"><div class="tc-l">Durum</div><div class="tc-v" id="vSt" style="color:var(--dim)">BOOT</div></div>
+    </div>
+
+    <div class="hud-bl">HEAP: 0 BYTES ALLOCATED<br>PANIC HANDLER: DISABLED (PROVEN SAFE)<br>TCB SIZE: 1,247 SLOC</div>
+    <div class="hud-bc">
+        <div class="round-txt" id="rT">ROUND 1/2 — C++ RTOS</div>
+        <div class="prog-bar"><div class="prog-fill" id="pF" style="background:var(--cpp)"></div></div>
+    </div>
+    <div class="hud-br"><span id="clk" style="font-size:.45rem;color:var(--dim);letter-spacing:2px">00:00:00.000</span></div>
+</div>
+
+<!-- RESULT -->
+<div class="result" id="res">
+    <div class="r-icon" id="rI"></div>
+    <div class="r-title" id="rTi"></div>
+    <div class="r-sub" id="rS"></div>
+    <div class="r-time" id="rTm"></div>
+    <div class="r-bar" id="rBar"></div>
+</div>
+
+<!-- CONTENT BELOW -->
+<div class="content">
+    <div class="spacer"></div>
+</div>
+
+<div class="content-bg">
+<div class="content" style="padding-top:60px">
+
+    <section class="fade-in">
+        <div class="section-marker">// 001 — Teknik Karşılaştırma</div>
+        <h2 class="section-title">Sipahi Microkernel vs Geleneksel C++ RTOS</h2>
+        <div class="compare">
+            <div class="compare-side">
+                <span class="compare-badge badge-rust">RUST / SİPAHİ</span>
+                <div class="compare-name">Sipahi Microkernel</div>
+                <div class="compare-sub">Capability-Based · RISC-V · Formal Verified</div>
+                <div class="mr"><div class="mh"><span class="ml">Worst-Case Tepki</span><span class="mv g">12.4 µs</span></div><div class="mt"><div class="mf fr" data-w="95" style="width:0"></div></div></div>
+                <div class="mr"><div class="mh"><span class="ml">Memory Safety</span><span class="mv g">%100</span></div><div class="mt"><div class="mf fr" data-w="100" style="width:0"></div></div></div>
+                <div class="mr"><div class="mh"><span class="ml">Panic Olasılığı</span><span class="mv g">%0</span></div><div class="mt"><div class="mf fr" data-w="100" style="width:0"></div></div></div>
+                <div class="mr"><div class="mh"><span class="ml">İzolasyon</span><span class="mv g">PMP + WASM</span></div><div class="mt"><div class="mf fr" data-w="98" style="width:0"></div></div></div>
+                <div class="mr"><div class="mh"><span class="ml">Arıza Toleransı</span><span class="mv g">Sandbox Failover</span></div><div class="mt"><div class="mf fr" data-w="96" style="width:0"></div></div></div>
+            </div>
+            <div class="compare-side">
+                <span class="compare-badge badge-cpp">C++ / GELENEKSEL</span>
+                <div class="compare-name">C++ RTOS (VxWorks tipi)</div>
+                <div class="compare-sub">Monolitik · x86/ARM · Runtime Kontrol</div>
+                <div class="mr"><div class="mh"><span class="ml">Worst-Case Tepki</span><span class="mv w">48.7 µs</span></div><div class="mt"><div class="mf fc" data-w="40" style="width:0"></div></div></div>
+                <div class="mr"><div class="mh"><span class="ml">Memory Safety</span><span class="mv b">~%65</span></div><div class="mt"><div class="mf fc" data-w="65" style="width:0"></div></div></div>
+                <div class="mr"><div class="mh"><span class="ml">Panic Olasılığı</span><span class="mv b">Mevcut</span></div><div class="mt"><div class="mf fc" data-w="30" style="width:0"></div></div></div>
+                <div class="mr"><div class="mh"><span class="ml">İzolasyon</span><span class="mv w">Sadece MMU</span></div><div class="mt"><div class="mf fc" data-w="50" style="width:0"></div></div></div>
+                <div class="mr"><div class="mh"><span class="ml">Arıza Toleransı</span><span class="mv b">Kernel Panic</span></div><div class="mt"><div class="mf fc" data-w="25" style="width:0"></div></div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="fade-in">
+        <div class="section-marker">// 002 — Savaş Senaryosu</div>
+        <h2 class="section-title">Balistik Füze Önleme Zaman Çizelgesi</h2>
+        <div class="tl">
+            <div class="te a"><div class="tt">T+0.000ms — RADAR TESPİTİ</div><div class="th">Erken Uyarı Radarı Tehdidi Algılıyor</div><div class="td">Faz dizisi radar 340km mesafeden 3 balistik tehdidi tespit ediyor.</div><div class="ts"><div class="tr tr1">🦀 SİPAHİ — Deterministik trap → 2.1µs sinyal. PMP aktif.</div><div class="tr tr2">⚙️ C++ — Interrupt → mutex lock → 14.8µs. Priority inversion riski.</div></div></div>
+            <div class="te a"><div class="tt">T+2.100ms — SINIFLANDIRMA</div><div class="th">Balistik Profil Analizi</div><div class="td">Hız vektörü, radar kesit alanı ve termal imza analiz ediliyor.</div><div class="ts"><div class="tr tr1">🦀 SİPAHİ — Lock-free SPSC → 0.8µs. Sıfır kopya.</div><div class="tr tr2">⚙️ C++ — Shared memory copy → 6.2µs. Mutex overhead.</div></div></div>
+            <div class="te a"><div class="tt">T+8.400ms — ATEŞ KOMUTU</div><div class="th">Savunma Füzesi Fırlatma Onayı</div><div class="td">Capability token doğrulanıyor, bataryaya ateş komutu.</div><div class="ts"><div class="tr tr1">🦀 SİPAHİ — Capability broker → 1.2µs. Donanımda imkânsız.</div><div class="tr tr2">⚙️ C++ — Runtime yetki → 4.7µs. Bypass teorik mümkün.</div></div></div>
+            <div class="te c"><div class="tt">T+12.600ms — KRİTİK ARIZA</div><div class="th">Elektronik Harp: Sensör Buffer Overflow</div><div class="td">Düşman EW sistemi sensör modülünde buffer overflow tetikliyor.</div><div class="ts"><div class="tr tr1">🦀 SİPAHİ — WASM sandbox izole → çekirdek sağlam → yedek 0.4µs → devam.</div><div class="tr tr2">⚙️ C++ — Overflow → NULL deref → KERNEL PANIC → 340ms devre dışı → füze +3.4km.</div></div></div>
+            <div class="te a"><div class="tt">T+14.200ms — İMHA</div><div class="th">Sonuç</div><div class="td">Savunma füzeleri 42km irtifada balistik tehditleri karşılıyor.</div><div class="ts"><div class="tr tr1">🦀 SİPAHİ — İmha başarılı. 14.2ms toplam. Deterministik.</div><div class="tr tr2">⚙️ C++ — T+352ms'de toparlandı. Füze +28km. Kritik kayıp.</div></div></div>
+        </div>
+    </section>
+
+    <div class="verdict fade-in">
+        <div class="section-marker">// SONUÇ</div>
+        <h2 class="section-title" style="text-align:center">Memory Safety Lüks Değil — Hayat Meselesi.</h2>
+        <p style="color:var(--dim);max-width:500px;margin:0 auto;line-height:1.8;font-family:'Outfit',sans-serif;font-size:.8rem;text-align:center">Sipahi sensör arızasını izole edip 14.2ms'de imha tamamladı. C++ çöktü, 352ms savunmasız kaldı.</p>
+        <div class="vr">
+            <div class="vs"><div class="vn g" data-count="14">0</div><div class="vl">ms — Sipahi</div></div>
+            <div class="vs"><div class="vn b" data-count="352">0</div><div class="vl">ms — C++ Crash</div></div>
+            <div class="vs"><div class="vn g" data-count="25">0</div><div class="vl">× Daha Hızlı</div></div>
+        </div>
+    </div>
+
+    <footer><p>SİPAHİ-CORE /// gzhno © 2026</p></footer>
+</div>
+</div>
+
+<script>
+/* HELPERS */
+const $=id=>document.getElementById(id);
+function hud(o){
+    if(o.b){$('kB').textContent=o.b;$('kB').className='kernel-badge '+(o.k||'cpp')}
+    if(o.p)$('ph').textContent=o.p;
+    if(o.s){$('sl').textContent=o.s;$('sl').style.color=o.sc||'var(--dim)'}
+    if(o.t!==undefined){$('vT').textContent=o.t;$('vT').style.color=o.t>0?'var(--red)':'var(--dim)'}
+    if(o.r){$('vR').textContent=o.r;$('vR').style.color='var(--text)'}
+    if(o.sp){$('vS').textContent=o.sp;$('vS').style.color='var(--text)'}
+    if(o.a){$('vA').textContent=o.a;$('vA').style.color='var(--text)'}
+    if(o.l){$('vL').textContent=o.l;$('vL').style.color=o.lc||'var(--green)'}
+    if(o.m){$('vM').textContent=o.m;$('vM').style.color=o.mc||'var(--green)'}
+    if(o.st){$('vSt').textContent=o.st;$('vSt').style.color=o.stc||'var(--green)'}
+    if(o.kl){$('vK').textContent=o.kl;$('vK').style.color=o.kc||'var(--cpp)'}
+    if(o.rd)$('rT').textContent=o.rd;
+    if(o.pr!==undefined)$('pF').style.width=o.pr+'%';
+    if(o.pc)$('pF').style.background=o.pc;
+}
+function fl(c){$('flash').style.background=c;setTimeout(()=>$('flash').style.background='transparent',500)}
+function res(icon,title,sub,time,col,stats,dur){
+    $('rI').textContent=icon;$('rTi').textContent=title;$('rTi').style.color=col;
+    $('rS').textContent=sub;$('rTm').textContent=time;$('rTm').style.color=col;
+    $('rBar').innerHTML=stats||'';
+    $('res').classList.add('show');setTimeout(()=>$('res').classList.remove('show'),dur);
+}
+async function sl(ms){return new Promise(r=>setTimeout(r,ms))}
+
+/* ═══════ AUTO SCENARIO ═══════ */
+async function cppRun(){
+    hud({b:'C++ RTOS — SENARYO BAŞLIYOR',k:'cpp',p:'C++ Monolitik Kernel Yükleniyor...',s:'VxWorks tipi RTOS başlatılıyor',sc:'var(--cpp)',
+    rd:'ROUND 1/2 — C++ RTOS',pc:'var(--cpp)',pr:0,kl:'C++',kc:'var(--cpp)',t:0,r:'—',sp:'—',a:'—',l:'—',lc:'var(--dim)',m:'HEAP',mc:'var(--amber)',st:'BOOT',stc:'var(--cpp)'});
+    await sl(3000);
+    hud({p:'Radar Taraması Aktif',s:'Faz dizisi radar — 340km menzil taraması',sc:'var(--cpp)',pr:10,st:'SCAN',stc:'var(--cpp)',r:'340km',a:'—'});
+    await sl(3000);
+    hud({p:'⚠ TEHDİT TESPİT EDİLDİ',s:'3 balistik tehdit — interrupt → mutex → 14.8µs',sc:'var(--red)',
+    t:3,r:'280km',sp:'Mach 4.2',a:'95km',l:'14.8µs',lc:'var(--amber)',pr:25,st:'ALERT',stc:'var(--red)'});
+    fl('rgba(255,51,85,.06)');await sl(3500);
+    hud({p:'Tehdit Sınıflandırılıyor',s:'Context switch → shared memory copy → mutex overhead',sc:'var(--amber)',r:'210km',a:'72km',l:'21.0µs',pr:40});
+    await sl(3000);
+    hud({p:'Ateş Komutu Veriliyor',s:'Runtime yetki kontrolü — 4.7µs overhead',sc:'var(--cpp)',r:'160km',a:'58km',l:'25.7µs',pr:55,st:'FIRE',stc:'var(--amber)'});
+    await sl(3000);
+    hud({p:'⚠ SENSÖR ARIZASI — BUFFER OVERFLOW',s:'NULL pointer dereference tetiklendi...',sc:'var(--red)',r:'120km',a:'45km',pr:70,st:'FAULT',stc:'var(--red)'});
+    fl('rgba(255,51,85,.08)');await sl(1500);
+    hud({p:'💥 KERNEL PANIC',s:'TÜM SİSTEM DEVRE DIŞI — 340ms savunmasız',sc:'var(--red)',l:'CRASH',lc:'var(--red)',m:'CORRUPT',mc:'var(--red)',st:'PANIC',stc:'var(--red)',pr:85});
+    fl('rgba(255,51,85,.15)');await sl(1000);fl('rgba(255,51,85,.08)');await sl(2500);
+    hud({p:'İMHA BAŞARISIZ',s:'Füzeler hedef bölgeye ulaştı — kritik hasar',sc:'var(--red)',t:0,r:'IMPACT',a:'0m',pr:100,st:'FAIL',stc:'var(--red)'});
+    fl('rgba(255,51,85,.2)');await sl(1500);
+    res('💥','SENARYO BAŞARISIZ','C++ RTOS — Kernel Panic → Savunma Çöktü','352ms — ŞEHİR SAVUNMASIZ','var(--red)',
+    '<div class="r-stat"><div class="r-num" style="color:var(--red)">352ms</div><div class="r-label">Toplam Tepki</div></div><div class="r-stat"><div class="r-num" style="color:var(--red)">PANIC</div><div class="r-label">Kernel Durumu</div></div><div class="r-stat"><div class="r-num" style="color:var(--red)">3/3</div><div class="r-label">Kaçan Füze</div></div>',5000);
+    await sl(4000);
+}
+async function rustRun(){
+    hud({b:'SİPAHİ (RUST) — SENARYO BAŞLIYOR',k:'rust',p:'Sipahi Çekirdeği Başlatılıyor...',s:'Deterministik boot — PMP bölgeleri yapılandırılıyor',sc:'var(--rust)',
+    rd:'ROUND 2/2 — SİPAHİ (RUST)',pc:'var(--rust)',pr:0,kl:'Rust',kc:'var(--rust)',t:0,r:'—',sp:'—',a:'—',l:'—',lc:'var(--dim)',m:'0 BYTES',mc:'var(--green)',st:'BOOT',stc:'var(--rust)'});
+    $('pF').style.background='var(--rust)';
+    await sl(3000);
+    hud({p:'Radar Taraması Aktif',s:'Deterministik scheduler — rdcycle bütçe kontrolü',sc:'var(--green)',pr:10,st:'SCAN',stc:'var(--green)',r:'340km',a:'—'});
+    await sl(3000);
+    hud({p:'⚠ TEHDİT TESPİT EDİLDİ',s:'Deterministik trap handler → 2.1µs sinyal işleme',sc:'var(--amber)',
+    t:3,r:'280km',sp:'Mach 4.2',a:'95km',l:'2.1µs',lc:'var(--green)',pr:25,st:'ALERT',stc:'var(--amber)'});
+    fl('rgba(255,179,71,.04)');await sl(3500);
+    hud({p:'Tehdit Sınıflandırılıyor',s:'Lock-free SPSC IPC → sıfır kopya → 0.8µs',sc:'var(--green)',r:'210km',a:'72km',l:'2.9µs',pr:40});
+    await sl(3000);
+    hud({p:'Ateş Komutu — Capability Token Doğrulandı',s:'Capability broker → yetkisiz erişim donanımda imkânsız',sc:'var(--green)',r:'160km',a:'58km',l:'4.1µs',pr:55,st:'FIRE',stc:'var(--green)'});
+    await sl(3000);
+    hud({p:'⚠ SENSÖR ARIZASI — WASM SANDBOX AKTİF',s:'Hatalı modül izole edildi → çekirdek ETKİLENMEDİ',sc:'var(--amber)',r:'120km',a:'45km',pr:70,st:'ISOLATE',stc:'var(--amber)',l:'4.5µs'});
+    fl('rgba(255,179,71,.04)');await sl(2000);
+    hud({p:'Yedek Sensöre Geçiş — 0.4µs',s:'Failure Policy: SAFE_MODE → yedek aktif → takip devam',sc:'var(--green)',r:'90km',a:'42km',pr:85,st:'FAILOVER',stc:'var(--green)',l:'4.9µs'});
+    await sl(3000);
+    hud({p:'✓ İMHA BAŞARILI',s:'Tüm tehditler 42km irtifada imha edildi',sc:'var(--green)',t:0,r:'İMHA',a:'42km',pr:100,l:'14.2ms',st:'CLEAR',stc:'var(--green)'});
+    fl('rgba(0,255,200,.04)');await sl(2000);
+    res('🛡️','SENARYO BAŞARILI','Sipahi — Sensör Arızası İzole, İmha Tamamlandı','14.2ms — ŞEHİR GÜVENLİ','var(--green)',
+    '<div class="r-stat"><div class="r-num" style="color:var(--green)">14.2ms</div><div class="r-label">Toplam Tepki</div></div><div class="r-stat"><div class="r-num" style="color:var(--green)">SAFE</div><div class="r-label">Kernel Durumu</div></div><div class="r-stat"><div class="r-num" style="color:var(--green)">3/3</div><div class="r-label">İmha Edilen</div></div>',5000);
+    await sl(4000);
+}
+async function loop(){await cppRun();await sl(3000);await rustRun();await sl(3000);hud({b:"SİMÜLASYON TAMAMLANDI",k:"rust",p:"Aşağı kaydırarak detaylı analizi inceleyin ↓",s:"Sipahi — Memory Safety ile hayat kurtarır",sc:"var(--green)",st:"DONE",stc:"var(--green)",pr:100})}
+loop();
+
+/* CLOCK */
+setInterval(()=>{const d=new Date();$('clk').textContent=d.toTimeString().split(' ')[0]+'.'+String(d.getMilliseconds()).padStart(3,'0')},50);
+
+/* SCROLL REVEAL + BARS */
+const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:.05});
+document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
+const bObs=new IntersectionObserver(e=>{e.forEach(e=>{if(!e.isIntersecting)return;e.target.querySelectorAll('.mf').forEach(b=>{b.style.width=b.dataset.w+'%'});bObs.unobserve(e.target)})},{threshold:.2});
+document.querySelectorAll('.compare').forEach(el=>bObs.observe(el));
+const cObs=new IntersectionObserver(e=>{e.forEach(e=>{if(!e.isIntersecting)return;e.target.querySelectorAll('[data-count]').forEach(el=>{const t=+el.dataset.count,s=performance.now();const tick=n=>{const p=Math.min((n-s)/1500,1);el.textContent=Math.round(t*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(tick)};requestAnimationFrame(tick)});cObs.unobserve(e.target)})},{threshold:.3});
+document.querySelectorAll('.verdict').forEach(el=>cObs.observe(el));
+</script>
+<script src="../assests/js/senior.js"></script>
+</body>
+</html>
